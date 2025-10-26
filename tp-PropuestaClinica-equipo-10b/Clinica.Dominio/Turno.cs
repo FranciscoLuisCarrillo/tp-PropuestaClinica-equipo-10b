@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Clinica.Dominio
 {
-    public class Class1
+    public class Turno
     {
     }
 }
