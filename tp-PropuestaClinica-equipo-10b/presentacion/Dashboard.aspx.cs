@@ -1,12 +1,11 @@
-﻿using System;
+﻿    using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 using Clinica.Negocio.Pruebas;
-
-namespace presentacion
+namespace Presentacion
 {
     public partial class Dashboard : System.Web.UI.Page
     {
@@ -23,7 +22,6 @@ namespace presentacion
 
             // --- PRUEBA 4: NOMBRE VACÍO (debería lanzar ArgumentException) ---
             TestManager.ProbarAgregarEspecialidad(string.Empty);
-
         }
     }
 }

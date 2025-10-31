@@ -7,7 +7,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace presentacion.Master
+namespace Presentacion
 {
 
 

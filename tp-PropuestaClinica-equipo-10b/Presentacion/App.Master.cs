@@ -5,9 +5,9 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-namespace presentacion.Appointments
+namespace Presentacion
 {
-    public partial class Details : System.Web.UI.Page
+    public partial class App : System.Web.UI.MasterPage
     {
         protected void Page_Load(object sender, EventArgs e)
         {

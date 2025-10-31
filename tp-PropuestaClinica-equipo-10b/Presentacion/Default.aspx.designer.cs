@@ -7,11 +7,11 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace presentacion
+namespace Presentacion
 {
 
 
-    public partial class Forgot
+    public partial class Default
     {
     }
 }
