@@ -1,4 +1,4 @@
-﻿<%@ Page Title="Registro - Clinica Medica" Language="C#" MasterPageFile="~/Public.Master" AutoEventWireup="true" CodeBehind="Register.aspx.cs" Inherits="Presentacion.Account.Register" %>
+﻿<%@ Page Title="Registro - Clinica Medica" Language="C#" MasterPageFile="~/App.Master" AutoEventWireup="true" CodeBehind="Register.aspx.cs" Inherits="Presentacion.Account.Register" %>
 
 <asp:Content ID="Head" ContentPlaceHolderID="HeadExtra" runat="server">
   <title>Registro — Clínica Médica</title>
@@ -10,7 +10,6 @@
 <asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
   <div class="mx-auto" style="max-width:720px;">
     <h1 class="h3 mb-3 text-center">Crear cuenta</h1>
-
    
     
 <div class="mb-4">

@@ -1,5 +1,5 @@
 ﻿<%@ Page Title="Inicio — Clínica Médica" Language="C#" 
-    MasterPageFile="~/Public.Master" 
+    MasterPageFile="~/App.Master" 
     AutoEventWireup="true" CodeBehind="Default.aspx.cs" 
     Inherits="Presentacion.Default" %>
 
