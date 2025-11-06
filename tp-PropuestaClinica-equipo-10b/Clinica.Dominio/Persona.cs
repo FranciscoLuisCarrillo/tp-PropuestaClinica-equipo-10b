@@ -8,6 +8,8 @@ namespace Clinica.Dominio
 {
     public class Persona
     {
+        // DATOS PERSONALES, LEY DE PROTECCION DE DATOS. BORRARLOS SIEMPRE despues de usarlos
+
         int Id { get; set; }
         string Nombre { get; set; }
         string Apellido { get; set; }
