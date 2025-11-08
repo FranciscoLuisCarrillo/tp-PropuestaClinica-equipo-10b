@@ -8,5 +8,7 @@ namespace Clinica.Dominio
 {
     public class Paciente : Persona
     {
+        //string NumeroHistoriaClinica { get; set; }
+       public string ObraSocial { get; set; }
     }
 }

@@ -10,15 +10,17 @@ namespace Clinica.Dominio
     {
         // DATOS PERSONALES, LEY DE PROTECCION DE DATOS. BORRARLOS SIEMPRE despues de usarlos
 
-        int Id { get; set; }
-        string Nombre { get; set; }
-        string Apellido { get; set; }
-        DateTime FechaNacimiento { get; set; }
-        string Genero { get; set; }
-        string Dni { get; set; }
-        string Direccion { get; set; }
-        string Telefono { get; set; }
-        string Email { get; set; }
+        public int Id { get; set; }
+        public string Nombre { get; set; }
+        public string Apellido { get; set; }
+        public DateTime FechaNacimiento { get; set; }
+        public string Genero { get; set; }
+        public string Dni { get; set; }
+        public string Direccion { get; set; }
+        public string Telefono { get; set; }
+        public string Email { get; set; }
+        public bool Activo { get; set; }
+
 
 
     }

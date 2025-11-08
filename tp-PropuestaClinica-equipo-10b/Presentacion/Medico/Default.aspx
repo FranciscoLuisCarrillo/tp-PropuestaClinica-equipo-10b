@@ -9,10 +9,9 @@
 </asp:Content>
 
 <asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
-  <main class="container my-5" role="main">
-    <h1 class="h3 text-center mb-4">Mi agenda</h1>
-
-
+  <main class="container mt-4 mb-5 medico-dashboard" role="main">
+      <h1 class="h4 fw-semibold mb-3">Mi agenda</h1>
+    
     <section aria-labelledby="filtro-turnos">
       <div class="d-flex justify-content-center mb-3">
         <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control w-auto" TextMode="Date" />
