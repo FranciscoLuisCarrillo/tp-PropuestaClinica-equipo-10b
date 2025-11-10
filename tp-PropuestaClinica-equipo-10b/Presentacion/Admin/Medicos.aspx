@@ -90,10 +90,12 @@
                             ErrorMessage="La matrícula es obligatoria." CssClass="text-danger" Display="Dynamic" />
                         </div>
                     <div class="mb-3">
-                        <label for="ddlEspecialidad" class="form-label">Especialidad</label>
-                        <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-select" />
-                        <asp:RequiredFieldValidator ID="rfvEspecialidad" runat="server" ControlToValidate="ddlEspecialidad"
-                            InitialValue="" ErrorMessage="La especialidad es obligatoria." CssClass="text-danger" Display="Dynamic" />
+                        <label class="form-label">Especialidades</label>
+                        <asp:CheckBoxList ID="chkEspecialidades" data-rol="especialidades" runat="server" CssClass="form-check" RepeatDirection="Vertical" />
+                        <asp:CustomValidator ID="cvEspecialidades" runat="server"
+                            ErrorMessage="Debe seleccionar al menos una especialidad."
+                            CssClass="text-danger" Display="Dynamic"
+                            ClientValidationFunction="validarEspecialidades"></asp:CustomValidator>
                         </div>
                     <div class="mb-3">
                         <label for="ddlTurnoDeTrabajo" class="form-label">Turno de Trabajo</label>

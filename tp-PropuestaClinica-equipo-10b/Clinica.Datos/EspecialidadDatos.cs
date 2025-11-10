@@ -70,5 +70,36 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+
+        public List<Especialidad> ListarTodas()
+        {
+            AccesoDatos datos = new AccesoDatos();
+            List<Especialidad> especialidades = new List<Especialidad>();
+            try
+            {
+                string consulta = "SELECT IdEspecialidad, Nombre, Activa FROM Especialidades";
+                datos.SetearConsulta(consulta);
+                datos.EjecutarLectura();
+                while (datos.Lector.Read())
+                {
+                    Especialidad esp = new Especialidad
+                    {
+                        IdEspecialidad = (int)datos.Lector["IdEspecialidad"],
+                        Nombre = (string)datos.Lector["Nombre"],
+                        Activa = (bool)datos.Lector["Activa"]
+                    };
+                    especialidades.Add(esp);
+                }
+                return especialidades;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al listar las especialidades desde la base de datos.", ex);
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
     }
 }

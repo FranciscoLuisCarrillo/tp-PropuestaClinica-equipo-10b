@@ -9,33 +9,29 @@ using Clinica.Negocio;
 
 namespace Presentacion.Admin
 {
-    public partial class Medicos : System.Web.UI.Page
+    public partial class Especialidades : System.Web.UI.Page
     {
-        EspecialidadNegocio especialidadNegocio = new EspecialidadNegocio();
- 
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(!IsPostBack)
+            if (!IsPostBack)
             {
                 CargarEspecialidades();
-            }   
+            }
         }
+
         private void CargarEspecialidades()
         {
+            EspecialidadNegocio negocio = new EspecialidadNegocio();
             try
             {
-                var lista = especialidadNegocio.ListarTodas();
-                chkEspecialidades.DataSource = lista;
-                chkEspecialidades.DataTextField = "Nombre";
-                chkEspecialidades.DataValueField = "IdEspecialidad";
-                chkEspecialidades.DataBind();
+                gvEspecialidades.DataSource = negocio.ListarTodas();
+                gvEspecialidades.DataBind();
             }
             catch (Exception ex)
             {
-                
+                // Manejo de errores (puedes mostrar un mensaje en la página si lo deseas)
                 throw new Exception("Error al cargar las especialidades.", ex);
             }
-
-        }
+        }   
     }
 }

@@ -12,7 +12,7 @@ namespace Clinica.Datos
     {
         // La cadena de conexión se genera directamente en el código, tal como lo solicitaste.
         // Utiliza la base de datos ClinicaDB que creaste.
-        private const string CadenaConexion = "server=.; database=ClinicaDB; integrated security=true;";
+        private const string CadenaConexion = "server=Tomas\\MSSQLSERVER01; database=ClinicaDB; integrated security=true;";
 
         // Método para obtener una nueva conexión a la base de datos.
         public static SqlConnection ObtenerConexion()

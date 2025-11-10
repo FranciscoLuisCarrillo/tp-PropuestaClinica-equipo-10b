@@ -67,6 +67,7 @@
     <Content Include="Account\Login.aspx" />
     <Content Include="Account\Register.aspx" />
     <Content Include="Admin\Default.aspx" />
+    <Content Include="Admin\Especialidades.aspx" />
     <Content Include="Admin\Medicos.aspx" />
     <Content Include="Dashboard.aspx" />
     <Content Include="Default.aspx" />
@@ -74,6 +75,7 @@
     <Content Include="Medico\Default.aspx" />
     <Content Include="Paciente\Dashboard.aspx" />
     <Content Include="Recepcion\Default.aspx" />
+    <Content Include="Script\Script.js" />
     <Content Include="Style\Style.css" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -98,6 +100,13 @@
     </Compile>
     <Compile Include="Admin\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="Admin\Especialidades.aspx.cs">
+      <DependentUpon>Especialidades.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Especialidades.aspx.designer.cs">
+      <DependentUpon>Especialidades.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\Medicos.aspx.cs">
       <DependentUpon>Medicos.aspx</DependentUpon>

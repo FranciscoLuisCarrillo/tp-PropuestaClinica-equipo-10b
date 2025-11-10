@@ -186,22 +186,22 @@ namespace Presentacion.Admin
         protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvMatricula;
 
         /// <summary>
-        /// Control ddlEspecialidad.
+        /// Control chkEspecialidades.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlEspecialidad;
+        protected global::System.Web.UI.WebControls.CheckBoxList chkEspecialidades;
 
         /// <summary>
-        /// Control rfvEspecialidad.
+        /// Control cvEspecialidades.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvEspecialidad;
+        protected global::System.Web.UI.WebControls.CustomValidator cvEspecialidades;
 
         /// <summary>
         /// Control ddlTurnoDeTrabajo.

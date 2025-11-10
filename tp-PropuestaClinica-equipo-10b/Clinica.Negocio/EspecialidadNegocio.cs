@@ -45,5 +45,10 @@ namespace Clinica.Negocio
 
             return filasAfectadas > 0;
         }
+
+        public List<Especialidad> ListarTodas()
+        {
+            return especialidadDatos.ListarTodas();
+        }
     }
 }
