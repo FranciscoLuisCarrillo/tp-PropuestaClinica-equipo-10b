@@ -1,15 +1,21 @@
 ﻿<%@ Page Title="Acceso — Clínica Médica" Language="C#"
-    MasterPageFile="~/App.Master"
     AutoEventWireup="true" CodeBehind="Login.aspx.cs"
     Inherits="Presentacion.Account.Login" %>
 
-<asp:Content ID="HeadSeo" ContentPlaceHolderID="HeadExtra" runat="server">
-  <title>Acceso — Clínica Médica</title>
-  <meta name="description" content="Ingresá con tu email y contraseña para acceder al sistema de turnos médicos online." />
-</asp:Content>
 
-<asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
-  <div class="container" style="max-width: 480px;">
+<!DOCTYPE html>
+<html lang="es" dir="ltr">
+    <head runat="server">
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Acceso — Clínica Médica</title>
+    <meta name="description" content="Iniciá sesión en tu cuenta para reservar y gestionar tus turnos médicos en la clínica médica." />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    </head>
+    <body class="bg-light">
+        <form id="form1" runat="server">
+
+  <div class="container" style="max-width: 480px; margin-top:60px">
     <h1 class="h3 text-center mb-4">Iniciar sesión</h1>
 
     <asp:ValidationSummary ID="valSum" runat="server" CssClass="alert alert-danger" EnableClientScript="true" />
@@ -33,4 +39,7 @@
       <a runat="server" href="~/Account/Register.aspx" class="text-decoration-none">Registrate</a>
     </div>
   </div>
-</asp:Content>
+        </form>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+ </body>
+ </html>

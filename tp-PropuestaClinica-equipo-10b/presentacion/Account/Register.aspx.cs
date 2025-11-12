@@ -13,27 +13,18 @@ namespace Presentacion.Account
         {
             if (!IsPostBack)
             {
-               rbPaciente.Checked = true;
-                cambiarRol();
+                
             }
-        }
-        protected void cambioRolMarcado(object sender, EventArgs e)
-        {
-            cambiarRol();
-        }
-        private void cambiarRol()
-        {
-            bool esMedico = rbMedico.Checked;
-            grpMatricula.Visible = esMedico;
-            reqMatricula.Enabled = esMedico;
-
-            grpObra.Visible = !esMedico;
-            reqObra.Enabled = !esMedico;
 
         }
+
         protected void btnRegistrar_Click(object sender, EventArgs e)
         {
-            string rol = rbMedico.Checked ? "Medico" : "Paciente";
+            if(!Page.IsValid)
+            {
+                return;
+            }
+            
         }
     }
 }

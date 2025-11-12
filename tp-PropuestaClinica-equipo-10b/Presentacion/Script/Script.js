@@ -1,41 +1,27 @@
 ﻿function validarEspecialidades(sender, args) {
-    var inputs = document.querySelectorAll('#<%= chkEspecialidades.ClientID %> input[type=checkbox]');
-    args.IsValid = Array.from(inputs).some(i => i.checked);
-}
-document.addEventListener("DOMContentLoaded", function () {
     const lista = document.querySelector('[data-rol="especialidades"]');
-    if (!lista) return; // si no está en esta página, no hace nada
+    if (!lista) { args.IsValid = false; return; }
+    args.IsValid = [...lista.querySelectorAll('input[type=checkbox]')].some(c => c.checked);
+}
+window.addEventListener('load', function () {
+    const lista = document.querySelector('[data-rol="especialidades"]');
+    if (!lista) return;
 
-    const checkboxes = lista.getElementsByTagName('input');
-    const maxSeleccion = 2;
+    const checkboxes = lista.querySelectorAll('input[type=checkbox]');
+    const aviso = document.createElement('small');
+    aviso.className = 'text-danger d-block mt-1';
+    lista.insertAdjacentElement('afterend', aviso);
 
-    // Mensaje debajo del listado
-    const aviso = document.createElement("span");
-    aviso.className = "text-danger small d-block mt-1";
-    lista.after(aviso);
+    checkboxes.forEach(chk => chk.addEventListener('change', () => {
+        const seleccionados = [...checkboxes].filter(c => c.checked);
+        const max = 2;
 
-    const actualizarEstado = () => {
-        const seleccionados = Array.from(checkboxes).filter(c => c.checked);
-        const cantidad = seleccionados.length;
-
-        if (cantidad >= maxSeleccion) {
-            aviso.textContent = `Solo podés seleccionar hasta ${maxSeleccion} especialidades.`;
-            checkboxes.forEach(chk => {
-                if (!chk.checked) {
-                    chk.disabled = true;
-                    chk.closest("label, span, td").classList.add("opacity-50"); // efecto visual
-                }
-            });
+        if (seleccionados.length >= max) {
+            aviso.textContent = `Solo podés elegir ${max} especialidades.`;
+            checkboxes.forEach(c => !c.checked && (c.disabled = true));
         } else {
-            aviso.textContent = "";
-            checkboxes.forEach(chk => {
-                chk.disabled = false;
-                chk.closest("label, span, td").classList.remove("opacity-50");
-            });
+            aviso.textContent = '';
+            checkboxes.forEach(c => c.disabled = false);
         }
-    };
-
-    checkboxes.forEach(chk => {
-        chk.addEventListener("change", actualizarEstado);
-    });
+    }));
 });
