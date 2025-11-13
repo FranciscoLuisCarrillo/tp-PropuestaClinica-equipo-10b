@@ -9,7 +9,8 @@ namespace Clinica.Dominio
     public class Usuario
     {
         int IdUsuario { get; set; }
-        int? I { get; set; }
+        int? IdPaciente { get; set; }
+        int? IdMedico { get; set; }
         string Email { get; set; }
         string Password { get; set; }
         string Rol { get; set; } // Admin, Medico, Recepcionista, Paciente

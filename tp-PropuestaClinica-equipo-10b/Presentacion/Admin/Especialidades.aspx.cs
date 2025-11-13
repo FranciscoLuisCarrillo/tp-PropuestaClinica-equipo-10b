@@ -32,6 +32,11 @@ namespace Presentacion.Admin
                 // Manejo de errores (puedes mostrar un mensaje en la página si lo deseas)
                 throw new Exception("Error al cargar las especialidades.", ex);
             }
-        }   
+        }
+
+        protected void btnAgregarEspecialidad_Click(object sender, EventArgs e)
+        {
+
+        }
     }
 }

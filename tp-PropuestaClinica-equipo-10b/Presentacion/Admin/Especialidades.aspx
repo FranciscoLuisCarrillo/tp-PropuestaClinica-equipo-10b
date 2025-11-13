@@ -28,7 +28,7 @@
                     <asp:RequiredFieldValidator ID="rfvNombreEspecialidad" runat="server" ControlToValidate="txtNombreEspecialidad"
                         ErrorMessage="El nombre de la especialidad es obligatorio." CssClass="text-danger" Display="Dynamic" />
                 </div>
-                <asp:Button ID="btnAgregarEspecialidad" runat="server" Text="Agregar Especialidad" CssClass="btn btn-success w-100" />
+                <asp:Button ID="btnAgregarEspecialidad" runat="server" Text="Agregar Especialidad" CssClass="btn btn-success w-100" OnClick="btnAgregarEspecialidad_Click" />
              </section>
         </div>
     </main>
