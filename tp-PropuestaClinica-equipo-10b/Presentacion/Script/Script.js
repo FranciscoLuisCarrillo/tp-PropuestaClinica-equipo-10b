@@ -1,4 +1,5 @@
-﻿function validarEspecialidades(sender, args) {
+﻿
+function validarEspecialidades(sender, args) {
     const lista = document.querySelector('[data-rol="especialidades"]');
     if (!lista) { args.IsValid = false; return; }
     args.IsValid = [...lista.querySelectorAll('input[type=checkbox]')].some(c => c.checked);
