@@ -29,7 +29,12 @@
                         ErrorMessage="El nombre de la especialidad es obligatorio." CssClass="text-danger" Display="Dynamic" />
                 </div>
                 <asp:Button ID="btnAgregarEspecialidad" runat="server" Text="Agregar Especialidad" CssClass="btn btn-success w-100" OnClick="btnAgregarEspecialidad_Click" />
-             </section>
+                <asp:Label ID="lblMsg" runat="server" EnableViewState="false"></asp:Label> 
+            </section>
         </div>
+         <div class="text-end mt-3">
+             <a href="Default.aspx" class="btn btn-secondary">Atrás</a>
+        </div>
+       
     </main>
 </asp:Content>

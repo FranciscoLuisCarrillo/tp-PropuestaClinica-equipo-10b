@@ -50,7 +50,7 @@
         <div class="col-md-3"><a runat="server" href="~/Admin/Medicos.aspx" class="btn btn-outline-primary w-100">Médicos</a></div>
         <div class="col-md-3"><a runat="server" href="~/Admin/Pacientes.aspx" class="btn btn-outline-primary w-100">Pacientes</a></div>
         <div class="col-md-3"><a runat="server" href="~/Admin/Especialidades.aspx" class="btn btn-outline-primary w-100">Especialidades</a></div>
-        <div class="col-md-3"><a runat="server" href="~/Admin/TurnosTrabajo.aspx" class="btn btn-outline-primary w-100">Turnos de trabajo</a></div>
+        <div class="col-md-3"><a runat="server" href="~/Admin/Recepcionista.aspx" class="btn btn-outline-primary w-100">Recepcionista</a></div>
       </div>
     </section>
 

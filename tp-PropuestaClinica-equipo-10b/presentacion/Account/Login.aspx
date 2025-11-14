@@ -32,7 +32,7 @@
       <asp:RequiredFieldValidator runat="server" ControlToValidate="txtPass" ErrorMessage="La contraseña es obligatoria" CssClass="text-danger" />
     </div>
 
-    <asp:Button ID="btnLogin" runat="server" Text="Entrar" CssClass="btn btn-primary w-100 mb-3" onclick="btnLogin_Click"/>
+    <asp:Button ID="btnLogin" runat="server" Text="Entrar" CssClass="btn btn-primary w-100 mb-3" />
 
     <div class="text-center">
       <span class="text-muted">¿No tenés cuenta?</span>

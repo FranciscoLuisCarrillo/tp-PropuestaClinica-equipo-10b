@@ -7,65 +7,74 @@
 // </generado automáticamente>
 //------------------------------------------------------------------------------
 
-namespace Presentacion.Admin
+namespace Presentacion.Pacientes
 {
 
 
-    public partial class Especialidades
+    public partial class Dashboard
     {
 
         /// <summary>
-        /// Control gvEspecialidades.
+        /// Control gvTurnos.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvEspecialidades;
+        protected global::System.Web.UI.WebControls.GridView gvTurnos;
 
         /// <summary>
-        /// Control ValidarEspecialidad.
+        /// Control ddlEspecialidad.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary ValidarEspecialidad;
+        protected global::System.Web.UI.WebControls.DropDownList ddlEspecialidad;
 
         /// <summary>
-        /// Control txtNombreEspecialidad.
+        /// Control ddlMedico.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtNombreEspecialidad;
+        protected global::System.Web.UI.WebControls.DropDownList ddlMedico;
 
         /// <summary>
-        /// Control rfvNombreEspecialidad.
+        /// Control txtFecha.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvNombreEspecialidad;
+        protected global::System.Web.UI.WebControls.TextBox txtFecha;
 
         /// <summary>
-        /// Control btnAgregarEspecialidad.
+        /// Control btnBuscarHorarios.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnAgregarEspecialidad;
+        protected global::System.Web.UI.WebControls.Button btnBuscarHorarios;
 
         /// <summary>
-        /// Control lblMsg.
+        /// Control pnlHorarios.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Label lblMsg;
+        protected global::System.Web.UI.WebControls.Panel pnlHorarios;
+
+        /// <summary>
+        /// Control rptHorarios.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Repeater rptHorarios;
     }
 }
