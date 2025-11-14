@@ -97,12 +97,6 @@
                             CssClass="text-danger" Display="Dynamic"
                             ClientValidationFunction="validarEspecialidades"></asp:CustomValidator>
                         </div>
-                    <div class="mb-3">
-                        <label for="ddlTurnoDeTrabajo" class="form-label">Turno de Trabajo</label>
-                        <asp:DropDownList ID="ddlTurnoDeTrabajo" runat="server" CssClass="form-select" />
-                        <asp:RequiredFieldValidator ID="rfvTurnoDeTrabajo" runat="server" ControlToValidate="ddlTurnoDeTrabajo"
-                            InitialValue="" ErrorMessage="El turno de trabajo es obligatorio." CssClass="text-danger" Display="Dynamic" />
-                        </div>
                     <asp:Button ID="btnGuarda" runat="server"
                         Text="Guardar" CssClass="btn btn-succes w-100" />
                     </section>

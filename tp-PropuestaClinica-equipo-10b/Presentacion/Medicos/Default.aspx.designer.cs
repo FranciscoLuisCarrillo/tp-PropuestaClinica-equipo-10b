@@ -7,7 +7,7 @@
 // </generado automáticamente>
 //------------------------------------------------------------------------------
 
-namespace Presentacion.Medico
+namespace Presentacion.Medicos
 {
 
 

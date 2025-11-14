@@ -73,7 +73,7 @@
     <Content Include="Dashboard.aspx" />
     <Content Include="Account\Default.aspx" />
     <Content Include="Global.asax" />
-    <Content Include="Medico\Default.aspx" />
+    <Content Include="Medicos\Default.aspx" />
     <Content Include="Pacientes\Dashboard.aspx" />
     <Content Include="Recepcion\Default.aspx" />
     <Content Include="Script\Script.js" />
@@ -140,11 +140,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Medico\Default.aspx.cs">
+    <Compile Include="Medicos\Default.aspx.cs">
       <DependentUpon>Default.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Medico\Default.aspx.designer.cs">
+    <Compile Include="Medicos\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
     <Compile Include="Pacientes\Dashboard.aspx.cs">

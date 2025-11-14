@@ -19,7 +19,7 @@ namespace Presentacion.Account
             }
 
         }
-        /*
+        
         protected void btnRegistrar_Click(object sender, EventArgs e)
         {
             if(!Page.IsValid)
@@ -33,13 +33,13 @@ namespace Presentacion.Account
                 paciente.FechaNacimiento = Convert.ToDateTime(txtFechaNacimiento.Text);
                 paciente.Genero = ddlGenero.SelectedValue;
                 paciente.Dni = txtDni.Text.Trim();
-                paciente.Direccion = txtDireccion.Text.Trim();
+                paciente.Domicilio = txtDireccion.Text.Trim();
                 paciente.Telefono = txtTelefono.Text.Trim();
                 paciente.ObraSocial = txtObraSocial.Text.Trim();
                 paciente.Activo = true;
               };
             PacienteNegocio pacienteNegocio = new PacienteNegocio();
-            int idPaciente = pacienteNegocio.Registrar(paciente);
+            int idPaciente = pacienteNegocio.Agregar(paciente);
            
             Usuario usuario = new Usuario();
             {
@@ -53,6 +53,6 @@ namespace Presentacion.Account
 
             Response.Redirect("~/Account/Login.aspx?registro=ok");
         }
-        */
+     
     }
 }

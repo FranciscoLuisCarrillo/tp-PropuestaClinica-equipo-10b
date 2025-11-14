@@ -204,24 +204,6 @@ namespace Presentacion.Admin
         protected global::System.Web.UI.WebControls.CustomValidator cvEspecialidades;
 
         /// <summary>
-        /// Control ddlTurnoDeTrabajo.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlTurnoDeTrabajo;
-
-        /// <summary>
-        /// Control rfvTurnoDeTrabajo.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.RequiredFieldValidator rfvTurnoDeTrabajo;
-
-        /// <summary>
         /// Control btnGuarda.
         /// </summary>
         /// <remarks>
