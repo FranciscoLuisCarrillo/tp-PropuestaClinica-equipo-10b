@@ -17,7 +17,8 @@ namespace Clinica.Dominio
         public string Password { get; set; }
         public string Rol { get; set; } // Admin, Medico, Recepcionista, Paciente
         public bool Activo { get; set; }
-        
+        public Perfil Perfil { get; set; }
+
 
         Persona Persona { get; set; }
 

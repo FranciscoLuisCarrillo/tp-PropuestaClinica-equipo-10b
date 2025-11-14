@@ -132,5 +132,22 @@ ADD CONSTRAINT FK_Medicos_TurnosTrabajo
     REFERENCES TurnosTrabajo (TurnoTrabajoId);
 GO
 
- 
+ -------------------------------------------- NUEVO TABLA USUARIOS -------------------------------
+USE ClinicaDB;
+GO
+
+CREATE TABLE Usuarios (
+    UsuarioId INT PRIMARY KEY IDENTITY(1,1),
+    Email NVARCHAR(100) NOT NULL UNIQUE,
+    Pass NVARCHAR(100) NOT NULL,
+    
+    -- 0=Admin, 1=Recepcionista, 2=Medico
+    -- (Esto lo manejaremos con el Enum en C#)
+    Perfil INT NOT NULL DEFAULT 1 
+);
+GO
+
+-- Insertamos un usuario Administrador por defecto para poder entrar
+INSERT INTO Usuarios (Email, Pass, Perfil) VALUES ('admin@clinica.com', 'admin', 0);
+GO
  */
