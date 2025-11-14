@@ -13,6 +13,9 @@ namespace Clinica.Dominio
         public int? IdTurnoTrabajo { get; set; }
         public string NombreTurnoTrabajo { get; set; } // Mañana, Tarde, Noche
 
+        public TurnoTrabajo Turno { get; set; }
+
+
         public List<Especialidad> Especialidades { get; set; } = new List<Especialidad>();
 
         public string EspecialidadTexto
@@ -25,6 +28,11 @@ namespace Clinica.Dominio
                 }
                 return "Sin especialidades";
             }
+        }
+
+        public Medico()
+        {
+            Especialidades = new List<Especialidad>();
         }
     }
 }

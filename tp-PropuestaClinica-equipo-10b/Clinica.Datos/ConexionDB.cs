@@ -120,5 +120,17 @@ CREATE TABLE Turnos (
     CONSTRAINT UQ_Turno_Paciente_Hora UNIQUE (PacienteId, FechaHoraInicio)
 );
 
+-- 1. Agregar la columna para el Turno de Trabajo
+ALTER TABLE Medicos
+ADD TurnoTrabajoId INT;
+GO
+
+-- 2. Crear la relación (Foreign Key)
+ALTER TABLE Medicos
+ADD CONSTRAINT FK_Medicos_TurnosTrabajo
+    FOREIGN KEY (TurnoTrabajoId)
+    REFERENCES TurnosTrabajo (TurnoTrabajoId);
+GO
+
  
  */
