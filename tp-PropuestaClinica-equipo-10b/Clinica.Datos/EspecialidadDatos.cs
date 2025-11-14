@@ -22,7 +22,7 @@ namespace Clinica.Datos
             try
             {
                 // Usamos COLLATE Latin1_General_CI_AI para hacer la comparación case-insensitive (CI) y accent-insensitive (AI).
-                string consulta = "SELECT EspecialidadId FROM Especialidades WHERE Nombre COLLATE Latin1_General_CI_AI = @Nombre";
+                string consulta = "SELECT IdEspecialidad FROM Especialidades WHERE Nombre COLLATE Latin1_General_CI_AI = @Nombre";
                 datos.SetearConsulta(consulta);
                 datos.SetearParametro("@Nombre", nombre);
                 datos.EjecutarLectura();
@@ -54,7 +54,7 @@ namespace Clinica.Datos
             try
             {
                 // Consulta de inserción simple
-                string consulta = "INSERT INTO Especialidades (Nombre) VALUES (@Nombre)";
+                string consulta = "INSERT INTO Especialidades (Nombre, Activa) VALUES (@Nombre, 1)";
                 datos.SetearConsulta(consulta);
                 datos.SetearParametro("@Nombre", nueva.Nombre);
 

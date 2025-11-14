@@ -36,7 +36,7 @@
                             <a runat="server" href="~/Medico/Default.aspx" class="nav-link text-white">Dashboard</a>
                         </asp:PlaceHolder>
                           <asp:PlaceHolder ID="phPaciente" runat="server" Visible="false">
-                              <a runat="server" href="~/Paciente/Default.aspx" class="nav-link text-white">Dashboard</a>
+                              <a runat="server" href="~/Pacientes/Dashboard.aspx" class="nav-link text-white">Dashboard</a>
                           </asp:PlaceHolder>
                        </nav>
                       <div class="text-end">

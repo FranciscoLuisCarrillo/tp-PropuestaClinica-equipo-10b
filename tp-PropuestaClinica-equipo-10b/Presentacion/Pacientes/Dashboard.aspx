@@ -1,6 +1,6 @@
 ﻿<%@ Page Title="Panel del Paciente — Clínica Médica" Language="C#" 
     MasterPageFile="~/App.Master" AutoEventWireup="true" 
-    CodeBehind="Dashboard.aspx.cs" Inherits="Presentacion.Paciente.Dashboard" %>
+    CodeBehind="Dashboard.aspx.cs" Inherits="Presentacion.Pacientes.Dashboard" %>
 
 <asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
 <div class="container my-5">

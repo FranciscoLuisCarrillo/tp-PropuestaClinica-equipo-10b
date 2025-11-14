@@ -69,11 +69,12 @@
     <Content Include="Admin\Default.aspx" />
     <Content Include="Admin\Especialidades.aspx" />
     <Content Include="Admin\Medicos.aspx" />
+    <Content Include="Admin\Recepcionista.aspx" />
     <Content Include="Dashboard.aspx" />
     <Content Include="Account\Default.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Medico\Default.aspx" />
-    <Content Include="Paciente\Dashboard.aspx" />
+    <Content Include="Pacientes\Dashboard.aspx" />
     <Content Include="Recepcion\Default.aspx" />
     <Content Include="Script\Script.js" />
     <Content Include="Style\Style.css" />
@@ -115,6 +116,13 @@
     <Compile Include="Admin\Medicos.aspx.designer.cs">
       <DependentUpon>Medicos.aspx</DependentUpon>
     </Compile>
+    <Compile Include="Admin\Recepcionista.aspx.cs">
+      <DependentUpon>Recepcionista.aspx</DependentUpon>
+      <SubType>ASPXCodeBehind</SubType>
+    </Compile>
+    <Compile Include="Admin\Recepcionista.aspx.designer.cs">
+      <DependentUpon>Recepcionista.aspx</DependentUpon>
+    </Compile>
     <Compile Include="Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
@@ -139,11 +147,11 @@
     <Compile Include="Medico\Default.aspx.designer.cs">
       <DependentUpon>Default.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Paciente\Dashboard.aspx.cs">
+    <Compile Include="Pacientes\Dashboard.aspx.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Paciente\Dashboard.aspx.designer.cs">
+    <Compile Include="Pacientes\Dashboard.aspx.designer.cs">
       <DependentUpon>Dashboard.aspx</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />

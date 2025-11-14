@@ -8,13 +8,15 @@ namespace Clinica.Dominio
 {
     public class Usuario
     {
-        int IdUsuario { get; set; }
-        int? IdPaciente { get; set; }
-        int? IdMedico { get; set; }
-        string Email { get; set; }
-        string Password { get; set; }
-        string Rol { get; set; } // Admin, Medico, Recepcionista, Paciente
-        bool Activo { get; set; }
+        public int IdUsuario { get; set; }
+        public int? IdRecepcionista { get; set; }
+
+        public int? IdPaciente { get; set; }
+        public int? IdMedico { get; set; }
+        public string Email { get; set; }
+        public string Password { get; set; }
+        public string Rol { get; set; } // Admin, Medico, Recepcionista, Paciente
+        public bool Activo { get; set; }
         
 
         Persona Persona { get; set; }

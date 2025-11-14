@@ -36,7 +36,37 @@ namespace Presentacion.Admin
 
         protected void btnAgregarEspecialidad_Click(object sender, EventArgs e)
         {
+            lblMsg.Text = string.Empty;
+            lblMsg.CssClass = "";
+            try
+            {
+                var nombre = (txtNombreEspecialidad.Text ?? "").Trim();
+                if (string.IsNullOrEmpty(nombre))
+                {
+                    lblMsg.Text = "Ingresa un nombre.";
+                    lblMsg.CssClass = "text-danger d-block mt-2";
+                    return;
+                }
+                EspecialidadNegocio negocio = new EspecialidadNegocio();
+                var ok = negocio.Agregar(new Clinica.Dominio.Especialidad { Nombre = nombre });
+                if (ok)
+                {
+                    lblMsg.Text = "Especialidad agregada Correctamente";
+                    txtNombreEspecialidad.Text = "";
+                    CargarEspecialidades();
 
+                }
+                else
+                {
+                    lblMsg.Text = "La especialidad ya existe.";
+                    lblMsg.CssClass = "text-warning d-block mt-2";
+                }
+            }
+            catch (Exception ex)
+            {
+                lblMsg.Text = "Error: " + ex.Message;
+                lblMsg.CssClass = "text-danger d-block mt-2";
+            }
         }
     }
 }

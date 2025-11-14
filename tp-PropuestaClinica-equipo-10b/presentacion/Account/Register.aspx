@@ -100,7 +100,7 @@
 
   
 <asp:Button ID="btnRegistrar" runat="server" Text="Crear cuenta"
-            CssClass="btn btn-success mt-4" OnClick="btnRegistrar_Click"/>
+            CssClass="btn btn-success mt-4" />
 </div>
             </form>
    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

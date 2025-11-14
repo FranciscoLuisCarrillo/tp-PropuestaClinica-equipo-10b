@@ -107,5 +107,10 @@
                         Text="Guardar" CssClass="btn btn-succes w-100" />
                     </section>
             </div>
+        
+            <div class="text-end mt-3">
+                <a href="Default.aspx" class="btn btn-secondary">Atrás</a>
+            </div>
+       
     </main>
 </asp:Content>

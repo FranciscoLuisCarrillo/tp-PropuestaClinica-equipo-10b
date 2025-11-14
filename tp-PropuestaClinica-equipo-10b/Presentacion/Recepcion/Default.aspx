@@ -21,24 +21,58 @@
         <div class="col-md-4">
           <label class="form-label">Paciente</label>
           <asp:DropDownList ID="ddlPaciente" runat="server" CssClass="form-select" />
+          <asp:RequiredFieldValidator runat="server"
+              ControlToValidate="ddlPaciente"
+              InitialValue=""
+              ErrorMessage="Seleccioná un paciente."
+              CssClass="text-danger"
+              Display="Dynamic" />
         </div>
+
         <div class="col-md-4">
           <label class="form-label">Especialidad</label>
-          <asp:DropDownList ID="ddlEspecialidad" runat="server" CssClass="form-select" AutoPostBack="true"
-                            />
+          <asp:DropDownList ID="ddlEspecialidad" runat="server"
+                            CssClass="form-select"
+                            AutoPostBack="true"
+                             />
+          <asp:RequiredFieldValidator runat="server"
+              ControlToValidate="ddlEspecialidad"
+              InitialValue=""
+              ErrorMessage="Seleccioná una especialidad."
+              CssClass="text-danger"
+              Display="Dynamic" />
         </div>
+
         <div class="col-md-4">
           <label class="form-label">Médico</label>
           <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-select" />
+          <asp:RequiredFieldValidator runat="server"
+              ControlToValidate="ddlMedico"
+              InitialValue=""
+              ErrorMessage="Seleccioná un médico."
+              CssClass="text-danger"
+              Display="Dynamic" />
         </div>
 
         <div class="col-md-6">
           <label class="form-label">Fecha</label>
           <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control" TextMode="Date" />
+          <asp:RequiredFieldValidator runat="server"
+              ControlToValidate="txtFecha"
+              ErrorMessage="La fecha es obligatoria."
+              CssClass="text-danger"
+              Display="Dynamic" />
         </div>
+
         <div class="col-md-6">
           <label class="form-label">Hora</label>
           <asp:DropDownList ID="ddlHora" runat="server" CssClass="form-select" />
+          <asp:RequiredFieldValidator runat="server"
+              ControlToValidate="ddlHora"
+              InitialValue=""
+              ErrorMessage="La hora es obligatoria."
+              CssClass="text-danger"
+              Display="Dynamic" />
         </div>
         <div class="col-12">
           <label class="form-label">Observaciones</label>
@@ -61,8 +95,9 @@
       </div>
 
       <asp:GridView ID="gvTurnosDia" runat="server"
-        CssClass="table table-striped table-hover table-sm"
-        AutoGenerateColumns="false" DataKeyNames="IdTurno"
+            CssClass="table table-striped table-hover table-sm"
+            AutoGenerateColumns="false"
+            DataKeyNames="IdTurno"
        >
         <Columns>
           <asp:BoundField DataField="Hora" HeaderText="Hora" />
@@ -70,8 +105,8 @@
           <asp:BoundField DataField="Medico" HeaderText="Médico" />
           <asp:BoundField DataField="Especialidad" HeaderText="Especialidad" />
           <asp:BoundField DataField="Estado" HeaderText="Estado" />
-          <asp:ButtonField Text="Reprogramar" CommandName="Reprogramar" ButtonType="Button" />
-          <asp:ButtonField Text="Cancelar" CommandName="Cancelar" ButtonType="Button" />
+          <asp:ButtonField Text="Reprogramar" CommandName="Reprogramar" ButtonType="Button" CausesValidation="false" />
+          <asp:ButtonField Text="Cancelar" CommandName="Cancelar" ButtonType="Button" CausesValidation="false" />
         </Columns>
       </asp:GridView>
     </section>
