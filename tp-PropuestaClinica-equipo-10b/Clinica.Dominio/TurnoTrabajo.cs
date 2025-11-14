@@ -9,7 +9,7 @@ namespace Clinica.Dominio
     public class TurnoTrabajo
 
     {
-        public int IdTurnoTrabajo { get; set; }
+        public int TurnoTrabajoId { get; set; }
         public string Nombre { get; set; }
 
         /// <summary>
