@@ -11,48 +11,49 @@ namespace Presentacion.Account
 {
     public partial class Register : System.Web.UI.Page
     {
+      
+
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
-                
+
             }
 
         }
-        
-        protected void btnRegistrar_Click(object sender, EventArgs e)
+
+        protected void btnCrearCuenta_Click(object sender, EventArgs e)
         {
-            if(!Page.IsValid)
-            {
+            if (!Page.IsValid)
                 return;
-            }
-            Paciente paciente = new Paciente();
+            UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
+            try
             {
-                paciente.Nombre = txtNombre.Text.Trim();
-                paciente.Apellido = txtApellido.Text.Trim();
-                paciente.FechaNacimiento = Convert.ToDateTime(txtFechaNacimiento.Text);
-                paciente.Genero = ddlGenero.SelectedValue;
-                paciente.Dni = txtDni.Text.Trim();
-                paciente.Domicilio = txtDireccion.Text.Trim();
-                paciente.Telefono = txtTelefono.Text.Trim();
-                paciente.ObraSocial = txtObraSocial.Text.Trim();
-                paciente.Activo = true;
-              };
-            PacienteNegocio pacienteNegocio = new PacienteNegocio();
-            int idPaciente = pacienteNegocio.Agregar(paciente);
-           
-            Usuario usuario = new Usuario();
-            {
-                usuario.IdPaciente = idPaciente;
-                usuario.Email = txtEmail.Text.Trim();
-                usuario.Password = txtPass.Text.Trim();
-                usuario.Rol = "Paciente";
-                usuario.Activo = true;
-            }
-            ;
+                Usuario nuevo = new Usuario();
+                nuevo.Nombre = txtNombre.Text.Trim();
+                nuevo.Apellido = txtApellido.Text.Trim();
+                nuevo.Email = txtEmail.Text.Trim();
+                nuevo.Password = txtPass.Text.Trim();
+                nuevo.Rol = "Paciente";
+                nuevo.Perfil = Perfil.Paciente;
+                nuevo.Activo = true;
 
-            Response.Redirect("~/Account/Login.aspx?registro=ok");
+                usuarioNegocio.Agregar(nuevo);
+
+
+                Session["UsuarioEmail"] = nuevo.Email;
+                Session["Perfil"] = nuevo.Perfil;
+
+                Response.Redirect("~/Pacientes/Default.aspx");
+            }
+            catch (Exception ex)
+            {
+                valSummary.HeaderText = ex.Message;
+            }
         }
-     
     }
+    
 }
+
+
+

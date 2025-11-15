@@ -17,11 +17,11 @@ namespace Presentacion.Admin
 
         private void CargarRecepcionistas()
         {
-            RecepcionistaNegocio negocio = new RecepcionistaNegocio();
+         //   RecepcionistaNegocio negocio = new RecepcionistaNegocio();
             try
             {
-                dgvRecepcionistas.DataSource = negocio.ListarConSP();
-                dgvRecepcionistas.DataBind();
+               // dgvRecepcionistas.DataSource = negocio.ListarConSP();
+            //    dgvRecepcionistas.DataBind();
             }
             catch (Exception ex)
             {
@@ -36,7 +36,7 @@ namespace Presentacion.Admin
                 return;
             }
             Persona nuevoRecepcionista = new Persona();
-            RecepcionistaNegocio negocio = new RecepcionistaNegocio();
+          //  RecepcionistaNegocio negocio = new RecepcionistaNegocio();
            
             try
             {
@@ -45,15 +45,15 @@ namespace Presentacion.Admin
                 nuevoRecepcionista.FechaNacimiento = Convert.ToDateTime(txtFechaNacimiento.Text);
                 nuevoRecepcionista.Genero = ddlGenero.SelectedValue;
                 nuevoRecepcionista.Dni = txtDNI.Text;
-                nuevoRecepcionista.Direccion = txtDireccion.Text;
+                nuevoRecepcionista.Domicilio = txtDireccion.Text;
                 nuevoRecepcionista.Telefono = txtTelefono.Text;
                 nuevoRecepcionista.Email = txtEmail.Text;
                 nuevoRecepcionista.Activo = true;
                 
-                int idRecepcionista = negocio.Agregar(nuevoRecepcionista);
+               /// int idRecepcionista = negocio.Agregar(nuevoRecepcionista);
                 Usuario usuario = new Usuario();
                 {
-                    usuario.IdRecepcionista = idRecepcionista;
+                    //usuario.IdRecepcionista = idRecepcionista;
                     usuario.Email = txtEmail.Text.Trim();
                     usuario.Password = txtPass.Text.Trim();
                     usuario.Rol = "Recepcionista";
