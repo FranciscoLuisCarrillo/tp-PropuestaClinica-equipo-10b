@@ -1,9 +1,10 @@
-﻿
-function validarEspecialidades(sender, args) {
+﻿function validarEspecialidades(sender, args) {
     const lista = document.querySelector('[data-rol="especialidades"]');
     if (!lista) { args.IsValid = false; return; }
-    args.IsValid = [...lista.querySelectorAll('input[type=checkbox]')].some(c => c.checked);
+    args.IsValid = [...lista.querySelectorAll('input[type=checkbox]')]
+        .some(c => c.checked);
 }
+
 window.addEventListener('load', function () {
     const lista = document.querySelector('[data-rol="especialidades"]');
     if (!lista) return;
@@ -26,3 +27,23 @@ window.addEventListener('load', function () {
         }
     }));
 });
+
+function mostrarFormularioMedico() {
+    const formPanel = document.getElementById('pnlNuevoMedico');
+    const listPanel = document.getElementById('pnlListadoMedicos');
+
+    if (formPanel) formPanel.style.display = 'block';
+    if (listPanel) listPanel.style.display = 'none';
+
+    if (formPanel) {
+        window.scrollTo({ top: formPanel.offsetTop - 80, behavior: 'smooth' });
+    }
+}
+
+function ocultarFormularioMedico() {
+    const formPanel = document.getElementById('pnlNuevoMedico');
+    const listPanel = document.getElementById('pnlListadoMedicos');
+
+    if (formPanel) formPanel.style.display = 'none';
+    if (listPanel) listPanel.style.display = 'block';
+}

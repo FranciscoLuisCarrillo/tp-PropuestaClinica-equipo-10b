@@ -11,7 +11,7 @@ namespace Presentacion.Admin
     {
         private readonly MedicoNegocio medicoNegocio = new MedicoNegocio();
         private readonly EspecialidadNegocio especialidadNegocio = new EspecialidadNegocio();
-        private readonly TurnoTrabajoNegocio turnoNegocio = new TurnoTrabajoNegocio(); // asumimos que existe
+       
 
         protected void Page_Load(object sender, EventArgs e)
         {
@@ -45,7 +45,7 @@ namespace Presentacion.Admin
                 var lista = especialidadNegocio.ListarTodas();
                 chkEspecialidades.DataSource = lista;
                 chkEspecialidades.DataTextField = "Nombre";
-                chkEspecialidades.DataValueField = "IdEspecialidad";
+                chkEspecialidades.DataValueField = "EspecialidadId";
                 chkEspecialidades.DataBind();
             }
             catch (Exception ex)
@@ -89,7 +89,7 @@ namespace Presentacion.Admin
                     {
                         nuevo.Especialidades.Add(new Especialidad
                         {
-                            IdEspecialidad = int.Parse(item.Value),
+                            EspecialidadId = int.Parse(item.Value),
                             Nombre = item.Text
                         });
                     }
@@ -100,7 +100,17 @@ namespace Presentacion.Admin
 
 
                 ValidarMedico.HeaderText = "Médico agregado correctamente. ID: " + idMedicoGenerado;
-
+                UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
+                Usuario usuarioMedico = new Usuario
+                {
+                    Email = nuevo.Email,
+                    Password = txtPassword.Text.Trim(),                    
+                    Perfil = Perfil.Medico,
+                    Rol = "Medico",
+                    Activo = true,
+                };
+                usuarioNegocio.Agregar(usuarioMedico);
+                ValidarMedico.HeaderText += " Usuario médico creado correctamente.";
 
                 CargarMedicos();
 

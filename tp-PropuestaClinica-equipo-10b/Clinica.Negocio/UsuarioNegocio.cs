@@ -47,5 +47,13 @@ namespace Clinica.Negocio
 
             datos.Agregar(nuevo);
         }
+        public Usuario Login(string email, string pass)
+        {
+            if (string.IsNullOrWhiteSpace(email) || string.IsNullOrWhiteSpace(pass))
+                throw new Exception("Email y contraseña son obligatorios");
+
+            return datos.Login(email, pass);
+        }
+
     }
 }

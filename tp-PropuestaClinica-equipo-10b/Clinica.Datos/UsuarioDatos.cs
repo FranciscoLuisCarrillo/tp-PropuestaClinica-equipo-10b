@@ -89,5 +89,34 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+
+        public Usuario Login(string email, string pass)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("SELECT UsuarioId, Email, Pass, Perfil FROM Usuarios WHERE Email COLLATE Latin1_General_CI_AI = @Email AND Pass = @Pass");
+                datos.SetearParametro("@Email", email);
+                datos.SetearParametro("@Pass", pass);
+                datos.EjecutarLectura();
+                if (datos.Lector.Read())
+                {
+                    Usuario usuario = new Usuario
+                    {
+                        IdUsuario = (int)datos.Lector["UsuarioId"],
+                        Email = (string)datos.Lector["Email"],
+                        Password = (string)datos.Lector["Pass"],
+                        Perfil = (Perfil)(int)datos.Lector["Perfil"]
+                    };
+                    return usuario;
+                }
+                return null;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+
     }
 }

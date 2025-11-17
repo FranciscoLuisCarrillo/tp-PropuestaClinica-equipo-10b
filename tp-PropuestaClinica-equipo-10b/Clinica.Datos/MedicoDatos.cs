@@ -34,12 +34,18 @@ namespace Clinica.Datos
                     aux.Matricula = (string)datos.Lector["Matricula"];
                     aux.Email = (string)datos.Lector["Email"];
                     aux.Telefono = (string)(datos.Lector["Telefono"] ?? DBNull.Value);
-
+                    /*
                     // Solo guardamos el ID del turno (no cargamos el objeto completo)
+                    
                     aux.Turno = new TurnoTrabajo();
                     if (datos.Lector["TurnoTrabajoId"] != DBNull.Value)
                     {
                         aux.Turno.TurnoTrabajoId = (int)datos.Lector["TurnoTrabajoId"];
+                    }
+                    */
+                    if(datos.Lector["TurnoTrabajoId"] != DBNull.Value)
+                    {
+                        aux.IdTurnoTrabajo = (int)datos.Lector["TurnoTrabajoId"];
                     }
 
                     lista.Add(aux);
@@ -78,7 +84,8 @@ namespace Clinica.Datos
                 datos.SetearParametro("@Matricula", nuevo.Matricula);
                 datos.SetearParametro("@Email", nuevo.Email);
                 datos.SetearParametro("@Telefono", (object)nuevo.Telefono ?? DBNull.Value);
-                datos.SetearParametro("@TurnoTrabajoId", nuevo.Turno.TurnoTrabajoId);
+                datos.SetearParametro("@TurnoTrabajoId",
+                (object)nuevo.IdTurnoTrabajo ?? DBNull.Value);
 
                 // Ejecutamos y obtenemos el nuevo ID
                 int idMedicoGenerado = Convert.ToInt32(datos.EjecutarEscalar());

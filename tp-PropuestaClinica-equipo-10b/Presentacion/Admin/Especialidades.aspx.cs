@@ -29,7 +29,7 @@ namespace Presentacion.Admin
             }
             catch (Exception ex)
             {
-                // Manejo de errores (puedes mostrar un mensaje en la página si lo deseas)
+                
                 throw new Exception("Error al cargar las especialidades.", ex);
             }
         }

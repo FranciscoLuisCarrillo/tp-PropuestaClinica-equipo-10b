@@ -24,8 +24,19 @@ namespace Clinica.Datos
                     TurnoTrabajo aux = new TurnoTrabajo();
                     aux.TurnoTrabajoId = (int)datos.Lector["TurnoTrabajoId"];
                     aux.Nombre = (string)datos.Lector["Nombre"];
-                    aux.HoraEntrada = (TimeSpan)datos.Lector["HoraEntrada"];
-                    aux.HoraSalida = (TimeSpan)datos.Lector["HoraSalida"];
+
+                    var horaEntradaObj = datos.Lector["HoraEntrada"];
+                   if(horaEntradaObj != DBNull.Value &&
+                        TimeSpan.TryParse(horaEntradaObj.ToString(), out TimeSpan horaEntrada))
+                    {
+                        aux.HoraEntrada = horaEntrada;
+                    }
+                   var horaSalidaObj = datos.Lector["HoraSalida"];
+                    if(horaSalidaObj != DBNull.Value &&
+                            TimeSpan.TryParse(horaSalidaObj.ToString(), out TimeSpan horaSalida))
+                      {
+                            aux.HoraSalida = horaSalida;
+                    }
 
                     lista.Add(aux);
                 }
@@ -34,7 +45,7 @@ namespace Clinica.Datos
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Error al listar Turnos de trabajo desde la base de datos.", ex);
             }
             finally
             {

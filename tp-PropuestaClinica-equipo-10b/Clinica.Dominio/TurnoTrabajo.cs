@@ -17,6 +17,11 @@ namespace Clinica.Dominio
         /// </summary>
         public TimeSpan HoraEntrada { get; set; }
         public TimeSpan HoraSalida { get; set; }
+
+        public string HoraEntradaTexto => HoraEntrada.ToString(@"hh\:mm");
+        public string HoraSalidaTexto => HoraSalida.ToString(@"hh\:mm");
+
+       
         public override string ToString()
         {
             return $"{Nombre} ({HoraEntrada:hh\\:mm} - {HoraSalida:hh\\:mm})";
