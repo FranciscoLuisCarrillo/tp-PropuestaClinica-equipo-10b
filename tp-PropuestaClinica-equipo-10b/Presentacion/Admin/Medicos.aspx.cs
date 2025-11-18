@@ -105,9 +105,7 @@ namespace Presentacion.Admin
                 {
                     Email = nuevo.Email,
                     Password = txtPassword.Text.Trim(),                    
-                    Perfil = Perfil.Medico,
-                    Rol = "Medico",
-                    Activo = true,
+                    Perfil = Perfil.Medico
                 };
                 usuarioNegocio.Agregar(usuarioMedico);
                 ValidarMedico.HeaderText += " Usuario médico creado correctamente.";

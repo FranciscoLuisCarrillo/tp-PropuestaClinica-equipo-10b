@@ -39,10 +39,6 @@
                         <Columns>
                             <asp:BoundField DataField="Nombre" HeaderText="Nombre/es" />
                             <asp:BoundField DataField="Apellido" HeaderText="Apellido/s" />
-                            <asp:BoundField DataField="FechaNacimiento" HeaderText="Fecha nacimiento" DataFormatString="{0:dd/MM/yyyy}" />
-                            <asp:BoundField DataField="Genero" HeaderText="Género" />
-                            <asp:BoundField DataField="Dni" HeaderText="DNI" />
-                            <asp:BoundField DataField="Domicilio" HeaderText="Dirección" />
                             <asp:BoundField DataField="Telefono" HeaderText="Teléfono" />
                             <asp:BoundField DataField="Email" HeaderText="Email" />
                             <asp:BoundField DataField="Matricula" HeaderText="Matrícula" />

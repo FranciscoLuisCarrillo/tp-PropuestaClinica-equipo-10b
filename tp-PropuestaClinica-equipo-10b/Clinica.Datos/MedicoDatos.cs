@@ -17,10 +17,11 @@ namespace Clinica.Datos
             try
             {
                 // Consulta simple, solo a la tabla Medicos.
-                string consulta = @"SELECT
-                                    M.MedicoId, M.Nombre, M.Apellido, M.Matricula, M.Email, M.Telefono,
-                                    M.TurnoTrabajoId
-                                FROM Medicos M";
+                string consulta = @"SELECT M.MedicoId, M.Nombre, M.Apellido, M.Matricula, M.Email, M.Telefono,
+                                  M.TurnoTrabajoId,
+                                  T.Nombre AS TurnoNombre
+                                  FROM Medicos M
+                                  LEFT JOIN TurnosTrabajo T ON T.TurnoTrabajoId = M.TurnoTrabajoId";
 
                 datos.SetearConsulta(consulta);
                 datos.EjecutarLectura();
@@ -28,12 +29,29 @@ namespace Clinica.Datos
                 while (datos.Lector.Read())
                 {
                     Medico aux = new Medico();
+
                     aux.Id = (int)datos.Lector["MedicoId"];
-                    aux.Nombre = (string)datos.Lector["Nombre"];
-                    aux.Apellido = (string)datos.Lector["Apellido"];
-                    aux.Matricula = (string)datos.Lector["Matricula"];
-                    aux.Email = (string)datos.Lector["Email"];
-                    aux.Telefono = (string)(datos.Lector["Telefono"] ?? DBNull.Value);
+                    aux.Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : datos.Lector["Nombre"].ToString();
+                    aux.Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : datos.Lector["Apellido"].ToString();
+                    aux.Matricula = datos.Lector["Matricula"] == DBNull.Value ? "" : datos.Lector["Matricula"].ToString();
+                    aux.Email = datos.Lector["Email"] == DBNull.Value ? "" : datos.Lector["Email"].ToString();
+
+                    aux.Telefono = datos.Lector["Telefono"] == DBNull.Value
+                        ? null
+                        : datos.Lector["Telefono"].ToString();
+
+                    aux.IdTurnoTrabajo = datos.Lector["TurnoTrabajoId"] == DBNull.Value
+                        ? (int?)null
+                        : Convert.ToInt32(datos.Lector["TurnoTrabajoId"]);
+
+                    aux.NombreTurnoTrabajo = datos.Lector["TurnoNombre"] == DBNull.Value
+                        ? "-"
+                        : datos.Lector["TurnoNombre"].ToString();
+                    
+
+                    aux.Especialidades = ObtenerEspecialidadesPorMedico(aux.Id);
+
+                    aux.Activo = datos.Lector["Activo"] == DBNull.Value ? true : (bool)datos.Lector["Activo"];
                     /*
                     // Solo guardamos el ID del turno (no cargamos el objeto completo)
                     
@@ -43,10 +61,7 @@ namespace Clinica.Datos
                         aux.Turno.TurnoTrabajoId = (int)datos.Lector["TurnoTrabajoId"];
                     }
                     */
-                    if(datos.Lector["TurnoTrabajoId"] != DBNull.Value)
-                    {
-                        aux.IdTurnoTrabajo = (int)datos.Lector["TurnoTrabajoId"];
-                    }
+
 
                     lista.Add(aux);
                 }
@@ -55,6 +70,40 @@ namespace Clinica.Datos
             catch (Exception ex)
             {
                 throw ex;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+
+        private List<Especialidad> ObtenerEspecialidadesPorMedico(int medicoId)
+        {
+            List<Especialidad> especialidades = new List<Especialidad>();
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                string consulta = @"SELECT E.EspecialidadId, E.Nombre
+                                    FROM MedicoEspecialidades ME
+                                    INNER JOIN Especialidades E ON E.EspecialidadId = ME.EspecialidadId
+                                    WHERE ME.MedicoId = @MedicoId";
+                datos.SetearConsulta(consulta);
+                datos.SetearParametro("@MedicoId", medicoId);
+                datos.EjecutarLectura();
+                while (datos.Lector.Read())
+                {
+                    Especialidad esp = new Especialidad
+                    {
+                        EspecialidadId = (int)datos.Lector["EspecialidadId"],
+                        Nombre = datos.Lector["Nombre"].ToString()
+                    };
+                    especialidades.Add(esp);
+                }
+                return especialidades;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener especialidades del médico.", ex);
             }
             finally
             {
@@ -89,9 +138,21 @@ namespace Clinica.Datos
 
                 // Ejecutamos y obtenemos el nuevo ID
                 int idMedicoGenerado = Convert.ToInt32(datos.EjecutarEscalar());
+                datos.CerrarConexion();
 
-                // --- PASO 2 (Eliminado) ---
-                // Se quitó la lógica de guardar las especialidades para simplificar.
+                if(nuevo.Especialidades != null && nuevo.Especialidades.Count > 0)
+                {
+                    foreach(var especialidad in nuevo.Especialidades)
+                    {
+                        AccesoDatos datosEspecialidad = new AccesoDatos();
+                        datosEspecialidad.SetearConsulta(@"INSERT INTO Medico_Especialidades (MedicoId, EspecialidadId) 
+                                                        VALUES (@MedicoId, @EspecialidadId)");
+                        datosEspecialidad.SetearParametro("@MedicoId", idMedicoGenerado);
+                        datosEspecialidad.SetearParametro("@EspecialidadId", especialidad.EspecialidadId);
+                        datosEspecialidad.EjecutarAccion();
+                        datosEspecialidad.CerrarConexion();
+                    }
+                }
 
                 return idMedicoGenerado;
             }
@@ -99,10 +160,7 @@ namespace Clinica.Datos
             {
                 throw new Exception("Error al agregar médico en la base de datos.", ex);
             }
-            finally
-            {
-                datos.CerrarConexion();
-            }
+           
         }
 
         // --- Métodos de Validación (Necesarios para Negocio) ---
