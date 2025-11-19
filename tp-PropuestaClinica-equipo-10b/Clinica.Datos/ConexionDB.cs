@@ -163,4 +163,7 @@ ALTER TABLE Medicos
 ADD Activo BIT DEFAULT 1;
 GO
 
+ALTER TABLE Pacientes
+ADD ObraSocial NVARCHAR(100) NULL;
+
 */

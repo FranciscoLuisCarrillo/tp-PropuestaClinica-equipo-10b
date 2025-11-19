@@ -6,6 +6,15 @@ using System.Threading.Tasks;
 
 namespace Clinica.Dominio
 {
+
+    public enum EstadoTurno
+    {
+        Nuevo = 0,
+        Reprogramado = 1,
+        Cancelado = 2,
+        NoAsistio = 3,
+        Cerrado = 4
+    }
     public class Turno
     {
         public int IdTurno { get; set; }
@@ -14,10 +23,10 @@ namespace Clinica.Dominio
         public int IdEspecialidad { get; set; }
         public DateTime FechaHoraInicio { get; set; }
         public DateTime FechaHoraFin { get; set; }
-        public string Observaciones { get; set; }
+        public string MotivoConsulta { get; set; }
         public string DiagnosticoMedico { get; set; }
 
-        public string Estado { get; set; } // Programado, Cancelado, Realizado
+        public EstadoTurno Estado { get; set; } // Programado, Cancelado, Realizado
         
         
 
