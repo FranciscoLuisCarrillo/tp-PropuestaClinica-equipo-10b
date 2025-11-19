@@ -34,7 +34,7 @@
                 <div class="table-responsive">
                     <asp:GridView ID="gvMedicos" runat="server"
                         CssClass="table table-sm table-hover mb-0 align-middle"
-                        AutoGenerateColumns="false" DataKeyNames="IdMedico">
+                        AutoGenerateColumns="false" DataKeyNames="Id">
                         <HeaderStyle CssClass="table-light" />
                         <Columns>
                             <asp:BoundField DataField="Nombre" HeaderText="Nombre/es" />

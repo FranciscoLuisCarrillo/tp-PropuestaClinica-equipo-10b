@@ -1,7 +1,7 @@
 ﻿<%@ Page Title="Médico — Agenda Clínica Médica" Language="C#"
     MasterPageFile="~/App.Master"
     AutoEventWireup="true" CodeBehind="Default.aspx.cs"
-    Inherits="Presentacion.Medico.Default"%>
+    Inherits="Presentacion.Medicos.Default"%>
 
 <asp:Content ID="HeadSeo" ContentPlaceHolderID="HeadExtra" runat="server">
   <title>Agenda del Médico — Clínica Médica</title>

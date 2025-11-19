@@ -20,7 +20,7 @@ namespace Presentacion.Admin
         }
         private void CargarPacientes()
         {
-            gvPacientes.DataSource = negocio.ListarTodos();
+           // gvPacientes.DataSource = negocio.Listar();
             gvPacientes.DataBind();
         }
 
@@ -31,7 +31,7 @@ namespace Presentacion.Admin
                 int index = Convert.ToInt32(e.CommandArgument);
                 int idPaciente = (int)gvPacientes.DataKeys[index].Value;
 
-                negocio.CambiarEstado(idPaciente, true);
+               //negocio.CambiarEstado(idPaciente, true);
                 CargarPacientes();
             }
         }

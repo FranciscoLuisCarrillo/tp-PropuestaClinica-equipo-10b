@@ -16,10 +16,11 @@ namespace Clinica.Datos
 
             try
             {
-                // Consulta simple, solo a la tabla Medicos.
+                
                 string consulta = @"SELECT M.MedicoId, M.Nombre, M.Apellido, M.Matricula, M.Email, M.Telefono,
                                   M.TurnoTrabajoId,
-                                  T.Nombre AS TurnoNombre
+                                  T.Nombre AS TurnoNombre,
+                                  M.Activo
                                   FROM Medicos M
                                   LEFT JOIN TurnosTrabajo T ON T.TurnoTrabajoId = M.TurnoTrabajoId";
 
@@ -40,7 +41,7 @@ namespace Clinica.Datos
                         ? null
                         : datos.Lector["Telefono"].ToString();
 
-                    aux.IdTurnoTrabajo = datos.Lector["TurnoTrabajoId"] == DBNull.Value
+                    aux.TurnoTrabajoId = datos.Lector["TurnoTrabajoId"] == DBNull.Value
                         ? (int?)null
                         : Convert.ToInt32(datos.Lector["TurnoTrabajoId"]);
 
@@ -134,7 +135,7 @@ namespace Clinica.Datos
                 datos.SetearParametro("@Email", nuevo.Email);
                 datos.SetearParametro("@Telefono", (object)nuevo.Telefono ?? DBNull.Value);
                 datos.SetearParametro("@TurnoTrabajoId",
-                (object)nuevo.IdTurnoTrabajo ?? DBNull.Value);
+                (object)nuevo.TurnoTrabajoId ?? DBNull.Value);
 
                 // Ejecutamos y obtenemos el nuevo ID
                 int idMedicoGenerado = Convert.ToInt32(datos.EjecutarEscalar());
@@ -145,7 +146,7 @@ namespace Clinica.Datos
                     foreach(var especialidad in nuevo.Especialidades)
                     {
                         AccesoDatos datosEspecialidad = new AccesoDatos();
-                        datosEspecialidad.SetearConsulta(@"INSERT INTO Medico_Especialidades (MedicoId, EspecialidadId) 
+                        datosEspecialidad.SetearConsulta(@"INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) 
                                                         VALUES (@MedicoId, @EspecialidadId)");
                         datosEspecialidad.SetearParametro("@MedicoId", idMedicoGenerado);
                         datosEspecialidad.SetearParametro("@EspecialidadId", especialidad.EspecialidadId);

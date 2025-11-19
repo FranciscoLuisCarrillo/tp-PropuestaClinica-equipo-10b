@@ -10,7 +10,7 @@ namespace Clinica.Dominio
     {
         public string Matricula { get; set; }
 
-        public int? IdTurnoTrabajo { get; set; }
+        public int? TurnoTrabajoId { get; set; }
         public string NombreTurnoTrabajo { get; set; } = "-"; // Mañana, Tarde, Noche
             
        // public TurnoTrabajo Turno { get; set; }

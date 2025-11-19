@@ -8,19 +8,23 @@ namespace Clinica.Dominio
 {
     public class Turno
     {
-        int IdTurno { get; set; }
-        int IdPaciente { get; set; }
-        int IdMedico { get; set; }
-        int IdEspecialidad { get; set; }
-        DateTime FechaHora { get; set; }
-        string Estado { get; set; } // Programado, Cancelado, Realizado
-        string Observaciones { get; set; }
+        public int IdTurno { get; set; }
+        public int IdPaciente { get; set; }
+        public int IdMedico { get; set; }
+        public int IdEspecialidad { get; set; }
+        public DateTime FechaHoraInicio { get; set; }
+        public DateTime FechaHoraFin { get; set; }
+        public string Observaciones { get; set; }
+        public string DiagnosticoMedico { get; set; }
+
+        public string Estado { get; set; } // Programado, Cancelado, Realizado
+        
         
 
         //relaciones
-        Paciente Paciente { get; set; }
-        Medico Medico { get; set; }
-        string Especialidad { get; set; }
+        public Paciente Paciente { get; set; }
+        public Medico Medico { get; set; }
+        public Especialidad Especialidad { get; set; }
 
     }
 }

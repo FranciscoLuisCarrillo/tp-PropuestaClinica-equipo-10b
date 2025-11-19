@@ -150,4 +150,17 @@ GO
 -- Insertamos un usuario Administrador por defecto para poder entrar
 INSERT INTO Usuarios (Email, Pass, Perfil) VALUES ('admin@clinica.com', 'admin', 0);
 GO
- */
+
+
+--- Ultimos añadidos --- 
+
+ALTER TABLE Especialidades
+ADD Activa BIT DEFAULT 1;
+
+GO
+
+ALTER TABLE Medicos
+ADD Activo BIT DEFAULT 1;
+GO
+
+*/
