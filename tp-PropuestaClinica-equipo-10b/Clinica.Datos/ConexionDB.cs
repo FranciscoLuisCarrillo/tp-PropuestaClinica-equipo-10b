@@ -12,8 +12,11 @@ namespace Clinica.Datos
     {
         // La cadena de conexión se genera directamente en el código, tal como lo solicitaste.
         // Utiliza la base de datos ClinicaDB que creaste.
-        private const string CadenaConexion = "server=Tomas\\MSSQLSERVER01; database=ClinicaDB; integrated security=true;";
-
+        // TOMAS
+        //private const string CadenaConexion = "server=Tomas\\MSSQLSERVER01; database=ClinicaDB; integrated security=true;";
+        // FRANCISCO
+        private const string CadenaConexion = "server=.; database=ClinicaDB; integrated security=true;";
+        
         // Método para obtener una nueva conexión a la base de datos.
         public static SqlConnection ObtenerConexion()
         {
@@ -176,4 +179,154 @@ ALTER TABLE Pacientes
 ADD ObraSocial NVARCHAR(100) NULL; -- Puede ser NULL si no tiene
 GO
 
+
+--------------------------------------------
+datos generados para pruebas
+--------------------------------------------
+
+USE ClinicaDB;
+GO
+
+-- =============================================
+-- 0. LIMPIEZA DE DATOS (Para evitar errores de duplicados)
+-- =============================================
+PRINT 'Iniciando limpieza de base de datos...';
+
+-- Desactivamos temporalmente las restricciones para borrar sin problemas de orden
+EXEC sp_msforeachtable "ALTER TABLE ? NOCHECK CONSTRAINT all";
+
+-- Borramos los datos de las tablas
+DELETE FROM Turnos;
+DELETE FROM MedicoEspecialidades;
+DELETE FROM Medicos;
+DELETE FROM Pacientes;
+DELETE FROM Usuarios;
+DELETE FROM Especialidades;
+DELETE FROM TurnosTrabajo;
+
+-- Reseteamos los contadores de ID (Identity) a 0
+DBCC CHECKIDENT ('Turnos', RESEED, 0);
+DBCC CHECKIDENT ('Medicos', RESEED, 0);
+DBCC CHECKIDENT ('Pacientes', RESEED, 0);
+DBCC CHECKIDENT ('Usuarios', RESEED, 0);
+DBCC CHECKIDENT ('Especialidades', RESEED, 0);
+DBCC CHECKIDENT ('TurnosTrabajo', RESEED, 0);
+
+-- Reactivamos las restricciones
+EXEC sp_msforeachtable "ALTER TABLE ? WITH CHECK CHECK CONSTRAINT all";
+
+PRINT 'Limpieza finalizada. Insertando datos de prueba...';
+GO
+
+-- =============================================
+-- 1. TABLA DE TURNOS DE TRABAJO
+-- =============================================
+INSERT INTO TurnosTrabajo (Nombre, HoraEntrada, HoraSalida) VALUES 
+('Mañana', '08:00:00', '14:00:00'),
+('Tarde', '14:00:00', '20:00:00'),
+('Noche', '20:00:00', '00:00:00'),
+('Guardia 24hs', '00:00:00', '23:59:59');
+GO
+
+-- =============================================
+-- 2. TABLA DE ESPECIALIDADES
+-- =============================================
+INSERT INTO Especialidades (Nombre) VALUES 
+('Clínica Médica'),
+('Pediatría'),
+('Cardiología'),
+('Dermatología'),
+('Traumatología'),
+('Ginecología'),
+('Oftalmología'),
+('Neurología'),
+('Psiquiatría'),
+('Nutrición');
+GO
+
+-- =============================================
+-- 3. TABLA DE USUARIOS (Perfiles: 0=Admin, 1=Recepcionista, 2=Medico)
+-- =============================================
+INSERT INTO Usuarios (Email, Pass, Perfil) VALUES 
+('admin@clinica.com', 'admin123', 0),           -- Administrador
+('recepcion1@clinica.com', 'recepcion123', 1),  -- Recepcionista Mañana
+('recepcion2@clinica.com', 'recepcion123', 1),  -- Recepcionista Tarde
+('medico1@clinica.com', 'medico123', 2),        -- Usuario para Médico 1
+('medico2@clinica.com', 'medico123', 2),        -- Usuario para Médico 2
+('medico3@clinica.com', 'medico123', 2),        -- Usuario para Médico 3
+('medico4@clinica.com', 'medico123', 2);        -- Usuario para Médico 4
+GO
+
+-- =============================================
+-- 4. TABLA DE MEDICOS
+-- =============================================
+-- Como reseteamos los IDs, sabemos que TurnosTrabajoId 1='Mañana', 2='Tarde', etc.
+INSERT INTO Medicos (Nombre, Apellido, Matricula, Email, Telefono, TurnoTrabajoId) VALUES 
+('Gregory', 'House', 'MN-1111', 'medico1@clinica.com', '11-5555-1111', 1), -- Turno Mañana
+('Meredith', 'Grey', 'MN-2222', 'medico2@clinica.com', '11-5555-2222', 2), -- Turno Tarde
+('Stephen', 'Strange', 'MN-3333', 'medico3@clinica.com', '11-5555-3333', 3), -- Turno Noche
+('Shaun', 'Murphy', 'MN-4444', 'medico4@clinica.com', '11-5555-4444', 1),   -- Turno Mañana
+('Julius', 'Hibbert', 'MN-5555', 'hibbert@clinica.com', '11-5555-5555', 2), -- Turno Tarde
+('Nick', 'Riviera', 'MN-6666', 'riviera@clinica.com', '11-5555-6666', 1);  -- Turno Mañana
+GO
+
+-- =============================================
+-- 5. RELACIÓN MEDICO - ESPECIALIDADES
+-- =============================================
+-- Asignamos especialidades a los médicos (IDs reiniciados y predecibles)
+-- House (ID 1) -> Clínica Médica (1) y Neurología (8)
+INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) VALUES (1, 1), (1, 8);
+
+-- Grey (ID 2) -> Clínica Médica (1) y Traumatología (5)
+INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) VALUES (2, 1), (2, 5);
+
+-- Strange (ID 3) -> Neurología (8) y Psiquiatría (9)
+INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) VALUES (3, 8), (3, 9);
+
+-- Murphy (ID 4) -> Pediatría (2) y Cardiología (3)
+INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) VALUES (4, 2), (4, 3);
+
+-- Hibbert (ID 5) -> Dermatologia (4) y Nutricion (10)
+INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) VALUES (5, 4), (5, 10);
+
+-- Riviera (ID 6) -> Traumatologia (5)
+INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) VALUES (6, 5);
+GO
+
+-- =============================================
+-- 6. TABLA DE PACIENTES
+-- =============================================
+INSERT INTO Pacientes (Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial) VALUES 
+('Homero', 'Simpson', '10000001', '1980-05-12', '11-1111-1111', 'homero@mail.com', 'Av. Siempreviva 742', 'OSDE 210'),
+('Marge', 'Bouvier', '10000002', '1982-10-01', '11-2222-2222', 'marge@mail.com', 'Av. Siempreviva 742', 'OSDE 210'),
+('Bart', 'Simpson', '30000001', '2010-04-01', '11-3333-3333', 'bart@mail.com', 'Av. Siempreviva 742', NULL),
+('Lisa', 'Simpson', '30000002', '2012-05-09', '11-4444-4444', 'lisa@mail.com', 'Av. Siempreviva 742', 'Swiss Medical'),
+('Ned', 'Flanders', '10000003', '1975-02-15', '11-5555-5555', 'ned@mail.com', 'Av. Siempreviva 744', 'Galeno'),
+('Barney', 'Gumble', '10000004', '1979-07-20', '11-6666-6666', 'barney@mail.com', 'Taverna de Moe', 'PAMI'),
+('Montgomery', 'Burns', '00000001', '1920-09-15', '11-0000-0000', 'burns@nuclear.com', 'Mansion Burns', 'Particular');
+GO
+
+-- =============================================
+-- 7. TABLA DE TURNOS (Generamos historial y futuros)
+-- =============================================
+-- Estados: 0=Nuevo, 1=Reprogramado, 2=Cancelado, 3=Cerrado/Atendido
+
+-- Turnos PASADOS (Ya atendidos o cancelados)
+INSERT INTO Turnos (PacienteId, MedicoId, EspecialidadId, FechaHoraInicio, FechaHoraFin, MotivoConsulta, DiagnosticoMedico, Estado) VALUES 
+(1, 1, 1, DATEADD(day, -10, GETDATE()), DATEADD(day, -10, DATEADD(hour, 1, GETDATE())), 'Dolor de cabeza fuerte', 'Migraña por estrés. Se receta ibuprofeno.', 3), -- Atendido
+(2, 2, 5, DATEADD(day, -5, GETDATE()), DATEADD(day, -5, DATEADD(hour, 1, GETDATE())), 'Dolor en la rodilla', 'Esguince leve.', 3), -- Atendido
+(5, 3, 8, DATEADD(day, -20, GETDATE()), DATEADD(day, -20, DATEADD(hour, 1, GETDATE())), 'Veo gente muerta', 'Derivado a psiquiatría.', 3), -- Atendido
+(6, 1, 1, DATEADD(day, -2, GETDATE()), DATEADD(day, -2, DATEADD(hour, 1, GETDATE())), 'Chequeo general', NULL, 2); -- Cancelado
+
+-- Turnos FUTUROS
+-- Nota: Usamos fechas fijas relativas a "ahora" para evitar violar restricciones UNIQUE si corres el script el mismo dia dos veces sin limpiar,
+-- pero como ya limpiamos arriba, no habrá problema.
+INSERT INTO Turnos (PacienteId, MedicoId, EspecialidadId, FechaHoraInicio, FechaHoraFin, MotivoConsulta, DiagnosticoMedico, Estado) VALUES 
+(3, 4, 2, DATEADD(day, 1, CAST(GETDATE() AS DATE)), DATEADD(hour, 1, DATEADD(day, 1, CAST(GETDATE() AS DATE))), 'Control pediátrico anual', NULL, 0), 
+(4, 4, 2, DATEADD(hour, 1, DATEADD(day, 1, CAST(GETDATE() AS DATE))), DATEADD(hour, 2, DATEADD(day, 1, CAST(GETDATE() AS DATE))), 'Dolor de garganta', NULL, 0), 
+(1, 2, 1, DATEADD(day, 2, CAST(GETDATE() AS DATE)), DATEADD(hour, 1, DATEADD(day, 2, CAST(GETDATE() AS DATE))), 'Consulta de seguimiento', NULL, 0), 
+(7, 6, 5, DATEADD(day, 3, CAST(GETDATE() AS DATE)), DATEADD(hour, 1, DATEADD(day, 3, CAST(GETDATE() AS DATE))), 'Rigidez articular', NULL, 0);
+GO
+
+PRINT 'Base de datos reiniciada y poblada con éxito.';
 */
