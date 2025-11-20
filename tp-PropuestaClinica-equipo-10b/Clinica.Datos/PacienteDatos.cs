@@ -50,6 +50,51 @@ namespace Clinica.Datos
             }
         }
 
+        public List<Paciente> Listar()
+        {
+            List<Paciente> lista = new List<Paciente>();
+            AccesoDatos datos = new AccesoDatos();
+
+            try
+            {
+                // Seleccionamos todos los campos necesarios
+                datos.SetearConsulta("SELECT PacienteId, Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial FROM Pacientes");
+                datos.EjecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Paciente aux = new Paciente();
+                    aux.Id = (int)datos.Lector["PacienteId"];
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    aux.Apellido = (string)datos.Lector["Apellido"];
+                    aux.Dni = (string)datos.Lector["DNI"];
+                    aux.FechaNacimiento = (DateTime)datos.Lector["FechaNacimiento"];
+                    aux.Email = (string)datos.Lector["Email"];
+
+                    // Validaciones para campos que pueden ser NULL en la base de datos
+                    if (!(datos.Lector["Telefono"] is DBNull))
+                        aux.Telefono = (string)datos.Lector["Telefono"];
+
+                    if (!(datos.Lector["Domicilio"] is DBNull))
+                        aux.Domicilio = (string)datos.Lector["Domicilio"];
+
+                    if (!(datos.Lector["ObraSocial"] is DBNull))
+                        aux.ObraSocial = (string)datos.Lector["ObraSocial"];
+
+                    lista.Add(aux);
+                }
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+
         /// <summary>
         /// Verifica si un DNI ya existe en la base de datos.
         /// </summary>

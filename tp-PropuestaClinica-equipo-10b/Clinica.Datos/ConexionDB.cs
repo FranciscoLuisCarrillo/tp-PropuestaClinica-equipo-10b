@@ -166,4 +166,14 @@ GO
 ALTER TABLE Pacientes
 ADD ObraSocial NVARCHAR(100) NULL;
 
+
+
+
+USE ClinicaDB;
+GO
+
+ALTER TABLE Pacientes
+ADD ObraSocial NVARCHAR(100) NULL; -- Puede ser NULL si no tiene
+GO
+
 */

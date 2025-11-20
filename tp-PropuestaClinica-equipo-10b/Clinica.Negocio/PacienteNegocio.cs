@@ -14,6 +14,12 @@ namespace Clinica.Negocio
             datos = new PacienteDatos();
         }
 
+        public List<Paciente> Listar()
+        {
+            // Llama al método de la capa de datos que hace el SELECT
+            return datos.Listar();
+        }
+
         /// <summary>
         /// Lógica de negocio para registrar un nuevo paciente.
         /// Devuelve el ID del paciente si tiene éxito.

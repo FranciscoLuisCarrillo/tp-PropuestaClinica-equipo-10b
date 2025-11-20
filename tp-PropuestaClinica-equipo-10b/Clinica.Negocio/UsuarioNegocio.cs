@@ -25,6 +25,15 @@ namespace Clinica.Negocio
         {
             return datos.Listar();
         }
+        public List<Usuario> ListarRecepcionistas()
+        {
+            List<Usuario> todos = datos.Listar();
+
+            // Usamos FindAll (o Where con Linq) para filtrar solo el perfil 1
+            List<Usuario> soloRecepcionistas = todos.FindAll(x => x.Perfil == Perfil.Recepcionista);
+
+            return soloRecepcionistas;
+        }
 
         /// <summary>
         /// Lógica de negocio para el "Guardado de la Recepcionista".
