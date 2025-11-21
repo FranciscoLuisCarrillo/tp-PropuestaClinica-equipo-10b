@@ -154,11 +154,13 @@ GO
 INSERT INTO Usuarios (Email, Pass, Perfil) VALUES ('admin@clinica.com', 'admin', 0);
 GO
 
-
+------------------------------------------
 --- Ultimos añadidos --- 
+--------------------------------------------
+
 
 ALTER TABLE Especialidades
-ADD Activa BIT DEFAULT 1;
+ADD Activa BIT DEFAULT TRUE;
 
 GO
 
