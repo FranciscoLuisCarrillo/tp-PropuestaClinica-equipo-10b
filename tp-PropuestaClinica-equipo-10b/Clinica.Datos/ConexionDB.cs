@@ -333,7 +333,10 @@ GO
 PRINT 'Base de datos reiniciada y poblada con éxito.';
 
 
-Ultimos agregados en la bd
+Ultimos agregados en la bd 21/11/2025
+-- =============================================
+-- 8. TABLA DE Recepcionistas
+-- =============================================
 
 CREATE TABLE Recepcionistas (
     RecepcionistaId INT IDENTITY(1,1) PRIMARY KEY,
@@ -341,19 +344,14 @@ CREATE TABLE Recepcionistas (
     Apellido NVARCHAR(100) NOT NULL,
     Email NVARCHAR(100) NOT NULL UNIQUE,
     Telefono NVARCHAR(50),
-    TurnoTrabajoId INT NULL
+    TurnoTrabajoId INT NULL,
+    Activo BIT DEFAULT 1
 );
 
 ALTER TABLE Recepcionistas
 ADD CONSTRAINT FK_Recepcionistas_TurnosTrabajo
     FOREIGN KEY (TurnoTrabajoId)
     REFERENCES TurnosTrabajo (TurnoTrabajoId);
-
-
-  ALTER TABLE Recepcionistas
-  ADD Activo BIT DEFAULT 1
-
-
 
 
 */
