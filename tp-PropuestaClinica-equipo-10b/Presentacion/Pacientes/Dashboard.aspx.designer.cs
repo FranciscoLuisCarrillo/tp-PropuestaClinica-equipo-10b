@@ -15,22 +15,22 @@ namespace Presentacion.Pacientes
     {
 
         /// <summary>
-        /// Control gvTurnos.
+        /// Control valTurno.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvTurnos;
+        protected global::System.Web.UI.WebControls.ValidationSummary valTurno;
 
         /// <summary>
-        /// Control ddlEspecialidad.
+        /// Control ddlEspecialidades.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlEspecialidad;
+        protected global::System.Web.UI.WebControls.DropDownList ddlEspecialidades;
 
         /// <summary>
         /// Control ddlMedico.
@@ -51,30 +51,57 @@ namespace Presentacion.Pacientes
         protected global::System.Web.UI.WebControls.TextBox txtFecha;
 
         /// <summary>
-        /// Control btnBuscarHorarios.
+        /// Control ddlHora.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnBuscarHorarios;
+        protected global::System.Web.UI.WebControls.DropDownList ddlHora;
 
         /// <summary>
-        /// Control pnlHorarios.
+        /// Control txtObs.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Panel pnlHorarios;
+        protected global::System.Web.UI.WebControls.TextBox txtObs;
 
         /// <summary>
-        /// Control rptHorarios.
+        /// Control btnCrearTurno.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.Repeater rptHorarios;
+        protected global::System.Web.UI.WebControls.Button btnCrearTurno;
+
+        /// <summary>
+        /// Control txtFechaListado.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtFechaListado;
+
+        /// <summary>
+        /// Control btnBuscarTurnosDia.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnBuscarTurnosDia;
+
+        /// <summary>
+        /// Control gvTurnosDia.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.GridView gvTurnosDia;
     }
 }

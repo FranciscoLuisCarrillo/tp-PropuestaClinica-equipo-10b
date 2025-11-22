@@ -31,12 +31,12 @@
 
         <div class="col-md-4">
           <label class="form-label">Especialidad</label>
-          <asp:DropDownList ID="ddlEspecialidad" runat="server"
+          <asp:DropDownList ID="ddlEspecialidades" runat="server"
                             CssClass="form-select"
                             AutoPostBack="true"
                              />
           <asp:RequiredFieldValidator runat="server"
-              ControlToValidate="ddlEspecialidad"
+              ControlToValidate="ddlEspecialidades"
               InitialValue=""
               ErrorMessage="Seleccioná una especialidad."
               CssClass="text-danger"
