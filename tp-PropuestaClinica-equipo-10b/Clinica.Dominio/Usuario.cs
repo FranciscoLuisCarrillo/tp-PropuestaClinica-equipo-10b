@@ -23,7 +23,5 @@ namespace Clinica.Dominio
         public Perfil Perfil { get; set; }
 
 
-        Persona Persona { get; set; }
-
     }
 }
