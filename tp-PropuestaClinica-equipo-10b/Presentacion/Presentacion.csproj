@@ -70,7 +70,7 @@
     <Content Include="Admin\Especialidades.aspx" />
     <Content Include="Admin\Medicos.aspx" />
     <Content Include="Admin\Pacientes.aspx" />
-    <Content Include="Admin\Recepcionista.aspx" />
+    <Content Include="Admin\RecepcionistaAdmin.aspx" />
     <Content Include="Admin\TurnosTrabajo.aspx" />
     <Content Include="Dashboard.aspx" />
     <Content Include="Account\Default.aspx" />
@@ -126,12 +126,12 @@
     <Compile Include="Admin\Pacientes.aspx.designer.cs">
       <DependentUpon>Pacientes.aspx</DependentUpon>
     </Compile>
-    <Compile Include="Admin\Recepcionista.aspx.cs">
-      <DependentUpon>Recepcionista.aspx</DependentUpon>
+    <Compile Include="Admin\RecepcionistaAdmin.aspx.cs">
+      <DependentUpon>RecepcionistaAdmin.aspx</DependentUpon>
       <SubType>ASPXCodeBehind</SubType>
     </Compile>
-    <Compile Include="Admin\Recepcionista.aspx.designer.cs">
-      <DependentUpon>Recepcionista.aspx</DependentUpon>
+    <Compile Include="Admin\RecepcionistaAdmin.aspx.designer.cs">
+      <DependentUpon>RecepcionistaAdmin.aspx</DependentUpon>
     </Compile>
     <Compile Include="Admin\TurnosTrabajo.aspx.cs">
       <DependentUpon>TurnosTrabajo.aspx</DependentUpon>

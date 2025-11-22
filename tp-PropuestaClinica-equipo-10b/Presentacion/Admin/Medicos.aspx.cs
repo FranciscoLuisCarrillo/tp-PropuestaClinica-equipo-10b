@@ -11,15 +11,31 @@ namespace Presentacion.Admin
     {
         private readonly MedicoNegocio medicoNegocio = new MedicoNegocio();
         private readonly EspecialidadNegocio especialidadNegocio = new EspecialidadNegocio();
-       
+        private readonly TurnoTrabajoNegocio turnoTrabajoNegocio = new TurnoTrabajoNegocio();
+
 
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
+                CargarTurnos();
                 CargarMedicos();
                 CargarEspecialidades();
                 
+            }
+        }
+        private void CargarTurnos()
+        {
+            try
+            {
+                ddlTurnoTrabajo.DataTextField = "Nombre";
+                ddlTurnoTrabajo.DataValueField = "TurnoTrabajoId";
+                ddlTurnoTrabajo.DataSource = turnoTrabajoNegocio.Listar();
+                ddlTurnoTrabajo.DataBind();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al cargar los turnos de trabajo.", ex);
             }
         }
 
@@ -68,19 +84,10 @@ namespace Presentacion.Admin
 
                 nuevo.Nombre = txtNombre.Text.Trim();
                 nuevo.Apellido = txtApellido.Text.Trim();
-
-                if (!string.IsNullOrEmpty(txtFechaNacimiento.Text))
-                    nuevo.FechaNacimiento = DateTime.Parse(txtFechaNacimiento.Text);
-
-                nuevo.Genero = ddlGenero.SelectedValue;
-                nuevo.Dni = txtDNI.Text.Trim();
-                nuevo.Domicilio = txtDireccion.Text.Trim();
-                nuevo.Telefono = txtTelefono.Text.Trim();
                 nuevo.Email = txtEmail.Text.Trim();
-                nuevo.Matricula = txtMatricula.Text.Trim();
-
-
-             
+                nuevo.Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? null : txtTelefono.Text.Trim();
+                nuevo.Matricula = string.IsNullOrWhiteSpace(txtMatricula.Text) ? null : txtMatricula.Text.Trim();
+                nuevo.TurnoTrabajoId = string.IsNullOrEmpty(ddlTurnoTrabajo.SelectedValue) ? (int?)null : int.Parse(ddlTurnoTrabajo.SelectedValue);
 
                 nuevo.Especialidades = new List<Especialidad>();
                 foreach (ListItem item in chkEspecialidades.Items)
@@ -125,21 +132,25 @@ namespace Presentacion.Admin
         {
             txtNombre.Text = string.Empty;
             txtApellido.Text = string.Empty;
-            txtFechaNacimiento.Text = string.Empty;
-            ddlGenero.SelectedIndex = 0;
-            txtDNI.Text = string.Empty;
-            txtDireccion.Text = string.Empty;
             txtTelefono.Text = string.Empty;
             txtEmail.Text = string.Empty;
+            txtPassword.Text = string.Empty;
             txtMatricula.Text = string.Empty;
-
-            
+            ddlTurnoTrabajo.SelectedIndex = 0;
 
             foreach (ListItem item in chkEspecialidades.Items)
             {
                 item.Selected = false;
                 item.Enabled = true;
             }
+        }
+        private List<Especialidad> ObtenerSeleccionEspecialidades()
+        {
+            var lista = new List<Especialidad>();
+            foreach (ListItem it in chkEspecialidades.Items)
+                if (it.Selected)
+                    lista.Add(new Especialidad { EspecialidadId = int.Parse(it.Value), Nombre = it.Text });
+            return lista;
         }
     }
 }

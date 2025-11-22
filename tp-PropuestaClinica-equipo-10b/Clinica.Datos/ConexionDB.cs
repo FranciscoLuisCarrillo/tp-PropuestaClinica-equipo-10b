@@ -13,9 +13,9 @@ namespace Clinica.Datos
         // La cadena de conexión se genera directamente en el código, tal como lo solicitaste.
         // Utiliza la base de datos ClinicaDB que creaste.
         // TOMAS
-        //private const string CadenaConexion = "server=Tomas\\MSSQLSERVER01; database=ClinicaDB; integrated security=true;";
+        private const string CadenaConexion = "server=Tomas\\MSSQLSERVER01; database=ClinicaDB; integrated security=true;";
         // FRANCISCO
-        private const string CadenaConexion = "server=.; database=ClinicaDB; integrated security=true;";
+        //private const string CadenaConexion = "server=.; database=ClinicaDB; integrated security=true;";
         
         // Método para obtener una nueva conexión a la base de datos.
         public static SqlConnection ObtenerConexion()
@@ -331,4 +331,29 @@ INSERT INTO Turnos (PacienteId, MedicoId, EspecialidadId, FechaHoraInicio, Fecha
 GO
 
 PRINT 'Base de datos reiniciada y poblada con éxito.';
+
+
+Ultimos agregados en la bd
+
+CREATE TABLE Recepcionistas (
+    RecepcionistaId INT IDENTITY(1,1) PRIMARY KEY,
+    Nombre NVARCHAR(100) NOT NULL,
+    Apellido NVARCHAR(100) NOT NULL,
+    Email NVARCHAR(100) NOT NULL UNIQUE,
+    Telefono NVARCHAR(50),
+    TurnoTrabajoId INT NULL
+);
+
+ALTER TABLE Recepcionistas
+ADD CONSTRAINT FK_Recepcionistas_TurnosTrabajo
+    FOREIGN KEY (TurnoTrabajoId)
+    REFERENCES TurnosTrabajo (TurnoTrabajoId);
+
+
+  ALTER TABLE Recepcionistas
+  ADD Activo BIT DEFAULT 1
+
+
+
+
 */

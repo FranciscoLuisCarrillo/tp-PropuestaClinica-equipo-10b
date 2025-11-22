@@ -46,6 +46,7 @@
     <Compile Include="AccesoDatos.cs" />
     <Compile Include="MedicoDatos.cs" />
     <Compile Include="PacienteDatos.cs" />
+    <Compile Include="RecepcionistaDatos.cs" />
     <Compile Include="TurnoDatos.cs" />
     <Compile Include="TurnoTrabajoDatos.cs" />
     <Compile Include="ConexionDB.cs" />

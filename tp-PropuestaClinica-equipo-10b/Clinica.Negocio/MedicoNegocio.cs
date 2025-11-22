@@ -35,8 +35,8 @@ namespace Clinica.Negocio
             if (string.IsNullOrWhiteSpace(nuevo.Matricula))
                 throw new ArgumentException("La Matrícula es obligatoria.");
 
-            //if (nuevo.Turno == null || nuevo.Turno.TurnoTrabajoId == 0)
-             //   throw new ArgumentException("Debe seleccionar un Turno de Trabajo.");
+            if (nuevo.Turno == null || nuevo.Turno.TurnoTrabajoId == 0)
+              throw new ArgumentException("Debe seleccionar un Turno de Trabajo.");
 
             // --- Regla de Especialidades (Eliminada) ---
              if (nuevo.Especialidades == null || nuevo.Especialidades.Count == 0)

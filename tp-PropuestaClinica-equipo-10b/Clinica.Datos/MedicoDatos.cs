@@ -22,7 +22,8 @@ namespace Clinica.Datos
                                   T.Nombre AS TurnoNombre,
                                   M.Activo
                                   FROM Medicos M
-                                  LEFT JOIN TurnosTrabajo T ON T.TurnoTrabajoId = M.TurnoTrabajoId";
+                                  LEFT JOIN TurnosTrabajo T ON T.TurnoTrabajoId = M.TurnoTrabajoId
+                                  ORDER BY M.Apellido, M.Nombre;";
 
                 datos.SetearConsulta(consulta);
                 datos.EjecutarLectura();
