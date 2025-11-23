@@ -9,6 +9,36 @@ namespace Clinica.Datos
 {
     public class TurnoDatos
     {
+
+        public void Agregar(Turno nuevo)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                string consulta = @"INSERT INTO Turnos (PacienteId, MedicoId, EspecialidadId, FechaHoraInicio, FechaHoraFin, MotivoConsulta, Estado)
+                            VALUES (@PacienteId, @MedicoId, @EspecialidadId, @FechaInicio, @FechaFin, @Motivo, @Estado)";
+
+                datos.SetearConsulta(consulta);
+                datos.SetearParametro("@PacienteId", nuevo.Paciente.PacienteId);
+                datos.SetearParametro("@MedicoId", nuevo.Medico.Id);
+                datos.SetearParametro("@EspecialidadId", nuevo.Especialidad.EspecialidadId);
+                datos.SetearParametro("@FechaInicio", nuevo.FechaHoraInicio);
+                datos.SetearParametro("@FechaFin", nuevo.FechaHoraInicio.AddHours(1));
+                datos.SetearParametro("@Motivo", nuevo.MotivoConsulta ?? (object)DBNull.Value);
+                datos.SetearParametro("@Estado", 0); // 0 = Nuevo
+
+                datos.EjecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+
         public List<TurnoAgendaMedico> ListarAgendaPorMedicoYFecha(int medicoId, DateTime fecha)
         {
             List<TurnoAgendaMedico> lista = new List<TurnoAgendaMedico>();
@@ -70,6 +100,7 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+
 
 
         public void ActualizarEstadoYDiagnostico(int idTurno, int estadoValor, string diagnostico)

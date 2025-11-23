@@ -54,5 +54,11 @@ namespace Clinica.Negocio
             // Llama a la versión simple de Agregar (solo guarda en tabla Medicos)
             return datos.Agregar(nuevo);
         }
+
+        public List<Medico> ListarPorEspecialidad(int especialidadId)
+        {
+            MedicoDatos datos = new MedicoDatos();
+            return datos.ListarPorEspecialidad(especialidadId);
+        }
     }
 }

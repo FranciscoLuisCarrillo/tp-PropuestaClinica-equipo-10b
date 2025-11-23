@@ -96,6 +96,15 @@ namespace Presentacion.Medicos
         protected global::System.Web.UI.WebControls.TextBox txtDiagnostico;
 
         /// <summary>
+        /// Control hfTurnoId.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfTurnoId;
+
+        /// <summary>
         /// Control btnGuardarDiagnostico.
         /// </summary>
         /// <remarks>
@@ -103,5 +112,14 @@ namespace Presentacion.Medicos
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnGuardarDiagnostico;
+
+        /// <summary>
+        /// Control lblMsg.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblMsg;
     }
 }

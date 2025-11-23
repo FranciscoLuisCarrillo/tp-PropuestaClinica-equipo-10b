@@ -64,7 +64,7 @@ namespace Clinica.Datos
                 while (datos.Lector.Read())
                 {
                     Paciente aux = new Paciente();
-                    aux.Id = (int)datos.Lector["PacienteId"];
+                    aux.PacienteId = (int)datos.Lector["PacienteId"];
                     aux.Nombre = (string)datos.Lector["Nombre"];
                     aux.Apellido = (string)datos.Lector["Apellido"];
                     aux.Dni = (string)datos.Lector["DNI"];

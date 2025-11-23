@@ -33,7 +33,10 @@ namespace Clinica.Negocio
 
             datos.ActualizarEstadoYDiagnostico(idTurno, estadoValor, diagnostico);
         }
-
+        public void AgendarTurno(Turno nuevo)
+        {
+            datos.Agregar(nuevo);
+        }
         private int EstadoTextoAInt(string estado)
         {
             switch (estado)

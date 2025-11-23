@@ -87,7 +87,11 @@ namespace Presentacion.Admin
                 nuevo.Email = txtEmail.Text.Trim();
                 nuevo.Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? null : txtTelefono.Text.Trim();
                 nuevo.Matricula = string.IsNullOrWhiteSpace(txtMatricula.Text) ? null : txtMatricula.Text.Trim();
-                nuevo.TurnoTrabajoId = string.IsNullOrEmpty(ddlTurnoTrabajo.SelectedValue) ? (int?)null : int.Parse(ddlTurnoTrabajo.SelectedValue);
+                int idTurno = int.Parse(ddlTurnoTrabajo.SelectedValue);
+                nuevo.TurnoTrabajoId = idTurno;
+                
+                nuevo.Turno = new TurnoTrabajo();
+                nuevo.Turno.TurnoTrabajoId = idTurno;
 
                 nuevo.Especialidades = new List<Especialidad>();
                 foreach (ListItem item in chkEspecialidades.Items)

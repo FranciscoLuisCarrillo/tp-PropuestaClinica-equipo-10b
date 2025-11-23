@@ -68,5 +68,24 @@ namespace Presentacion.Admin
                 lblMsg.CssClass = "text-danger d-block mt-2";
             }
         }
+        protected void chkActiva_CheckedChanged(object sender, EventArgs e)
+        {
+            CheckBox chk = (CheckBox)sender;
+            GridViewRow row = (GridViewRow)chk.NamingContainer;
+            int especialidadId = Convert.ToInt32(gvEspecialidades.DataKeys[row.RowIndex].Value);
+            bool nuevoEstado = chk.Checked;
+            EspecialidadNegocio negocio = new EspecialidadNegocio();
+            negocio.CambiarEstado(especialidadId, nuevoEstado);
+            CargarEspecialidades();
+        }
+        protected void gvEspecialidades_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType == DataControlRowType.DataRow)
+            {
+                Especialidad especialidad = (Especialidad)e.Row.DataItem;
+                CheckBox chkActiva = (CheckBox)e.Row.FindControl("chkActiva");
+                chkActiva.Checked = especialidad.Activa;
+            }
+        }
     }
 }

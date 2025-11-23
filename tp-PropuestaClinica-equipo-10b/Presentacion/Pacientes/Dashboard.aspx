@@ -15,9 +15,9 @@
         <div class="col-md-4">
           <label class="form-label">Especialidad</label>
           <asp:DropDownList ID="ddlEspecialidades" runat="server"
-                            CssClass="form-select"
-                            AutoPostBack="true"
-                             />
+              CssClass="form-select"
+              AutoPostBack="true"
+              OnSelectedIndexChanged="ddlEspecialidades_SelectedIndexChanged" />
           <asp:RequiredFieldValidator runat="server"
               ControlToValidate="ddlEspecialidades"
               InitialValue=""
@@ -28,7 +28,7 @@
 
         <div class="col-md-4">
           <label class="form-label">Médico</label>
-          <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-select" />
+          <asp:DropDownList ID="ddlMedico" runat="server" CssClass="form-select" AutoPostBack="true" OnSelectedIndexChanged="ddlMedico_SelectedIndexChanged" />
           <asp:RequiredFieldValidator runat="server"
               ControlToValidate="ddlMedico"
               InitialValue=""

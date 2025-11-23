@@ -192,5 +192,40 @@ namespace Clinica.Datos
             }
             finally { datos.CerrarConexion(); }
         }
+
+        public List<Medico> ListarPorEspecialidad(int especialidadId)
+        {
+            List<Medico> lista = new List<Medico>();
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                string consulta = @"SELECT M.MedicoId, M.Nombre, M.Apellido 
+                            FROM Medicos M
+                            INNER JOIN MedicoEspecialidades ME ON ME.MedicoId = M.MedicoId
+                            WHERE ME.EspecialidadId = @EspecialidadId AND M.Activo = 1";
+
+                datos.SetearConsulta(consulta);
+                datos.SetearParametro("@EspecialidadId", especialidadId);
+                datos.EjecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Medico aux = new Medico();
+                    aux.Id = (int)datos.Lector["MedicoId"];
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    aux.Apellido = (string)datos.Lector["Apellido"];
+                    lista.Add(aux);
+                }
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
     }
 }

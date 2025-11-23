@@ -101,5 +101,60 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+        public void ActualizarEstado(int especialidadId, bool nuevoEstado)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                string consulta = "UPDATE Especialidades SET Activa = @Activa WHERE EspecialidadId = @EspecialidadId";
+                datos.SetearConsulta(consulta);
+                datos.SetearParametro("@Activa", nuevoEstado);
+                datos.SetearParametro("@EspecialidadId", especialidadId);
+                datos.EjecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar el estado de la especialidad en la base de datos.", ex);
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+
+        public List<Especialidad> ListarPorMedico(int medicoId)
+        {
+            List<Especialidad> lista = new List<Especialidad>();
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                
+                string consulta = @"SELECT E.EspecialidadId, E.Nombre 
+                            FROM Especialidades E
+                            INNER JOIN MedicoEspecialidades ME ON ME.EspecialidadId = E.EspecialidadId
+                            WHERE ME.MedicoId = @MedicoId AND E.Activa = 1";
+
+                datos.SetearConsulta(consulta);
+                datos.SetearParametro("@MedicoId", medicoId);
+                datos.EjecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    Especialidad aux = new Especialidad();
+                    aux.EspecialidadId = (int)datos.Lector["EspecialidadId"];
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    lista.Add(aux);
+                }
+                return lista;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al listar especialidades por médico.", ex);
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
     }
 }

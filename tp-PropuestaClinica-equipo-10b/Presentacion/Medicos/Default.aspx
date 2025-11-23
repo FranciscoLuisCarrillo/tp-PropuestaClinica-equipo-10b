@@ -12,29 +12,22 @@
   <main class="container mt-4 mb-5 medico-dashboard" role="main">
       <h1 class="h4 fw-semibold mb-3">Mi agenda</h1>
     
-    <section aria-labelledby="filtro-turnos">
-      <div class="d-flex justify-content-center mb-3">
-        <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control w-auto" TextMode="Date" />
-        <asp:Button ID="btnVerFecha" runat="server" Text="Ver" CssClass="btn btn-primary ms-2" />
-      </div>
-    </section>
+           <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control w-auto" TextMode="Date" />
+        <asp:Button ID="btnVerFecha" runat="server" Text="Ver" CssClass="btn btn-primary ms-2"
+                    OnClick="btnVerFecha_Click" />
 
- 
-    <section aria-labelledby="tabla-turnos">
-      <h2 id="tabla-turnos" class="visually-hidden">Turnos del médico</h2>
-      <asp:GridView ID="gvTurnos" runat="server"
-        CssClass="table table-striped table-hover"
-        AutoGenerateColumns="false" DataKeyNames="IdTurno"
-        >
-        <Columns>
-          <asp:BoundField DataField="Hora" HeaderText="Hora" />
-          <asp:BoundField DataField="Paciente" HeaderText="Paciente" />
-          <asp:BoundField DataField="ObraSocial" HeaderText="Obra social" />
-          <asp:BoundField DataField="Estado" HeaderText="Estado" />
-          <asp:ButtonField Text="Editar" CommandName="Editar" ButtonType="Button" />
-        </Columns>
-      </asp:GridView>
-    </section>
+        <asp:GridView ID="gvTurnos" runat="server"
+            CssClass="table table-striped table-hover"
+            AutoGenerateColumns="false" DataKeyNames="IdTurno"
+            OnRowCommand="gvTurnos_RowCommand">
+          <Columns>
+            <asp:BoundField DataField="Hora" HeaderText="Hora" />
+            <asp:BoundField DataField="Paciente" HeaderText="Paciente" />
+            <asp:BoundField DataField="ObraSocial" HeaderText="Obra social" />
+            <asp:BoundField DataField="Estado" HeaderText="Estado" />
+            <asp:ButtonField Text="Editar" CommandName="Editar" ButtonType="Button" />
+          </Columns>
+        </asp:GridView>
 
   
     <section aria-labelledby="detalle-turno">
@@ -46,25 +39,22 @@
           <p><strong>Fecha y hora:</strong> <asp:Label ID="lblFechaHora" runat="server" /></p>
           <p><strong>Especialidad:</strong> <asp:Label ID="lblEspecialidad" runat="server" /></p>
 
-          <div class="mb-3">
-            <label class="form-label">Estado</label>
-            <asp:DropDownList ID="ddlEstadoTurno" runat="server" CssClass="form-select">
+          <asp:DropDownList ID="ddlEstadoTurno" runat="server" CssClass="form-select">
               <asp:ListItem Text="Nuevo" Value="Nuevo" />
               <asp:ListItem Text="Reprogramado" Value="Reprogramado" />
               <asp:ListItem Text="Cancelado" Value="Cancelado" />
               <asp:ListItem Text="No Asistió" Value="No Asistio" />
               <asp:ListItem Text="Cerrado" Value="Cerrado" />
             </asp:DropDownList>
-          </div>
 
-          <div class="mb-3">
-            <label class="form-label">Observaciones / Diagnóstico</label>
             <asp:TextBox ID="txtDiagnostico" runat="server" CssClass="form-control" TextMode="MultiLine" Rows="4" />
-          </div>
 
-          <asp:Button ID="btnGuardarDiagnostico" runat="server"
-                      Text="Guardar cambios" CssClass="btn btn-success" />
-        </div>
+            <asp:HiddenField ID="hfTurnoId" runat="server" />
+            <asp:Button ID="btnGuardarDiagnostico" runat="server"
+                        Text="Guardar cambios" CssClass="btn btn-success"
+                        OnClick="btnGuardarDiagnostico_Click" />
+            <asp:Label ID="lblMsg" runat="server" CssClass="d-block mt-2"></asp:Label>
+            </div>
       </asp:Panel>
     </section>
   </main>

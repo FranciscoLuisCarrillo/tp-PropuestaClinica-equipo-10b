@@ -11,10 +11,18 @@
                 <h2 id="titulo-lista-especialidades" class="h5 mb-3">Listado de especialidades</h2>
                 <asp:GridView ID="gvEspecialidades" runat="server"
                     CssClass="table table-sm table-hover"
-                    AutoGenerateColumns="false" DataKeyNames="EspecialidadId">
+                    AutoGenerateColumns="false" DataKeyNames="EspecialidadId" OnRowDataBound="gvEspecialidades_RowDataBound">
                     <Columns>
                         <asp:BoundField DataField="Nombre" HeaderText="Nombre Especialidad" />
-                        <asp:CheckBoxField DataField="Activa" HeaderText="Activa" />
+                       <asp:TemplateField HeaderText="Activa">
+                        <ItemTemplate>
+                            <asp:CheckBox ID="chkActiva"
+                                runat="server"
+                                Checked='<%# Bind("Activa") %>'
+                                AutoPostBack="true"
+                                OnCheckedChanged="chkActiva_CheckedChanged" />
+                        </ItemTemplate>
+                    </asp:TemplateField>
                     </Columns>
                 </asp:GridView>
             </section>

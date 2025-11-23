@@ -50,5 +50,18 @@ namespace Clinica.Negocio
         {
             return especialidadDatos.ListarTodas();
         }
+
+        public void CambiarEstado(int especialidadId, bool nuevoEstado)
+        {
+            EspecialidadDatos datos = new EspecialidadDatos();
+            datos.ActualizarEstado(especialidadId, nuevoEstado);
+        }
+
+        public List<Especialidad> ListarPorMedico(int medicoId)
+        {
+            EspecialidadDatos datos = new EspecialidadDatos();
+            return datos.ListarPorMedico(medicoId);
+        }
+
     }
 }
