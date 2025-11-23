@@ -26,23 +26,33 @@ namespace Presentacion.Account
         {
             if (!Page.IsValid)
                 return;
-            UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
+            PacienteNegocio pacienteNegocio = new PacienteNegocio();
+            Paciente paciente = new Paciente();
+
+            
+            
             try
             {
+                paciente.Nombre = txtNombre.Text.Trim();
+                paciente.Apellido = txtApellido.Text.Trim();
+                paciente.Email = txtEmail.Text.Trim();
+                paciente.Activo = true;
+
+                int idPacienteGenerado = pacienteNegocio.Agregar(paciente);
+
+                UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
                 Usuario nuevo = new Usuario();
-                nuevo.Nombre = txtNombre.Text.Trim();
-                nuevo.Apellido = txtApellido.Text.Trim();
                 nuevo.Email = txtEmail.Text.Trim();
                 nuevo.Password = txtPass.Text.Trim();
-                nuevo.Rol = "Paciente";
                 nuevo.Perfil = Perfil.Paciente;
+                nuevo.Rol = "Paciente";
                 nuevo.Activo = true;
 
+                nuevo.IdPaciente = idPacienteGenerado;
                 usuarioNegocio.Agregar(nuevo);
 
 
-                Session["UsuarioEmail"] = nuevo.Email;
-                Session["Perfil"] = nuevo.Perfil;
+                Session["usuario"] = nuevo;
 
                 Response.Redirect("~/Pacientes/Dashboard.aspx");
             }

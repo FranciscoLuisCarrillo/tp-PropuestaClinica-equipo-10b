@@ -18,23 +18,31 @@ namespace Clinica.Datos
                 // Agregamos "SELECT SCOPE_IDENTITY()" para que la consulta
                 // devuelva el ID del paciente recién insertado.
                 string consulta = @"INSERT INTO Pacientes 
-                                (Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio) 
-                                VALUES 
-                                (@Nombre, @Apellido, @DNI, @FechaNacimiento, @Telefono, @Email, @Domicilio);
-                                SELECT SCOPE_IDENTITY();";
+                                    (Nombre, Apellido, Email, DNI, FechaNacimiento, Telefono, Domicilio, Activo) 
+                                    VALUES 
+                                    (@Nombre, @Apellido, @Email, @DNI, @FechaNacimiento, @Telefono, @Domicilio, 1);
+                                    SELECT SCOPE_IDENTITY();";
 
                 datos.SetearConsulta(consulta);
 
                 // Seteamos los parámetros leyendo las propiedades públicas de 'nuevo'
                 datos.SetearParametro("@Nombre", nuevo.Nombre);
                 datos.SetearParametro("@Apellido", nuevo.Apellido);
-                datos.SetearParametro("@DNI", nuevo.Dni);
-                datos.SetearParametro("@FechaNacimiento", nuevo.FechaNacimiento);
+                datos.SetearParametro("@Email", nuevo.Email);
 
                 // Manejamos valores opcionales (pueden ser nulos en la DB)
+                datos.SetearParametro("@DNI", (object)nuevo.Dni ?? DBNull.Value);
                 datos.SetearParametro("@Telefono", (object)nuevo.Telefono ?? DBNull.Value);
-                datos.SetearParametro("@Email", nuevo.Email);
                 datos.SetearParametro("@Domicilio", (object)nuevo.Domicilio ?? DBNull.Value);
+
+                if (nuevo.FechaNacimiento == DateTime.MinValue)
+                {
+                    datos.SetearParametro("@FechaNacimiento", DBNull.Value);
+                }
+                else
+                {
+                    datos.SetearParametro("@FechaNacimiento", nuevo.FechaNacimiento);
+                }
 
                 // Usamos EjecutarEscalar para obtener el ID devuelto por SCOPE_IDENTITY()
                 object idGenerado = datos.EjecutarEscalar();

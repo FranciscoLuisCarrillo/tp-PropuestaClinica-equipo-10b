@@ -19,6 +19,10 @@ namespace Clinica.Datos
                             VALUES (@PacienteId, @MedicoId, @EspecialidadId, @FechaInicio, @FechaFin, @Motivo, @Estado)";
 
                 datos.SetearConsulta(consulta);
+                if (nuevo.FechaHoraInicio == DateTime.MinValue)
+                {
+                    throw new Exception("La fecha y hora del turno no son válidas. Verifique los campos.");
+                }
                 datos.SetearParametro("@PacienteId", nuevo.Paciente.PacienteId);
                 datos.SetearParametro("@MedicoId", nuevo.Medico.Id);
                 datos.SetearParametro("@EspecialidadId", nuevo.Especialidad.EspecialidadId);

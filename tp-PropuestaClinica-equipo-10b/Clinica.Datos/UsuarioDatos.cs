@@ -52,18 +52,25 @@ namespace Clinica.Datos
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("INSERT INTO Usuarios (Email, Pass, Perfil) VALUES (@Email, @Pass, @Perfil)");
+                datos.SetearConsulta(@"INSERT INTO Usuarios 
+                                    (Email, Pass, Perfil, Activo, IdPaciente, IdMedico, IdRecepcionista) 
+                                    VALUES 
+                                    (@Email, @Pass, @Perfil, 1, @IdPaciente, @IdMedico, @IdRecepcionista)");
+
+
                 datos.SetearParametro("@Email", nuevo.Email);
                 datos.SetearParametro("@Pass", nuevo.Password);
-
-                // Convertimos el ENUM de C# al INT de la DB
                 datos.SetearParametro("@Perfil", (int)nuevo.Perfil);
+
+                datos.SetearParametro("@IdPaciente", nuevo.IdPaciente.HasValue ? (object)nuevo.IdPaciente.Value : DBNull.Value);
+                datos.SetearParametro("@IdMedico", nuevo.IdMedico.HasValue ? (object)nuevo.IdMedico.Value : DBNull.Value);
+                datos.SetearParametro("@IdRecepcionista", nuevo.IdRecepcionista.HasValue ? (object)nuevo.IdRecepcionista.Value : DBNull.Value);
 
                 datos.EjecutarAccion();
             }
             catch (Exception ex)
             {
-                throw ex;
+                throw new Exception("Error al crear el usuario: " + ex.Message);
             }
             finally
             {
@@ -95,19 +102,27 @@ namespace Clinica.Datos
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("SELECT UsuarioId, Email, Pass, Perfil FROM Usuarios WHERE Email COLLATE Latin1_General_CI_AI = @Email AND Pass = @Pass");
+                datos.SetearConsulta(@"SELECT UsuarioId, Email, Pass, Perfil, IdPaciente, IdMedico, IdRecepcionista, Activo
+                                    FROM Usuarios
+                                    WHERE Email = @Email AND Pass = @Pass");
                 datos.SetearParametro("@Email", email);
                 datos.SetearParametro("@Pass", pass);
                 datos.EjecutarLectura();
                 if (datos.Lector.Read())
                 {
-                    Usuario usuario = new Usuario
-                    {
-                        IdUsuario = (int)datos.Lector["UsuarioId"],
-                        Email = (string)datos.Lector["Email"],
-                        Password = (string)datos.Lector["Pass"],
-                        Perfil = (Perfil)(int)datos.Lector["Perfil"]
-                    };
+                    Usuario usuario = new Usuario();
+                    usuario.IdUsuario = (int)datos.Lector["UsuarioId"];
+                    usuario.Email = (string)datos.Lector["Email"];
+                    usuario.Password = (string)datos.Lector["Pass"];
+                    usuario.Perfil = (Perfil)(int)datos.Lector["Perfil"];
+                    usuario.Activo = datos.Lector["Activo"] != DBNull.Value ? (bool)datos.Lector["Activo"] : true;
+
+                    if(datos.Lector["IdPaciente"] != DBNull.Value)
+                        usuario.IdPaciente = (int)datos.Lector["IdPaciente"];
+                    if (datos.Lector["IdMedico"] != DBNull.Value)
+                        usuario.IdMedico = (int)datos.Lector["IdMedico"];
+                    if (datos.Lector["IdRecepcionista"] != DBNull.Value)
+                        usuario.IdRecepcionista = (int)datos.Lector["IdRecepcionista"];
                     return usuario;
                 }
                 return null;

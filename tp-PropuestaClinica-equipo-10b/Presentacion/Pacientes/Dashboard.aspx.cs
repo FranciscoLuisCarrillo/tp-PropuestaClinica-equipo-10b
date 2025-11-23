@@ -170,6 +170,11 @@ namespace Presentacion.Pacientes
             Page.Validate();
             if (!Page.IsValid) return;
 
+            if (ddlHora.SelectedIndex == 0 || string.IsNullOrEmpty(ddlHora.SelectedValue))
+            {
+                Response.Write("<script>alert('Por favor seleccione una hora.');</script>");
+                return;
+            }
             try
             {
                 TurnoNegocio turnoNegocio = new TurnoNegocio();

@@ -354,4 +354,28 @@ ADD CONSTRAINT FK_Recepcionistas_TurnosTrabajo
     REFERENCES TurnosTrabajo (TurnoTrabajoId);
 
 
+// Agregados a las tablas 23/11/2025
+
+ALTER TABLE Pacientes ALTER COLUMN DNI NVARCHAR(20) NULL;
+ALTER TABLE Pacientes ALTER COLUMN Telefono NVARCHAR(50) NULL;
+ALTER TABLE Pacientes ALTER COLUMN Domicilio NVARCHAR(250) NULL;
+ALTER TABLE Pacientes ALTER COLUMN FechaNacimiento DATE NULL;
+
+
+ALTER TABLE Pacientes ADD Activo BIT NOT NULL DEFAULT 1;
+
+ALTER TABLE Usuarios ADD IdPaciente INT NULL;
+
+ALTER TABLE Usuarios ADD IdMedico INT NULL;
+
+ALTER TABLE Usuarios ADD IdRecepcionista INT NULL;
+
+ALTER TABLE Usuarios ADD Activo BIT NOT NULL DEFAULT 1;
+
+
+ALTER TABLE Usuarios ADD CONSTRAINT FK_Usuarios_Pacientes FOREIGN KEY (IdPaciente) REFERENCES Pacientes(PacienteId);
+ALTER TABLE Usuarios ADD CONSTRAINT FK_Usuarios_Medicos FOREIGN KEY (IdMedico) REFERENCES Medicos(MedicoId);
+
+
+
 */
