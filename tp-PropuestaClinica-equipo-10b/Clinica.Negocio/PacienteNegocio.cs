@@ -65,5 +65,17 @@ namespace Clinica.Negocio
             // Si todas las validaciones pasan, se llama a la capa de datos para guardar.
             return datos.Agregar(nuevo);
         }
+
+
+        public Paciente ObtenerPorId(int id)
+        {
+            return datos.ObtenerPorId(id);
+        }
+        
+        public void Modificar(Paciente paciente)
+        {
+            
+            datos.Modificar(paciente);
+        }
     }
 }

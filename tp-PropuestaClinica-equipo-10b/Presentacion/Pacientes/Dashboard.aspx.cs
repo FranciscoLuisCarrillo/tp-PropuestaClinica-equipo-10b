@@ -169,6 +169,24 @@ namespace Presentacion.Pacientes
         {
             Page.Validate();
             if (!Page.IsValid) return;
+            Usuario usuarioActual = (Usuario)Session ["usuario"];
+            try
+            {
+                PacienteNegocio pacienteNegocio = new PacienteNegocio();
+                Paciente datos = pacienteNegocio.ObtenerPorId((int)usuarioActual.IdPaciente);
+                if(datos ==null || string.IsNullOrEmpty(datos.Dni) || datos.FechaNacimiento == null)
+                {
+                    Response.Write("<script>alert('Por favor complete sus datos personales antes de reservar un turno.'); window.location='Add.aspx';</script>");
+                    return;
+                }
+            }catch (Exception ex)
+            {
+                Response.Write("<script>alert('Error al verificar datos personales: " + ex.Message + "');</script>");
+                return;
+            }
+
+
+
 
             if (ddlHora.SelectedIndex == 0 || string.IsNullOrEmpty(ddlHora.SelectedValue))
             {
@@ -186,12 +204,14 @@ namespace Presentacion.Pacientes
                 nuevoTurno.Especialidad = new Especialidad();
                 nuevoTurno.Especialidad.EspecialidadId = int.Parse(ddlEspecialidades.SelectedValue);
 
-                Usuario usuarioActual = (Usuario)Session["usuario"];
+                
                 nuevoTurno.Paciente = new Paciente();
                 nuevoTurno.Paciente.PacienteId = (int)usuarioActual.IdPaciente; 
                 DateTime fecha = DateTime.Parse(txtFecha.Text);
                 TimeSpan hora = TimeSpan.Parse(ddlHora.SelectedValue);
+                
                 nuevoTurno.FechaHoraInicio = fecha.Add(hora);
+                nuevoTurno.FechaHoraFin = nuevoTurno.FechaHoraInicio.AddHours(1);
 
                 nuevoTurno.MotivoConsulta = txtObs.Text;
                 nuevoTurno.Estado = EstadoTurno.Nuevo;

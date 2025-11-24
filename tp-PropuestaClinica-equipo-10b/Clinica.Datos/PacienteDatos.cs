@@ -154,5 +154,62 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+        public void Modificar(Paciente paciente)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"UPDATE Pacientes 
+                               SET Nombre=@Nombre, Apellido=@Apellido, DNI=@DNI, 
+                                   FechaNacimiento=@Fecha, Telefono=@Tel, Domicilio=@Dom
+                               WHERE PacienteId=@Id");
+
+                datos.SetearParametro("@Nombre", paciente.Nombre);
+                datos.SetearParametro("@Apellido", paciente.Apellido);
+                datos.SetearParametro("@DNI", paciente.Dni);
+                datos.SetearParametro("@Fecha", paciente.FechaNacimiento);
+                datos.SetearParametro("@Tel", paciente.Telefono);
+                datos.SetearParametro("@Dom", paciente.Domicilio);
+                datos.SetearParametro("@Id", paciente.PacienteId);
+
+                datos.EjecutarAccion();
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+        public Paciente ObtenerPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("SELECT * FROM Pacientes WHERE PacienteId = @Id");
+                datos.SetearParametro("@Id", id);
+                datos.EjecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    Paciente aux = new Paciente();
+                    aux.PacienteId = (int)datos.Lector["PacienteId"];
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    aux.Apellido = (string)datos.Lector["Apellido"];
+                    aux.Email = (string)datos.Lector["Email"];
+
+                    // Validamos nulos porque es un registro incompleto
+                    if (!(datos.Lector["DNI"] is DBNull)) aux.Dni = (string)datos.Lector["DNI"];
+                    if (!(datos.Lector["Telefono"] is DBNull)) aux.Telefono = (string)datos.Lector["Telefono"];
+                    if (!(datos.Lector["FechaNacimiento"] is DBNull)) aux.FechaNacimiento = (DateTime)datos.Lector["FechaNacimiento"];
+                    if (!(datos.Lector["Domicilio"] is DBNull)) aux.Domicilio = (string)datos.Lector["Domicilio"];
+
+                    return aux;
+                }
+                return null;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+    } 
     }
-}
