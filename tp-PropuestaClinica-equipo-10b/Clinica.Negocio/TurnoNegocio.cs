@@ -22,8 +22,7 @@ namespace Clinica.Negocio
 
         public void GuardarDiagnostico(int idTurno, string estadoTexto, string diagnostico)
         {
-            if (idTurno <= 0)
-                throw new ArgumentException("El turno no es válido.");
+           
 
             if (string.IsNullOrWhiteSpace(estadoTexto))
                 throw new ArgumentException("Debe seleccionar un estado.");
@@ -49,5 +48,17 @@ namespace Clinica.Negocio
                 default: return 0;
             }
         }
+    
+    public List<TurnoAgendaMedico> ListarPorPaciente(int pacienteId)
+        {
+           
+            return datos.ListarPorPaciente(pacienteId);
+        }
+
+        public Turno ObtenerPorId(int turnoId)
+        {
+            return datos.ObtenerPorId(turnoId);
+        }
+
+        }
     }
-}

@@ -54,7 +54,7 @@ namespace Presentacion.Account
 
                 Session["usuario"] = nuevo;
 
-                Response.Redirect("~/Pacientes/Dashboard.aspx");
+                Response.Redirect("~/Pacientes/Default.aspx");
             }
             catch (Exception ex)
             {

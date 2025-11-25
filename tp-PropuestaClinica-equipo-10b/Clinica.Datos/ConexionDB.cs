@@ -378,4 +378,8 @@ ALTER TABLE Usuarios ADD CONSTRAINT FK_Usuarios_Medicos FOREIGN KEY (IdMedico) R
 
 
 
+// Agregado 24/11/2025
+ALTER TABLE Pacientes ADD Genero NVARCHAR(20) NULL;
+
+
 */

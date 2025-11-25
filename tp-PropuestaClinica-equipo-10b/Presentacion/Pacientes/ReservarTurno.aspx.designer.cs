@@ -11,7 +11,7 @@ namespace Presentacion.Pacientes
 {
 
 
-    public partial class Dashboard
+    public partial class ReservarTurno
     {
 
         /// <summary>
@@ -76,32 +76,5 @@ namespace Presentacion.Pacientes
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.Button btnCrearTurno;
-
-        /// <summary>
-        /// Control txtFechaListado.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.TextBox txtFechaListado;
-
-        /// <summary>
-        /// Control btnBuscarTurnosDia.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.Button btnBuscarTurnosDia;
-
-        /// <summary>
-        /// Control gvTurnosDia.
-        /// </summary>
-        /// <remarks>
-        /// Campo generado automáticamente.
-        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
-        /// </remarks>
-        protected global::System.Web.UI.WebControls.GridView gvTurnosDia;
     }
 }

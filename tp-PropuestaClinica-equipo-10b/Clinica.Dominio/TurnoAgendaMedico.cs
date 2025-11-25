@@ -11,6 +11,8 @@ namespace Clinica.Dominio
         public int IdTurno { get; set; }
         public string Hora { get; set; }
         public string Paciente { get; set; }
+        public string Medico { get; set; }
+
         public string ObraSocial { get; set; }
         public string Especialidad { get; set; }
         public string Estado { get; set; }

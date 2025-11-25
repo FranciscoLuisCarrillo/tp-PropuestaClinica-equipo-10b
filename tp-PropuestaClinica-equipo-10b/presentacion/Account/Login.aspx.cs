@@ -40,7 +40,7 @@ namespace Presentacion.Account
                         Response.Redirect("~/Medicos/Default.aspx");
                         break;
                     case Perfil.Paciente:
-                        Response.Redirect("~/Pacientes/Dashboard.aspx");
+                        Response.Redirect("~/Pacientes/Default.aspx");
                         break;
                     default:
                         valSum.HeaderText = "Perfil de usuario no reconocido.";

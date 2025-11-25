@@ -160,16 +160,27 @@ namespace Clinica.Datos
             try
             {
                 datos.SetearConsulta(@"UPDATE Pacientes 
-                               SET Nombre=@Nombre, Apellido=@Apellido, DNI=@DNI, 
-                                   FechaNacimiento=@Fecha, Telefono=@Tel, Domicilio=@Dom
-                               WHERE PacienteId=@Id");
+                            SET Nombre = @Nombre, 
+                                Apellido = @Apellido, 
+                                DNI = @DNI, 
+                                FechaNacimiento = @FechaNacimiento, 
+                                Genero = @Genero,
+                                Telefono = @Telefono, 
+                                Domicilio = @Domicilio,
+                                ObraSocial = @ObraSocial
+                            WHERE PacienteId = @Id");
+
+                
 
                 datos.SetearParametro("@Nombre", paciente.Nombre);
                 datos.SetearParametro("@Apellido", paciente.Apellido);
                 datos.SetearParametro("@DNI", paciente.Dni);
-                datos.SetearParametro("@Fecha", paciente.FechaNacimiento);
-                datos.SetearParametro("@Tel", paciente.Telefono);
-                datos.SetearParametro("@Dom", paciente.Domicilio);
+                datos.SetearParametro("@FechaNacimiento", paciente.FechaNacimiento);
+                datos.SetearParametro("@Genero", paciente.Genero ?? (object)DBNull.Value);
+                datos.SetearParametro("@Telefono", paciente.Telefono ?? (object)DBNull.Value);
+                datos.SetearParametro("@Domicilio", paciente.Domicilio ?? (object)DBNull.Value);
+                datos.SetearParametro("@ObraSocial", paciente.ObraSocial ?? (object)DBNull.Value);
+                
                 datos.SetearParametro("@Id", paciente.PacienteId);
 
                 datos.EjecutarAccion();

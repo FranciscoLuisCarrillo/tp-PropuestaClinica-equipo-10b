@@ -1,6 +1,5 @@
 ﻿using Clinica.Dominio;
 using Clinica.Negocio;
-using Presentacion.Admin;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,14 +7,14 @@ using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
 
-
 namespace Presentacion.Pacientes
 {
-    public partial class Dashboard : System.Web.UI.Page
+    public partial class ReservarTurno : System.Web.UI.Page
     {
+
         protected void Page_Load(object sender, EventArgs e)
         {
-           
+
             if (Session["usuario"] == null)
             {
                 Response.Redirect("~/Login.aspx", false);
@@ -24,11 +23,11 @@ namespace Presentacion.Pacientes
 
             if (!IsPostBack)
             {
-                CargarEspecialidades(); 
-                CargarMedicos(true);    
+                CargarEspecialidades();
+                CargarMedicos(true);
                 CargarHoras();
 
-                
+
                 txtFecha.Attributes["min"] = DateTime.Now.ToString("yyyy-MM-dd");
             }
         }
@@ -38,7 +37,7 @@ namespace Presentacion.Pacientes
             ddlHora.Items.Clear();
             ddlHora.Items.Insert(0, new ListItem("-- Seleccionar hora --", ""));
 
-            
+
             for (int h = 8; h <= 20; h++)
             {
                 string hora = h.ToString("00") + ":00";
@@ -46,7 +45,7 @@ namespace Presentacion.Pacientes
             }
         }
 
-        
+
         private void CargarEspecialidades(List<Especialidad> listaFiltrada = null)
         {
             try
@@ -67,7 +66,7 @@ namespace Presentacion.Pacientes
             }
         }
 
-        
+
         private void CargarMedicos(bool cargarTodos = false, List<Medico> listaFiltrada = null)
         {
             try
@@ -80,10 +79,10 @@ namespace Presentacion.Pacientes
                 else
                     lista = listaFiltrada ?? new List<Medico>();
 
-                
+
                 ddlMedico.DataSource = lista;
-                ddlMedico.DataTextField = "Nombre"; 
-                ddlMedico.DataValueField = "Id";    
+                ddlMedico.DataTextField = "Nombre";
+                ddlMedico.DataValueField = "Id";
                 ddlMedico.DataBind();
 
                 ddlMedico.Items.Insert(0, new ListItem("-- Seleccionar médico --", ""));
@@ -113,7 +112,7 @@ namespace Presentacion.Pacientes
 
                     CargarEspecialidades(listaFiltrada: listaEspecialidades);
 
-                 
+
                     if (listaEspecialidades.Count == 1)
                     {
                         ddlEspecialidades.SelectedIndex = 1;
@@ -136,7 +135,7 @@ namespace Presentacion.Pacientes
         {
             try
             {
-                
+
                 string medicoPrevio = ddlMedico.SelectedValue;
 
                 if (ddlEspecialidades.SelectedIndex == 0 || ddlEspecialidades.SelectedValue == "")
@@ -152,7 +151,7 @@ namespace Presentacion.Pacientes
                     CargarMedicos(cargarTodos: false, listaFiltrada: listaMedicos);
                 }
 
-                
+
                 if (!string.IsNullOrEmpty(medicoPrevio) && ddlMedico.Items.FindByValue(medicoPrevio) != null)
                 {
                     ddlMedico.SelectedValue = medicoPrevio;
@@ -169,17 +168,19 @@ namespace Presentacion.Pacientes
         {
             Page.Validate();
             if (!Page.IsValid) return;
-            Usuario usuarioActual = (Usuario)Session ["usuario"];
+            Usuario usuarioActual = (Usuario)Session["usuario"];
             try
             {
                 PacienteNegocio pacienteNegocio = new PacienteNegocio();
                 Paciente datos = pacienteNegocio.ObtenerPorId((int)usuarioActual.IdPaciente);
-                if(datos ==null || string.IsNullOrEmpty(datos.Dni) || datos.FechaNacimiento == null)
+                if (datos == null || string.IsNullOrEmpty(datos.Dni) || datos.FechaNacimiento == DateTime.MinValue)
                 {
-                    Response.Write("<script>alert('Por favor complete sus datos personales antes de reservar un turno.'); window.location='Add.aspx';</script>");
+
+                    Response.Write("<script>alert('Faltan datos en tu perfil. Por favor complétalos.'); window.location='Add.aspx';</script>");
                     return;
                 }
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 Response.Write("<script>alert('Error al verificar datos personales: " + ex.Message + "');</script>");
                 return;
@@ -204,12 +205,12 @@ namespace Presentacion.Pacientes
                 nuevoTurno.Especialidad = new Especialidad();
                 nuevoTurno.Especialidad.EspecialidadId = int.Parse(ddlEspecialidades.SelectedValue);
 
-                
+
                 nuevoTurno.Paciente = new Paciente();
-                nuevoTurno.Paciente.PacienteId = (int)usuarioActual.IdPaciente; 
+                nuevoTurno.Paciente.PacienteId = (int)usuarioActual.IdPaciente;
                 DateTime fecha = DateTime.Parse(txtFecha.Text);
                 TimeSpan hora = TimeSpan.Parse(ddlHora.SelectedValue);
-                
+
                 nuevoTurno.FechaHoraInicio = fecha.Add(hora);
                 nuevoTurno.FechaHoraFin = nuevoTurno.FechaHoraInicio.AddHours(1);
 
@@ -218,12 +219,17 @@ namespace Presentacion.Pacientes
 
                 turnoNegocio.AgendarTurno(nuevoTurno);
 
-                Response.Write("<script>alert('¡Turno reservado con éxito!'); window.location='Dashboard.aspx';</script>");
+                Response.Write("<script>alert('¡Turno reservado con éxito!'); window.location='Default.aspx';</script>");
+            }
+            catch (System.Threading.ThreadAbortException)
+            {
+
             }
             catch (Exception ex)
             {
                 Response.Write("<script>alert('Error al reservar: " + ex.Message + "');</script>");
             }
         }
+
     }
 }
