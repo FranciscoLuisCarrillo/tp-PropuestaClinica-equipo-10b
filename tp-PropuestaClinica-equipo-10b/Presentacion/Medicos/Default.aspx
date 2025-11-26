@@ -11,13 +11,11 @@
             <p class="lead text-muted">Bienvenido al sistema de gestión clínica.</p>
         </header>
 
-        <section aria-labelledby="accesos-rapidos" class="row justify-content-center">
-            <h2 id="accesos-rapidos" class="visually-hidden">Accesos Rápidos</h2>
-            
+        <section class="row justify-content-center">
             <div class="col-md-6 col-lg-4">
                 <article class="card shadow hover-card h-100 text-center border-0">
                     <div class="card-body p-5">
-                        <div class="mb-3 text-primary">
+                        <div class="mb-3 text-dark">
                             <i class="bi bi-calendar-check fs-1"></i>
                         </div>
                         <h3 class="card-title h4">Mi Agenda</h3>

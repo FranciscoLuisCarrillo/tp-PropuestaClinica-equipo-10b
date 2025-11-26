@@ -34,7 +34,7 @@
                     <Columns>
                         <asp:BoundField DataField="Hora" HeaderText="Horario" HeaderStyle-CssClass="ps-3" ItemStyle-CssClass="ps-3 fw-bold" />
                         <asp:BoundField DataField="Paciente" HeaderText="Paciente" />
-                        <asp:BoundField DataField="Motivo" HeaderText="Definicion/Resolucion" />
+                        <asp:BoundField DataField="Definicion" HeaderText="Definicion/Resolucion" />
                         <asp:BoundField DataField="Estado" HeaderText="Estado Actual" />
                         <asp:TemplateField HeaderText="Acciones">
                             <ItemTemplate>

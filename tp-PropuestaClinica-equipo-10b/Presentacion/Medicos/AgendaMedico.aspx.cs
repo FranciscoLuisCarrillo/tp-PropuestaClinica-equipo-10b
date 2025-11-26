@@ -15,6 +15,7 @@ namespace Presentacion.Medicos
         {
             if (!IsPostBack)
             {
+                
                 txtFecha.Text = DateTime.Today.ToString("yyyy-MM-dd"); 
                 CargarAgenda();
             }
@@ -50,7 +51,7 @@ namespace Presentacion.Medicos
                 x.IdTurno,
                 x.Hora,
                 x.Paciente,
-                Motivo = x.Diagnostico,
+                Definicion = x.Diagnostico,
                 x.Estado
             });
             gvTurnos.DataBind();

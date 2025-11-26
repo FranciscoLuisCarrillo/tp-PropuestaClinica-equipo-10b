@@ -1,11 +1,10 @@
-﻿html, body {
+﻿
+html, body {
     height: 100%;
+    margin: 0;
+    background-color: #f2f7fb; 
 }
 
-body {
-    margin: 0;
-    background-color: #f2f7fb;
-}
 
 form#form1 {
     display: flex;
@@ -13,15 +12,19 @@ form#form1 {
     min-height: 100vh;
 }
 main {
-    flex: 1;
-    display: block;
+    flex: 1 0 auto; 
+    width: 100%; 
     padding: 2rem 0;
 }
 
-.medico-dashboard{
-    padding-top: 0;
-}
 
 footer {
+    flex-shrink: 0;
     background-color: #e4ecf3;
+    width: 100%;
+}
+
+
+.medico-dashboard {
+    padding-top: 0;
 }
