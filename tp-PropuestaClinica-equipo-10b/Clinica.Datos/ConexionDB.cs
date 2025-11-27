@@ -382,4 +382,32 @@ ALTER TABLE Usuarios ADD CONSTRAINT FK_Usuarios_Medicos FOREIGN KEY (IdMedico) R
 ALTER TABLE Pacientes ADD Genero NVARCHAR(20) NULL;
 
 
+// AGREGADO PARA QUE FUNCIONE RECEPCIONISTA 26/11/2025
+
+USE ClinicaDB;
+GO
+
+-- 1. Agregar columna Nombre (si no existe)
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE Name = N'Nombre' AND Object_ID = Object_ID(N'Usuarios'))
+BEGIN
+    ALTER TABLE Usuarios ADD Nombre NVARCHAR(50) NULL;
+    PRINT 'Columna Nombre agregada.';
+END
+
+-- 2. Agregar columna Apellido (si no existe)
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE Name = N'Apellido' AND Object_ID = Object_ID(N'Usuarios'))
+BEGIN
+    ALTER TABLE Usuarios ADD Apellido NVARCHAR(50) NULL;
+    PRINT 'Columna Apellido agregada.';
+END
+
+-- 3. Agregar columna Rol (si no existe)
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE Name = N'Rol' AND Object_ID = Object_ID(N'Usuarios'))
+BEGIN
+    ALTER TABLE Usuarios ADD Rol NVARCHAR(20) NULL;
+    PRINT 'Columna Rol agregada.';
+END
+GO
+
+
 */

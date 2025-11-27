@@ -52,25 +52,35 @@ namespace Clinica.Datos
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta(@"INSERT INTO Usuarios 
-                                    (Email, Pass, Perfil, Activo, IdPaciente, IdMedico, IdRecepcionista) 
-                                    VALUES 
-                                    (@Email, @Pass, @Perfil, 1, @IdPaciente, @IdMedico, @IdRecepcionista)");
+                string consulta = @"
+            INSERT INTO Usuarios 
+            (Email, Pass, Perfil, Activo, IdRecepcionista, IdMedico, IdPaciente, Nombre, Apellido, Rol) 
+            VALUES 
+            (@Email, @Pass, @Perfil, @Activo, @IdRecepcionista, @IdMedico, @IdPaciente, @Nombre, @Apellido, @Rol)";
 
+                datos.SetearConsulta(consulta);
 
+                // Parámetros Básicos
                 datos.SetearParametro("@Email", nuevo.Email);
-                datos.SetearParametro("@Pass", nuevo.Password);
+                datos.SetearParametro("@Pass", nuevo.Password); // Asegurate que la propiedad en Usuario se llame Password
                 datos.SetearParametro("@Perfil", (int)nuevo.Perfil);
+                datos.SetearParametro("@Activo", nuevo.Activo);
 
-                datos.SetearParametro("@IdPaciente", nuevo.IdPaciente.HasValue ? (object)nuevo.IdPaciente.Value : DBNull.Value);
-                datos.SetearParametro("@IdMedico", nuevo.IdMedico.HasValue ? (object)nuevo.IdMedico.Value : DBNull.Value);
-                datos.SetearParametro("@IdRecepcionista", nuevo.IdRecepcionista.HasValue ? (object)nuevo.IdRecepcionista.Value : DBNull.Value);
+                // Parámetros de Relación (Manejo de Nulos)
+                datos.SetearParametro("@IdRecepcionista", (object)nuevo.IdRecepcionista ?? DBNull.Value);
+                datos.SetearParametro("@IdMedico", (object)nuevo.IdMedico ?? DBNull.Value);
+                datos.SetearParametro("@IdPaciente", (object)nuevo.IdPaciente ?? DBNull.Value);
+
+                // Parámetros Nuevos
+                datos.SetearParametro("@Nombre", (object)nuevo.Nombre ?? DBNull.Value);
+                datos.SetearParametro("@Apellido", (object)nuevo.Apellido ?? DBNull.Value);
+                datos.SetearParametro("@Rol", (object)nuevo.Rol ?? DBNull.Value);
 
                 datos.EjecutarAccion();
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al crear el usuario: " + ex.Message);
+                throw new Exception("Error al agregar usuario: " + ex.Message);
             }
             finally
             {
