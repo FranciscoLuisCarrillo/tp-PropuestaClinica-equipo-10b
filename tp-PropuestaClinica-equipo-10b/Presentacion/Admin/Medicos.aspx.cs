@@ -75,7 +75,11 @@ namespace Presentacion.Admin
         protected void btnGuarda_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid)
+            {
+                ClientScript.RegisterStartupScript(this.GetType(), "ShowPanel", "mostrarFormularioMedico();", true);
                 return;
+            }
+                
 
             try
             {
@@ -93,17 +97,29 @@ namespace Presentacion.Admin
                 nuevo.Turno = new TurnoTrabajo();
                 nuevo.Turno.TurnoTrabajoId = idTurno;
 
+                int cantidadSeleccionada = 0;
+
                 nuevo.Especialidades = new List<Especialidad>();
                 foreach (ListItem item in chkEspecialidades.Items)
                 {
                     if (item.Selected)
                     {
+                        cantidadSeleccionada++;
                         nuevo.Especialidades.Add(new Especialidad
                         {
                             EspecialidadId = int.Parse(item.Value),
                             Nombre = item.Text
                         });
                     }
+                }
+                if (cantidadSeleccionada == 0)
+                {
+                    throw new Exception("Debe seleccionar al menos una especialidad.");
+                }
+
+                if (cantidadSeleccionada > 2)
+                {
+                    throw new Exception("Solo puede seleccionar un máximo de 2 especialidades.");
                 }
 
 
@@ -116,7 +132,8 @@ namespace Presentacion.Admin
                 {
                     Email = nuevo.Email,
                     Password = txtPassword.Text.Trim(),                    
-                    Perfil = Perfil.Medico
+                    Perfil = Perfil.Medico,
+                    IdMedico = idMedicoGenerado
                 };
                 usuarioNegocio.Agregar(usuarioMedico);
                 ValidarMedico.HeaderText += " Usuario médico creado correctamente.";
@@ -129,6 +146,7 @@ namespace Presentacion.Admin
             catch (Exception ex)
             {
                 ValidarMedico.HeaderText = ex.Message;
+                ClientScript.RegisterStartupScript(this.GetType(), "ShowPanelError", "mostrarFormularioMedico();", true);
             }
         }
 

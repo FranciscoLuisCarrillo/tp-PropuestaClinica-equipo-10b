@@ -127,7 +127,7 @@
             <div class="mb-2">
               <label class="form-label">Especialidades</label>
               <div class="border rounded p-2" style="max-height: 260px; overflow:auto">
-                <asp:CheckBoxList ID="chkEspecialidades" data-rol="especialidades" runat="server"
+                <asp:CheckBoxList ID="chkEspecialidades" ClientIDMode="Static" data-rol="especialidades" runat="server"
                   CssClass="form-check" RepeatDirection="Vertical" />
               </div>
               <asp:CustomValidator ID="cvEspecialidades" runat="server"
