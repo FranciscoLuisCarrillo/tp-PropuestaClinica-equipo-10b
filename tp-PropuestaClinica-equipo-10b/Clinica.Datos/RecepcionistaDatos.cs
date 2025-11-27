@@ -104,6 +104,86 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+        public void Modificar(Recepcionista modificar)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                string consulta = @"UPDATE Recepcionistas 
+                                    SET Nombre = @Nombre, 
+                                        Apellido = @Apellido, 
+                                        Email = @Email, 
+                                        Telefono = @Telefono, 
+                                        TurnoTrabajoId = @TurnoTrabajoId,
+                                        Activo = @Activo
+                                    WHERE RecepcionistaId = @Id";
 
+                datos.SetearConsulta(consulta);
+                datos.SetearParametro("@Nombre", modificar.Nombre);
+                datos.SetearParametro("@Apellido", modificar.Apellido);
+                datos.SetearParametro("@Email", modificar.Email);
+                datos.SetearParametro("@Telefono", (object)modificar.Telefono ?? DBNull.Value);
+                datos.SetearParametro("@TurnoTrabajoId", (object)modificar.TurnoTrabajoId ?? DBNull.Value);
+                datos.SetearParametro("@Activo", modificar.Activo);
+                datos.SetearParametro("@Id", modificar.Id);
+
+                datos.EjecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al modificar recepcionista.", ex);
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+        public void EliminarLogico(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("UPDATE Recepcionistas SET Activo = 0 WHERE RecepcionistaId = @Id");
+                datos.SetearParametro("@Id", id);
+                datos.EjecutarAccion();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar recepcionista.", ex);
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+        public Recepcionista ObtenerPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                string consulta = @"SELECT R.RecepcionistaId, R.Nombre, R.Apellido, R.Email, R.Telefono,
+                                    R.TurnoTrabajoId, R.Activo, T.Nombre AS TurnoNombre
+                                    FROM Recepcionistas R
+                                    LEFT JOIN TurnosTrabajo T ON T.TurnoTrabajoId = R.TurnoTrabajoId
+                                    WHERE R.RecepcionistaId = @Id";
+                datos.SetearConsulta(consulta);
+                datos.SetearParametro("@Id", id);
+                datos.EjecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    return Mapear(datos);
+                }
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener Recepcionista por ID.", ex);
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
     }
 }
