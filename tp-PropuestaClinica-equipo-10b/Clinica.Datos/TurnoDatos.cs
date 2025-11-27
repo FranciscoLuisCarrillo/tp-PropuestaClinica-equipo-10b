@@ -9,7 +9,6 @@ namespace Clinica.Datos
 {
     public class TurnoDatos
     {
-
         public void Agregar(Turno nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -29,7 +28,7 @@ namespace Clinica.Datos
                 datos.SetearParametro("@FechaInicio", nuevo.FechaHoraInicio);
                 datos.SetearParametro("@FechaFin", nuevo.FechaHoraInicio.AddHours(1));
                 datos.SetearParametro("@Motivo", nuevo.MotivoConsulta ?? (object)DBNull.Value);
-                datos.SetearParametro("@Estado", 0); 
+                datos.SetearParametro("@Estado", 0);
 
                 datos.EjecutarAccion();
             }
@@ -55,7 +54,7 @@ namespace Clinica.Datos
                         T.TurnoId,
                         CONVERT(VARCHAR(5), T.FechaHoraInicio, 108) AS Hora,
                         P.Nombre + ' ' + P.Apellido AS Paciente,
-                         P.ObraSocial AS ObraSocial, 
+                        P.ObraSocial AS ObraSocial, 
                         E.Nombre AS Especialidad,
                         T.Estado,
                         CASE T.Estado
@@ -105,8 +104,6 @@ namespace Clinica.Datos
             }
         }
 
-
-
         public void ActualizarEstadoYDiagnostico(int idTurno, int estadoValor, string diagnostico)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -138,7 +135,6 @@ namespace Clinica.Datos
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                
                 string consulta = @"SELECT T.TurnoId, 
                                    T.FechaHoraInicio, 
                                    M.Apellido + ', ' + M.Nombre as MedicoNombre, 
@@ -159,16 +155,12 @@ namespace Clinica.Datos
                     var turno = new TurnoAgendaMedico();
                     turno.IdTurno = (int)datos.Lector["TurnoId"];
 
-                   
                     DateTime fecha = (DateTime)datos.Lector["FechaHoraInicio"];
                     turno.Hora = fecha.ToString("dd/MM/yyyy HH:mm");
 
-                    
                     turno.Medico = datos.Lector["MedicoNombre"].ToString();
-
                     turno.Especialidad = datos.Lector["Especialidad"].ToString();
 
-                    
                     int estado = (int)datos.Lector["Estado"];
                     if (estado == 0 || estado == 1) turno.Estado = "Pendiente";
                     else if (estado == 2) turno.Estado = "Cancelado";
@@ -180,12 +172,12 @@ namespace Clinica.Datos
             }
             finally { datos.CerrarConexion(); }
         }
+
         public Turno ObtenerPorId(int idTurno)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // Traemos datos del turno + nombre del paciente
                 string consulta = @"SELECT T.TurnoId, T.FechaHoraInicio, T.MotivoConsulta, T.DiagnosticoMedico, T.Estado, 
                                    P.Nombre, P.Apellido, P.DNI 
                             FROM Turnos T

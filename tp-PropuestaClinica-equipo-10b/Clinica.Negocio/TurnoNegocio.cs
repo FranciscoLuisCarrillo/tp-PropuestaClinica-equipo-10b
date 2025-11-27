@@ -22,20 +22,30 @@ namespace Clinica.Negocio
 
         public void GuardarDiagnostico(int idTurno, string estadoTexto, string diagnostico)
         {
-           
-
             if (string.IsNullOrWhiteSpace(estadoTexto))
                 throw new ArgumentException("Debe seleccionar un estado.");
-
 
             int estadoValor = EstadoTextoAInt(estadoTexto);
 
             datos.ActualizarEstadoYDiagnostico(idTurno, estadoValor, diagnostico);
         }
+
         public void AgendarTurno(Turno nuevo)
         {
             datos.Agregar(nuevo);
         }
+
+        public void CancelarTurno(int idTurno)
+        {
+            datos.ActualizarEstadoYDiagnostico(idTurno, 2, "");
+        }
+
+        public void ReprogramarTurno(int idTurnoAnterior, Turno nuevoTurno)
+        {
+            datos.ActualizarEstadoYDiagnostico(idTurnoAnterior, 1, "");
+            datos.Agregar(nuevoTurno);
+        }
+
         private int EstadoTextoAInt(string estado)
         {
             switch (estado)
@@ -48,10 +58,9 @@ namespace Clinica.Negocio
                 default: return 0;
             }
         }
-    
-    public List<TurnoAgendaMedico> ListarPorPaciente(int pacienteId)
+
+        public List<TurnoAgendaMedico> ListarPorPaciente(int pacienteId)
         {
-           
             return datos.ListarPorPaciente(pacienteId);
         }
 
@@ -59,6 +68,5 @@ namespace Clinica.Negocio
         {
             return datos.ObtenerPorId(turnoId);
         }
-
-        }
     }
+}

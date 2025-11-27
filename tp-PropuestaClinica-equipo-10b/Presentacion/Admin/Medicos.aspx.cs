@@ -13,7 +13,6 @@ namespace Presentacion.Admin
         private readonly EspecialidadNegocio especialidadNegocio = new EspecialidadNegocio();
         private readonly TurnoTrabajoNegocio turnoTrabajoNegocio = new TurnoTrabajoNegocio();
 
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
@@ -21,9 +20,9 @@ namespace Presentacion.Admin
                 CargarTurnos();
                 CargarMedicos();
                 CargarEspecialidades();
-                
             }
         }
+
         private void CargarTurnos()
         {
             try
@@ -35,7 +34,7 @@ namespace Presentacion.Admin
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al cargar los turnos de trabajo.", ex);
+                ValidarMedico.HeaderText = "Error al cargar turnos: " + ex.Message;
             }
         }
 
@@ -49,8 +48,7 @@ namespace Presentacion.Admin
             }
             catch (Exception ex)
             {
-
-                ValidarMedico.HeaderText = "Error al cargar los médicos: " + ex.Message;
+                ValidarMedico.HeaderText = "Error al cargar médicos: " + ex.Message;
             }
         }
 
@@ -66,24 +64,19 @@ namespace Presentacion.Admin
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al cargar las especialidades.", ex);
+                ValidarMedico.HeaderText = "Error al cargar especialidades: " + ex.Message;
             }
         }
-
-        
 
         protected void btnGuarda_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "ShowPanel", "mostrarFormularioMedico();", true);
                 return;
             }
-                
 
             try
             {
-
                 Medico nuevo = new Medico();
 
                 nuevo.Nombre = txtNombre.Text.Trim();
@@ -91,15 +84,14 @@ namespace Presentacion.Admin
                 nuevo.Email = txtEmail.Text.Trim();
                 nuevo.Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? null : txtTelefono.Text.Trim();
                 nuevo.Matricula = string.IsNullOrWhiteSpace(txtMatricula.Text) ? null : txtMatricula.Text.Trim();
+
                 int idTurno = int.Parse(ddlTurnoTrabajo.SelectedValue);
                 nuevo.TurnoTrabajoId = idTurno;
-                
-                nuevo.Turno = new TurnoTrabajo();
-                nuevo.Turno.TurnoTrabajoId = idTurno;
+                nuevo.Turno = new TurnoTrabajo { TurnoTrabajoId = idTurno };
 
                 int cantidadSeleccionada = 0;
-
                 nuevo.Especialidades = new List<Especialidad>();
+
                 foreach (ListItem item in chkEspecialidades.Items)
                 {
                     if (item.Selected)
@@ -112,6 +104,7 @@ namespace Presentacion.Admin
                         });
                     }
                 }
+
                 if (cantidadSeleccionada == 0)
                 {
                     throw new Exception("Debe seleccionar al menos una especialidad.");
@@ -122,31 +115,32 @@ namespace Presentacion.Admin
                     throw new Exception("Solo puede seleccionar un máximo de 2 especialidades.");
                 }
 
+                nuevo.Activo = true;
 
                 int idMedicoGenerado = medicoNegocio.Agregar(nuevo);
 
-
-                ValidarMedico.HeaderText = "Médico agregado correctamente. ID: " + idMedicoGenerado;
                 UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
                 Usuario usuarioMedico = new Usuario
                 {
                     Email = nuevo.Email,
-                    Password = txtPassword.Text.Trim(),                    
+                    Password = txtPassword.Text.Trim(),
                     Perfil = Perfil.Medico,
-                    IdMedico = idMedicoGenerado
+                    Rol = "Medico",
+                    IdMedico = idMedicoGenerado,
+                    Nombre = nuevo.Nombre,
+                    Apellido = nuevo.Apellido,
+                    Activo = true
                 };
+
                 usuarioNegocio.Agregar(usuarioMedico);
-                ValidarMedico.HeaderText += " Usuario médico creado correctamente.";
 
+                ValidarMedico.HeaderText = "Médico y Usuario creados correctamente.";
                 CargarMedicos();
-
-
                 LimpiarFormulario();
             }
             catch (Exception ex)
             {
                 ValidarMedico.HeaderText = ex.Message;
-                ClientScript.RegisterStartupScript(this.GetType(), "ShowPanelError", "mostrarFormularioMedico();", true);
             }
         }
 
@@ -163,16 +157,7 @@ namespace Presentacion.Admin
             foreach (ListItem item in chkEspecialidades.Items)
             {
                 item.Selected = false;
-                item.Enabled = true;
             }
-        }
-        private List<Especialidad> ObtenerSeleccionEspecialidades()
-        {
-            var lista = new List<Especialidad>();
-            foreach (ListItem it in chkEspecialidades.Items)
-                if (it.Selected)
-                    lista.Add(new Especialidad { EspecialidadId = int.Parse(it.Value), Nombre = it.Text });
-            return lista;
         }
     }
 }
