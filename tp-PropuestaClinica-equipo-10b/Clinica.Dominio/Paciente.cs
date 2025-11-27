@@ -18,7 +18,9 @@ namespace Clinica.Dominio
         public string Telefono { get; set; }
         public string Email { get; set; }
         public bool Activo { get; set; }
-        //string NumeroHistoriaClinica { get; set; }
+        
         public string ObraSocial { get; set; }
     }
+
+
 }

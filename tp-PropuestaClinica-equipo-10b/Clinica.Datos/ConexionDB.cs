@@ -409,5 +409,17 @@ BEGIN
 END
 GO
 
+//AGREGA A LA DDBB para la eliminacion de pacientes 27/11/2025
+
+
+USE ClinicaDB;
+GO
+
+IF NOT EXISTS(SELECT * FROM sys.columns WHERE Name = N'Activo' AND Object_ID = Object_ID(N'Pacientes'))
+BEGIN
+    ALTER TABLE Pacientes ADD Activo BIT DEFAULT 1;
+    PRINT 'Columna Activo agregada a Pacientes.';
+END
+GO
 
 */
