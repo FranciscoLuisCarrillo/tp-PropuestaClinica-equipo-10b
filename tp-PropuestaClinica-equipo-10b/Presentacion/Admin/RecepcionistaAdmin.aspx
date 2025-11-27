@@ -52,6 +52,7 @@
           <div class="card-body">
             
             <asp:Label ID="lblMensaje" runat="server" CssClass="d-block mb-3 fw-bold"></asp:Label>
+            
             <asp:ValidationSummary ID="valResumen" runat="server" CssClass="alert alert-danger" DisplayMode="BulletList" ShowMessageBox="false" />
 
             <div class="mb-3">
@@ -71,6 +72,14 @@
             <div class="mb-3">
               <label for="txtTelefono" class="form-label">Teléfono</label>
               <asp:TextBox ID="txtTelefono" runat="server" CssClass="form-control" />
+              
+              <asp:RequiredFieldValidator ID="rfvTelefono" runat="server" ControlToValidate="txtTelefono"
+                ErrorMessage="El teléfono es obligatorio." CssClass="text-danger small" Display="Dynamic" />
+
+              <asp:RegularExpressionValidator ID="revTelefono" runat="server" ControlToValidate="txtTelefono"
+                ErrorMessage="Ingrese solo números (mínimo 10, sin guiones)." 
+                CssClass="text-danger small" Display="Dynamic"
+                ValidationExpression="^\d{10,}$" />
             </div>
 
             <div class="mb-3">

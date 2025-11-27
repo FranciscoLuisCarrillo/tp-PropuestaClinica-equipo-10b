@@ -23,6 +23,36 @@ namespace Clinica.Negocio
             return datos.Listar();
         }
 
+        private void ValidarDatosTelefono(Recepcionista obj)
+        {
+            // ... (Tus validaciones anteriores de Nombre, Apellido, Email) ...
+
+            if (obj == null) throw new ArgumentNullException("El objeto es nulo.");
+            if (string.IsNullOrWhiteSpace(obj.Email)) throw new ArgumentException("El Email es obligatorio.");
+
+            // --- VALIDACIÓN DE TELÉFONO NUEVA ---
+
+            // 1. Validar si es obligatorio (asumimos que sí por tu pedido)
+            if (string.IsNullOrWhiteSpace(obj.Telefono))
+            {
+                throw new ArgumentException("El teléfono es obligatorio.");
+            }
+
+            // 2. Validar formato: Solo números y mínimo 10 dígitos
+            // Explicación Regex:
+            // ^      -> Inicio del texto
+            // \d     -> Dígito numérico (0-9)
+            // {10,}  -> Se repite 10 veces o más (sin límite máximo)
+            // $      -> Fin del texto
+            string patronTelefono = @"^\d{10,}$";
+
+            if (!Regex.IsMatch(obj.Telefono, patronTelefono))
+            {
+                throw new ArgumentException("El teléfono debe contener solo números y tener al menos 10 dígitos (sin guiones ni paréntesis).");
+            }
+
+            // ... (Resto de validaciones como formato de email, etc.) ...
+        }
         public Recepcionista ObtenerPorId(int id)
         {
             if (id <= 0) throw new ArgumentException("El ID debe ser mayor a 0.");
@@ -101,4 +131,5 @@ namespace Clinica.Negocio
             return Regex.IsMatch(email, patron);
         }
     }
+
 }
