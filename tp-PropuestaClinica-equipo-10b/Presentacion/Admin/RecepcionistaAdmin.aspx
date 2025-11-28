@@ -116,10 +116,8 @@
       </section>
     </div>
 
-    <div class="mt-4">
-      <a href="Default.aspx" class="btn btn-outline-secondary">
-          <i class="bi bi-arrow-left"></i> Volver al Inicio
-      </a>
-    </div>
+    <div class="text-end mt-2">
+  <a href="Default.aspx" class="btn btn-secondary">Volver al panel</a>
+</div>
   </main>
 </asp:Content>

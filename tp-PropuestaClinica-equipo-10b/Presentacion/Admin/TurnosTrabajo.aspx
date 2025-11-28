@@ -79,8 +79,8 @@
             </section>
         </div>
 
-        <div class="text-end mt-3">
-            <a href="Default.aspx" class="btn btn-secondary">Atrás</a>
+        <div class="text-end mt-2">
+          <a href="Default.aspx" class="btn btn-secondary">Volver al panel</a>
         </div>
     </main>
 </asp:Content>

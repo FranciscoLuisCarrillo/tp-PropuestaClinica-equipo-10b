@@ -55,5 +55,21 @@ namespace Clinica.Negocio
         {
             datos.Eliminar(id);
         }
+
+     
+        public Paciente ObtenerPorId(int id)
+        {
+            return datos.ObtenerPorId(id);
+        }
+
+        public void Modificar(Paciente paciente)
+        {
+
+            datos.Modificar(paciente);
+        }
+        public void CambioEstado(int id, bool estado)
+        {
+            datos.CambioEstado(id, estado);
+        }
     }
 }

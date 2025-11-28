@@ -68,5 +68,7 @@ namespace Clinica.Negocio
         {
             return datos.ObtenerPorId(turnoId);
         }
+        public int ContarTurnosHoy() => datos.ContarTurnosHoy();
+        public List<TurnoResumen> ListarUltimosResumen(int top) => datos.ListarUltimosResumen(top);
     }
 }

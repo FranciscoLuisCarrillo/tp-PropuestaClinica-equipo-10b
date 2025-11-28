@@ -64,5 +64,14 @@ namespace Clinica.Negocio
             return datos.Login(email, pass);
         }
 
+
+        public void ModificarPasswordPorEmail(string email, string nuevaPassword)
+        {
+            if (string.IsNullOrWhiteSpace(email)) throw new ArgumentException("Email inválido.");
+            if (string.IsNullOrWhiteSpace(nuevaPassword)) throw new ArgumentException("La nueva contraseña no puede estar vacía.");
+
+            datos.ModificarPasswordEmail(email, nuevaPassword);
+        }
+
     }
 }

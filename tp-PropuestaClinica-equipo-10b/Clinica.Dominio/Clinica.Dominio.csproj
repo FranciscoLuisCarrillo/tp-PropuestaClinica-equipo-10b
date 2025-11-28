@@ -51,6 +51,7 @@
     <Compile Include="Recepcionista.cs" />
     <Compile Include="Turno.cs" />
     <Compile Include="TurnoAgendaMedico.cs" />
+    <Compile Include="TurnoResumen.cs" />
     <Compile Include="TurnoTrabajo.cs" />
     <Compile Include="Usuario.cs" />
   </ItemGroup>

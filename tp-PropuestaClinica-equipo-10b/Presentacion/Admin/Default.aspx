@@ -12,37 +12,47 @@
   <main class="container my-4" role="main">
     <h1 class="h3 mb-4 text-center">Panel de administración</h1>
 
- 
-    <section aria-labelledby="metricas-titulo">
-      <h2 id="metricas-titulo" class="visually-hidden">Métricas principales</h2>
-      <div class="row g-3 mb-4">
-        <div class="col-md-4">
-          <div class="card text-center shadow-sm" aria-label="Pacientes registrados">
-            <div class="card-body">
-              <h3 class="text-muted fs-6">Pacientes</h3>
-              <p class="display-6 fw-semibold mb-0"><asp:Label ID="lblPacientes" runat="server" Text="0" /></p>
+ <section aria-labelledby="metricas-titulo">
+  <h2 id="metricas-titulo" class="visually-hidden">Métricas principales</h2>
+  <div class="row g-3 mb-4">
+    <div class="col-md-4">
+      <a href="~/Admin/Pacientes.aspx" runat="server" class="text-decoration-none">
+        <div class="card text-center shadow-sm border-0 h-100">
+          <div class="card-body">
+            <div class="text-muted fs-6 d-flex justify-content-center align-items-center gap-2">
+              <i class="bi bi-people"></i><span>Pacientes</span>
             </div>
+            <p class="display-6 fw-semibold mb-0"><asp:Label ID="lblPacientes" runat="server" Text="0" /></p>
           </div>
         </div>
-        <div class="col-md-4">
-          <div class="card text-center shadow-sm" aria-label="Médicos activos">
-            <div class="card-body">
-              <h3 class="text-muted fs-6">Médicos</h3>
-              <p class="display-6 fw-semibold mb-0"><asp:Label ID="lblMedicos" runat="server" Text="0" /></p>
-            </div>
-          </div>
-        </div>
-        <div class="col-md-4">
-          <div class="card text-center shadow-sm" aria-label="Turnos de hoy">
-            <div class="card-body">
-              <h3 class="text-muted fs-6">Turnos de hoy</h3>
-              <p class="display-6 fw-semibold mb-0"><asp:Label ID="lblTurnosHoy" runat="server" Text="0" /></p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
+      </a>
+    </div>
 
+    <div class="col-md-4">
+      <a href="~/Admin/Medicos.aspx" runat="server" class="text-decoration-none">
+        <div class="card text-center shadow-sm border-0 h-100">
+          <div class="card-body">
+            <div class="text-muted fs-6 d-flex justify-content-center align-items-center gap-2">
+              <i class="bi bi-person-badge"></i><span>Médicos</span>
+            </div>
+            <p class="display-6 fw-semibold mb-0"><asp:Label ID="lblMedicos" runat="server" Text="0" /></p>
+          </div>
+        </div>
+      </a>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card text-center shadow-sm border-0 h-100">
+          <div class="card-body">
+            <div class="text-muted fs-6 d-flex justify-content-center align-items-center gap-2">
+              <i class="bi bi-calendar-check"></i><span>Turnos de hoy</span>
+            </div>
+            <p class="display-6 fw-semibold mb-0"><asp:Label ID="lblTurnosHoy" runat="server" Text="0" /></p>
+          </div>
+        </div>
+    </div>
+  </div>
+</section>
    
     <section aria-labelledby="accesos-titulo">
       <h2 id="accesos-titulo" class="visually-hidden">Accesos rápidos</h2>

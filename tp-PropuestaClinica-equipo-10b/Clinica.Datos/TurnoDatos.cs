@@ -208,5 +208,80 @@ namespace Clinica.Datos
             }
             finally { datos.CerrarConexion(); }
         }
+        public int ContarTurnosHoy()
+        {
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"
+                    SELECT COUNT(*)
+                    FROM Turnos
+                    WHERE FechaHoraInicio >= @Hoy
+                      AND FechaHoraInicio < @Maniana;");
+                var hoy = DateTime.Today;
+                datos.SetearParametro("@Hoy", hoy);
+                datos.SetearParametro("@Maniana", hoy.AddDays(1));
+
+                object r = datos.EjecutarEscalar();
+                return Convert.ToInt32(r);
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        
+        public List<TurnoResumen> ListarUltimosResumen(int top)
+        {
+            var lista = new List<TurnoResumen>();
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"
+                    SELECT TOP (@TopN)
+                        t.TurnoId                                      AS NumeroTurno,
+                        CAST(t.FechaHoraInicio AS date)                AS Fecha,
+                        FORMAT(t.FechaHoraInicio, 'HH:mm')             AS Hora,
+                        CONCAT(p.Apellido, ', ', p.Nombre)            AS Paciente,
+                        CONCAT(m.Apellido, ', ', m.Nombre)            AS Medico,
+                        e.Nombre                                       AS Especialidad,
+                        t.Estado                                       AS Estado
+                    FROM Turnos t
+                    INNER JOIN Pacientes p       ON p.PacienteId      = t.PacienteId
+                    INNER JOIN Medicos m         ON m.MedicoId        = t.MedicoId
+                    INNER JOIN Especialidades e  ON e.EspecialidadId  = t.EspecialidadId
+                    ORDER BY t.FechaHoraInicio DESC;");
+                datos.SetearParametro("@TopN", top);
+                datos.EjecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    int estado = (int)datos.Lector["Estado"];
+                    lista.Add(new TurnoResumen
+                    {
+                        NumeroTurno = (int)datos.Lector["NumeroTurno"],
+                        Fecha = (DateTime)datos.Lector["Fecha"],
+                        Hora = (string)datos.Lector["Hora"],
+                        Paciente = (string)datos.Lector["Paciente"],
+                        Medico = (string)datos.Lector["Medico"],
+                        Especialidad = (string)datos.Lector["Especialidad"],
+                        Estado = EstadoTurnoToTexto((EstadoTurno)estado)
+                    });
+                }
+                return lista;
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        private static string EstadoTurnoToTexto(EstadoTurno e)
+        {
+            switch (e)
+            {
+                case EstadoTurno.Nuevo: return "Nuevo";
+                case EstadoTurno.Reprogramado: return "Reprogramado";
+                case EstadoTurno.Cancelado: return "Cancelado";
+                case EstadoTurno.NoAsistio: return "No asistió";
+                case EstadoTurno.Cerrado: return "Cerrado";
+                default: return "Desconocido";
+            }
+        }
     }
 }

@@ -13,35 +13,35 @@ namespace Clinica.Datos
 
             try
             {
-                // Agregamos Activo a la consulta y filtramos solo los activos (Activo = 1)
-                datos.SetearConsulta("SELECT PacienteId, Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial, Activo FROM Pacientes WHERE Activo = 1");
+              
+                datos.SetearConsulta("SELECT PacienteId, Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial, Activo FROM Pacientes");
                 datos.EjecutarLectura();
 
                 while (datos.Lector.Read())
                 {
                     Paciente aux = new Paciente();
                     aux.PacienteId = (int)datos.Lector["PacienteId"];
-                    aux.Nombre = (string)datos.Lector["Nombre"];
-                    aux.Apellido = (string)datos.Lector["Apellido"];
-                    aux.Dni = (string)datos.Lector["DNI"];
-                    aux.FechaNacimiento = (DateTime)datos.Lector["FechaNacimiento"];
-                    aux.Email = (string)datos.Lector["Email"];
+                    aux.Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : (string)datos.Lector["Nombre"];
+                    aux.Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : (string)datos.Lector["Apellido"];
+                    aux.Dni = datos.Lector["DNI"] == DBNull.Value ? "" : (string)datos.Lector["DNI"];
+                    aux.Email = datos.Lector["Email"] == DBNull.Value ? "" : (string)datos.Lector["Email"];
 
-                    if (!(datos.Lector["Telefono"] is DBNull))
-                        aux.Telefono = (string)datos.Lector["Telefono"];
-
-                    if (!(datos.Lector["Domicilio"] is DBNull))
-                        aux.Domicilio = (string)datos.Lector["Domicilio"];
-
-                    if (!(datos.Lector["ObraSocial"] is DBNull))
-                        aux.ObraSocial = (string)datos.Lector["ObraSocial"];
+                    aux.Telefono = datos.Lector["Telefono"] == DBNull.Value ? "" : (string)datos.Lector["Telefono"];
+                    aux.Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : (string)datos.Lector["Domicilio"];
+                    aux.ObraSocial = datos.Lector["ObraSocial"] == DBNull.Value ? "" : (string)datos.Lector["ObraSocial"];
 
                     // Leemos el estado
-                    aux.Activo = (bool)datos.Lector["Activo"];
+                    if (datos.Lector["Activo"] != DBNull.Value)
+                        aux.Activo = (bool)datos.Lector["Activo"];
+                    else
+                        aux.Activo = true; 
 
                     lista.Add(aux);
                 }
                 return lista;
+            }catch (Exception ex)
+            {
+                throw ex;
             }
             finally
             {
@@ -121,5 +121,78 @@ namespace Clinica.Datos
             }
             finally { datos.CerrarConexion(); }
         }
+        public void Modificar(Paciente paciente)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"UPDATE Pacientes 
+                               SET Nombre=@Nombre, Apellido=@Apellido, DNI=@DNI, 
+                                   FechaNacimiento=@Fecha, Telefono=@Tel, Domicilio=@Dom
+                               WHERE PacienteId=@Id");
+
+                datos.SetearParametro("@Nombre", paciente.Nombre);
+                datos.SetearParametro("@Apellido", paciente.Apellido);
+                datos.SetearParametro("@DNI", paciente.Dni);
+                datos.SetearParametro("@Fecha", paciente.FechaNacimiento);
+                datos.SetearParametro("@Tel", paciente.Telefono);
+                datos.SetearParametro("@Dom", paciente.Domicilio);
+                datos.SetearParametro("@Id", paciente.PacienteId);
+
+                datos.EjecutarAccion();
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+        public void CambioEstado(int id, bool estado)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("UPDATE Pacientes SET Activo = @Estado WHERE PacienteId = @Id");
+                datos.SetearParametro("@Estado", estado);
+                datos.SetearParametro("@Id", id);
+                datos.EjecutarAccion();
+
+            }finally
+            {
+                datos.CerrarConexion();
+            }
+        }
+        public Paciente ObtenerPorId(int id)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("SELECT * FROM Pacientes WHERE PacienteId = @Id");
+                datos.SetearParametro("@Id", id);
+                datos.EjecutarLectura();
+
+                if (datos.Lector.Read())
+                {
+                    Paciente aux = new Paciente();
+                    aux.PacienteId = (int)datos.Lector["PacienteId"];
+                    aux.Nombre = (string)datos.Lector["Nombre"];
+                    aux.Apellido = (string)datos.Lector["Apellido"];
+                    aux.Email = (string)datos.Lector["Email"];
+
+                    // Validamos nulos porque es un registro incompleto
+                    if (!(datos.Lector["DNI"] is DBNull)) aux.Dni = (string)datos.Lector["DNI"];
+                    if (!(datos.Lector["Telefono"] is DBNull)) aux.Telefono = (string)datos.Lector["Telefono"];
+                    if (!(datos.Lector["FechaNacimiento"] is DBNull)) aux.FechaNacimiento = (DateTime)datos.Lector["FechaNacimiento"];
+                    if (!(datos.Lector["Domicilio"] is DBNull)) aux.Domicilio = (string)datos.Lector["Domicilio"];
+
+                    return aux;
+                }
+                return null;
+            }
+            finally
+            {
+                datos.CerrarConexion();
+            }
+        }
     }
 }
+   

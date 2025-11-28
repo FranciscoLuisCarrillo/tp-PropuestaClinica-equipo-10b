@@ -47,3 +47,21 @@ function ocultarFormularioMedico() {
     if (formPanel) formPanel.style.display = 'none';
     if (listPanel) listPanel.style.display = 'block';
 }
+
+window.abrirModalPassEmail = function (email) {
+    var hidEmail = document.getElementById('hfEmailDestino');
+    var lbl = document.getElementById('lblEmailModal');
+    var txt = document.getElementById('txtNuevaPass');
+    var modalEl = document.getElementById('modalPassword');
+
+    if (hidEmail) hidEmail.value = email || '';
+    if (lbl) lbl.textContent = email || '';
+    if (txt) txt.value = '';
+
+    if (modalEl && typeof bootstrap !== 'undefined') {
+        var m = new bootstrap.Modal(modalEl);
+        m.show();
+    } else {
+        console.error('Modal/Bootstrap no disponible.');
+    }
+};

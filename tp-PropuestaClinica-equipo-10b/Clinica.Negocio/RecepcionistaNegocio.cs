@@ -25,7 +25,7 @@ namespace Clinica.Negocio
 
         private void ValidarDatosTelefono(Recepcionista obj)
         {
-            // ... (Tus validaciones anteriores de Nombre, Apellido, Email) ...
+          
 
             if (obj == null) throw new ArgumentNullException("El objeto es nulo.");
             if (string.IsNullOrWhiteSpace(obj.Email)) throw new ArgumentException("El Email es obligatorio.");
@@ -96,7 +96,7 @@ namespace Clinica.Negocio
         {
             if (id <= 0) throw new ArgumentException("El ID debe ser mayor a 0.");
 
-            // Aquí podrías validar si la recepcionista tiene turnos o tareas pendientes si fuera necesario
+          
 
             datos.EliminarLogico(id);
         }

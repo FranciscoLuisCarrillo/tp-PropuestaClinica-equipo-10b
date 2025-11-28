@@ -120,9 +120,7 @@ namespace Clinica.Datos
             }
             catch (Exception ex)
             {
-                // Nota: Esto podría fallar si un Médico tiene este TurnoTrabajoId asignado
-                // (por una restricción de Clave Foránea).
-                // La capa de Negocio debería manejar esa validación antes de llamar a Eliminar.
+                
                 throw ex;
             }
             finally

@@ -142,6 +142,25 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+        public void ModificarPasswordEmail(string email, string nuevaPass)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"UPDATE Usuarios 
+                               SET Pass = @Pass 
+                               WHERE Email COLLATE Latin1_General_CI_AI = @Email");
+                datos.SetearParametro("@Pass", nuevaPass);
+                datos.SetearParametro("@Email", email);
+                int afectados = datos.EjecutarAccion();
+
+                if (afectados == 0)
+                    throw new Exception("No se encontró un usuario con ese email.");
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        
 
     }
 }

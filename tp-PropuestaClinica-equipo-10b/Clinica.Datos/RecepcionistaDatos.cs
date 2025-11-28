@@ -9,7 +9,7 @@ namespace Clinica.Datos
 {
     public class RecepcionistaDatos
     {
-        // ... (Tu método Listar existente se mantiene igual) ...
+       
         public List<Recepcionista> Listar()
         {
             List<Recepcionista> lista = new List<Recepcionista>();
@@ -70,7 +70,7 @@ namespace Clinica.Datos
             }
         }
 
-        // ... (Tu método Agregar existente se mantiene igual) ...
+     
         public int Agregar(Recepcionista nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
