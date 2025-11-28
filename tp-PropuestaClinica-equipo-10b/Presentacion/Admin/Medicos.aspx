@@ -8,7 +8,6 @@
 <asp:Content ID="Main" ContentPlaceHolderID="MainContent" runat="server">
   <main class="container my-4" role="main" aria-labelledby="titulo-medicos">
 
-    <!-- ENCABEZADO -->
     <div class="d-flex justify-content-between align-items-center mb-4">
       <div>
         <h1 id="titulo-medicos" class="h3 mb-1">Médicos</h1>
@@ -22,7 +21,6 @@
       </button>
     </div>
 
-    <!-- LISTADO -->
     <asp:Panel ID="pnlListadoMedicos" runat="server" ClientIDMode="Static" CssClass="card shadow-sm mb-4">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h2 id="titulo-listado-medicos" class="h6 mb-0">Listado de médicos</h2>
@@ -54,7 +52,6 @@
       </div>
     </asp:Panel>
 
-    <!-- FORMULARIO ALTA -->
     <asp:Panel ID="pnlNuevoMedico" ClientIDMode="Static" runat="server" CssClass="card shadow-sm mb-4" Style="display:none;">
       <div class="card-header d-flex justify-content-between align-items-center">
         <h2 id="titulo-nuevo-medico" class="h6 mb-0">Nuevo médico</h2>
@@ -65,7 +62,6 @@
         <asp:ValidationSummary ID="ValidarMedico" runat="server" CssClass="alert alert-danger mb-3" EnableClientScript="true" />
 
         <div class="row g-4">
-          <!-- Columna izquierda -->
           <div class="col-md-6">
             <div class="mb-3">
               <label for="txtNombre" class="form-label">Nombre/es</label>
@@ -110,7 +106,6 @@
             </div>
           </div>
 
-          <!-- Columna derecha -->
           <div class="col-md-6">
             <div class="mb-3">
               <label for="ddlTurnoTrabajo" class="form-label">Turno de trabajo</label>
@@ -149,4 +144,17 @@
       <a href="Default.aspx" class="btn btn-secondary">Volver al panel</a>
     </div>
   </main>
+
+  <script type="text/javascript">
+      function ocultarFormularioMedico() {
+          document.getElementById('pnlNuevoMedico').style.display = 'none';
+          document.getElementById('pnlListadoMedicos').style.display = 'block';
+      }
+      
+      // Esta funcion se llama desde el CodeBehind en caso de error para mantener visible el formulario
+      function mostrarFormularioMedico() {
+          document.getElementById('pnlNuevoMedico').style.display = 'block';
+          document.getElementById('pnlListadoMedicos').style.display = 'none';
+      }
+  </script>
 </asp:Content>

@@ -72,6 +72,7 @@ namespace Presentacion.Admin
         {
             if (!Page.IsValid)
             {
+                ClientScript.RegisterStartupScript(this.GetType(), "ShowPanel", "mostrarFormularioMedico();", true);
                 return;
             }
 
@@ -134,13 +135,14 @@ namespace Presentacion.Admin
 
                 usuarioNegocio.Agregar(usuarioMedico);
 
-                ValidarMedico.HeaderText = "Médico y Usuario creados correctamente.";
+                ClientScript.RegisterStartupScript(this.GetType(), "alertSuccess", "alert('Médico y Usuario creados correctamente.');", true);
                 CargarMedicos();
                 LimpiarFormulario();
             }
             catch (Exception ex)
             {
-                ValidarMedico.HeaderText = ex.Message;
+                string mensajeLimpio = ex.Message.Replace("'", "").Replace("\n", "").Replace("\r", "");
+                ClientScript.RegisterStartupScript(this.GetType(), "alertError", $"alert('{mensajeLimpio}'); mostrarFormularioMedico();", true);
             }
         }
 
