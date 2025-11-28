@@ -111,24 +111,31 @@ namespace Clinica.Datos
             }
         }
 
-        public bool Login(Usuario usuario)
+        public Usuario Login(string email, string password)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("SELECT UsuarioId, Perfil, Activo FROM Usuarios WHERE Email = @Email AND Pass = @Pass");
-                datos.SetearParametro("@Email", usuario.Email);
-                datos.SetearParametro("@Pass", usuario.Password);
+                datos.SetearConsulta("SELECT UsuarioId, Email, Pass, Perfil, Activo FROM Usuarios WHERE Email = @Email AND Pass = @Pass");
+                datos.SetearParametro("@Email", email);
+                datos.SetearParametro("@Pass", password);
                 datos.EjecutarLectura();
 
                 if (datos.Lector.Read())
                 {
+                    Usuario usuario = new Usuario();
                     usuario.IdUsuario = (int)datos.Lector["UsuarioId"];
+                    usuario.Email = (string)datos.Lector["Email"];
+                    usuario.Password = (string)datos.Lector["Pass"];
                     usuario.Perfil = (Perfil)(int)datos.Lector["Perfil"];
                     usuario.Activo = (bool)datos.Lector["Activo"];
-                    return true;
+                    return usuario;
                 }
-                return false;
+                return null;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
             }
             finally
             {
@@ -136,4 +143,4 @@ namespace Clinica.Datos
             }
         }
     }
-}
+ }

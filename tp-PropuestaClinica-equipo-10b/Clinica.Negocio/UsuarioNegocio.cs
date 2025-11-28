@@ -47,9 +47,9 @@ namespace Clinica.Negocio
             datos.ModificarPassword(email, nuevaPass);
         }
 
-        public bool Login(Usuario usuario)
+        public Usuario Login(string email, string password)
         {
-            return datos.Login(usuario);
+            return datos.Login(email, password);
         }
     }
 }
