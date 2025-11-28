@@ -3,6 +3,7 @@ using Clinica.Dominio;
 using Clinica.Negocio;
 using System;
 using System.Collections.Generic;
+using System.Web.UI;
 using System.Web.UI.WebControls;
 
 namespace Presentacion.Admin
@@ -51,7 +52,6 @@ namespace Presentacion.Admin
             CargarPacientes();
         }
 
-
         protected void btnGuardarPass_Click(object sender, EventArgs e)
         {
             try
@@ -71,11 +71,10 @@ namespace Presentacion.Admin
                 }
 
                 var un = new UsuarioNegocio();
-                un.ModificarPasswordPorEmail(email, nuevaPass); 
+                un.ModificarPasswordPorEmail(email, nuevaPass);
 
                 txtNuevaPass.Text = string.Empty;
 
-              
                 ClientScript.RegisterStartupScript(
                     GetType(), "pwdok",
                     "(() => { var el = document.getElementById('modalPassword'); if (el){ var m = bootstrap.Modal.getInstance(el) || new bootstrap.Modal(el); m.hide(); } alert('Contraseña actualizada correctamente.'); })();",
@@ -87,6 +86,5 @@ namespace Presentacion.Admin
                 ClientScript.RegisterStartupScript(GetType(), "err", $"alert('Error al cambiar clave: {ex.Message}');", true);
             }
         }
-
     }
 }

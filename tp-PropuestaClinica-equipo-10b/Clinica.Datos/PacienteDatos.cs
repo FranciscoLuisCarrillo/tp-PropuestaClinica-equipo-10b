@@ -13,7 +13,6 @@ namespace Clinica.Datos
 
             try
             {
-              
                 datos.SetearConsulta("SELECT PacienteId, Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial, Activo FROM Pacientes");
                 datos.EjecutarLectura();
 
@@ -30,16 +29,16 @@ namespace Clinica.Datos
                     aux.Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : (string)datos.Lector["Domicilio"];
                     aux.ObraSocial = datos.Lector["ObraSocial"] == DBNull.Value ? "" : (string)datos.Lector["ObraSocial"];
 
-                    // Leemos el estado
                     if (datos.Lector["Activo"] != DBNull.Value)
                         aux.Activo = (bool)datos.Lector["Activo"];
                     else
-                        aux.Activo = true; 
+                        aux.Activo = true;
 
                     lista.Add(aux);
                 }
                 return lista;
-            }catch (Exception ex)
+            }
+            catch (Exception ex)
             {
                 throw ex;
             }
@@ -80,7 +79,6 @@ namespace Clinica.Datos
             }
         }
 
-        // NUEVO MÉTODO ELIMINAR
         public void Eliminar(int id)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -121,6 +119,7 @@ namespace Clinica.Datos
             }
             finally { datos.CerrarConexion(); }
         }
+
         public void Modificar(Paciente paciente)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -146,6 +145,7 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+
         public void CambioEstado(int id, bool estado)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -155,12 +155,13 @@ namespace Clinica.Datos
                 datos.SetearParametro("@Estado", estado);
                 datos.SetearParametro("@Id", id);
                 datos.EjecutarAccion();
-
-            }finally
+            }
+            finally
             {
                 datos.CerrarConexion();
             }
         }
+
         public Paciente ObtenerPorId(int id)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -178,7 +179,6 @@ namespace Clinica.Datos
                     aux.Apellido = (string)datos.Lector["Apellido"];
                     aux.Email = (string)datos.Lector["Email"];
 
-                    // Validamos nulos porque es un registro incompleto
                     if (!(datos.Lector["DNI"] is DBNull)) aux.Dni = (string)datos.Lector["DNI"];
                     if (!(datos.Lector["Telefono"] is DBNull)) aux.Telefono = (string)datos.Lector["Telefono"];
                     if (!(datos.Lector["FechaNacimiento"] is DBNull)) aux.FechaNacimiento = (DateTime)datos.Lector["FechaNacimiento"];
@@ -195,4 +195,3 @@ namespace Clinica.Datos
         }
     }
 }
-   
