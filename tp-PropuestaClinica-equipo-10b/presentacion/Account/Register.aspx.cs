@@ -11,32 +11,35 @@ namespace Presentacion.Account
 {
     public partial class Register : System.Web.UI.Page
     {
-      
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
 
             }
-
         }
 
         protected void btnCrearCuenta_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid)
                 return;
+
             PacienteNegocio pacienteNegocio = new PacienteNegocio();
             Paciente paciente = new Paciente();
 
-            
-            
             try
             {
                 paciente.Nombre = txtNombre.Text.Trim();
                 paciente.Apellido = txtApellido.Text.Trim();
                 paciente.Email = txtEmail.Text.Trim();
                 paciente.Activo = true;
+
+                // --- CORRECCIÓN: Agregar campos obligatorios para SQL ---
+                // Como no los pides en el formulario, asignamos valores por defecto
+                // para que la base de datos acepte el registro.
+                paciente.Dni = "S/D";
+                paciente.FechaNacimiento = DateTime.Now;
+                // -------------------------------------------------------
 
                 int idPacienteGenerado = pacienteNegocio.Agregar(paciente);
 
@@ -48,22 +51,25 @@ namespace Presentacion.Account
                 nuevo.Rol = "Paciente";
                 nuevo.Activo = true;
 
-                nuevo.IdPaciente = idPacienteGenerado;
-                usuarioNegocio.Agregar(nuevo);
+                // Copiamos datos personales al usuario también (si tu tabla lo requiere)
+                nuevo.Nombre = txtNombre.Text.Trim();
+                nuevo.Apellido = txtApellido.Text.Trim();
 
+                nuevo.IdPaciente = idPacienteGenerado;
+
+                usuarioNegocio.Agregar(nuevo);
 
                 Session["usuario"] = nuevo;
 
-                Response.Redirect("~/Pacientes/Default.aspx");
+                Response.Redirect("~/Pacientes/Default.aspx", false);
             }
             catch (Exception ex)
             {
-                valSummary.HeaderText = ex.Message;
+                // Asegúrate de tener un control con ID="valSummary" en tu HTML
+                // o cambia esto por un Label de error.
+                if (valSummary != null)
+                    valSummary.HeaderText = ex.Message;
             }
         }
     }
-    
 }
-
-
-
