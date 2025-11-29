@@ -45,5 +45,9 @@ namespace Clinica.Negocio
         {
             datos.CambioEstado(id, estado);
         }
+        public bool ExistePorEmail(string email)
+        {
+            return datos.ExistePorEmail(email);
+        }
     }
 }

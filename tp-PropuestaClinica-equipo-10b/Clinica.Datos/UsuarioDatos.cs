@@ -21,7 +21,7 @@ namespace Clinica.Datos
                     Usuario aux = new Usuario();
                     aux.IdUsuario = (int)datos.Lector["UsuarioId"];
                     aux.Email = (string)datos.Lector["Email"];
-                    aux.Password = (string)datos.Lector["Pass"];
+                    aux.Pass = (string)datos.Lector["Pass"];
                     aux.Perfil = (Perfil)(int)datos.Lector["Perfil"];
                     aux.Activo = (bool)datos.Lector["Activo"];
 
@@ -37,12 +37,7 @@ namespace Clinica.Datos
                         aux.Apellido = (string)datos.Lector["Apellido"];
                     if (!(datos.Lector["Rol"] is DBNull))
                         aux.Rol = (string)datos.Lector["Rol"];
-                    var aux = new Usuario
-                    {
-                        IdUsuario = (int)datos.Lector["UsuarioId"],
-                        Email = (string)datos.Lector["Email"],
-                        Perfil = (Perfil)(int)datos.Lector["Perfil"]
-                    };
+                   
                    
 
                     lista.Add(aux);
@@ -94,7 +89,7 @@ namespace Clinica.Datos
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("SELECT 1 FROM Usuarios WHERE Email = @Email");
+                datos.SetearConsulta("SELECT 1 FROM Usuarios WHERE LOWER(Email) = LOWER(@Email)");
                 datos.SetearParametro("@Email", email);
                 datos.EjecutarLectura();
                 return datos.Lector.Read();

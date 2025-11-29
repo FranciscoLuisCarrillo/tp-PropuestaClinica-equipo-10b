@@ -54,5 +54,9 @@ namespace Clinica.Negocio
         {
             return datos.Login(email, password);
         }
+        public bool ExistePorEmail(string email)
+        {
+            return datos.ExistePorEmail(email);
+        }
     }
 }

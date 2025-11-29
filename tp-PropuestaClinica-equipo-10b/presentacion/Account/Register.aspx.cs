@@ -21,53 +21,52 @@ namespace Presentacion.Account
 
         protected void BtnCrearCuenta_Click(object sender, EventArgs e)
         {
-            if (!Page.IsValid)
+            if (!Page.IsValid) return;
+
+            var email = txtEmail.Text.Trim();
+
+            var pacienteNegocio = new PacienteNegocio();
+            var usuarioNegocio = new UsuarioNegocio();
+
+            // Evitá mails duplicados en ambos lados
+            if (usuarioNegocio.ExistePorEmail(email) || pacienteNegocio.ExistePorEmail(email))
+            {
+                valSummary.HeaderText = "El email ya está registrado.";
                 return;
-
-
-            PacienteNegocio pacienteNegocio = new PacienteNegocio();
-            
-
-            try
-            {
-                var paciente = new Paciente
-                {
-                    Nombre = txtNombre.Text.Trim(),
-                    Apellido = txtApellido.Text.Trim(),
-                    Email = txtEmail.Text.Trim(),
-                    Dni = null,                
-                    FechaNacimiento = DateTime.MinValue,
-                    Telefono = null,
-                    Domicilio = null,
-                    ObraSocial = null,
-                    Activo = true
-                };
-
-
-                int idPacienteGenerado = pacienteNegocio.Agregar(paciente);
-
-                UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
-                var usuario = new Usuario
-                {
-                    Email = txtEmail.Text.Trim(),
-                    Pass = txtPass.Text.Trim(),
-                    Perfil = Perfil.Paciente,
-                    Rol = "Paciente",
-                    Activo = true,
-                    IdPaciente = idPacienteGenerado
-                };
-                Session["usuario"] = usuario;
-
-                Response.Redirect("~/Pacientes/Default.aspx", false);
             }
-            catch (Exception ex)
+
+          
+            var paciente = new Paciente
             {
-                // Asegúrate de tener un control con ID="valSummary" en tu HTML
-                // o cambia esto por un Label de error.
-                if (valSummary != null)
-                    valSummary.HeaderText = ex.Message;
-            }
+                Nombre = txtNombre.Text.Trim(),
+                Apellido = txtApellido.Text.Trim(),
+                Email = email,
+                Dni = null,
+                FechaNacimiento = DateTime.MinValue,
+                Telefono = null,
+                Domicilio = null,
+                ObraSocial = null,
+                Activo = true
+            };
+
+            int idPacienteGenerado = pacienteNegocio.Agregar(paciente);
+
+           
+            var usuario = new Usuario
+            {
+                Email = email,
+                Pass = txtPass.Text.Trim(),   
+                Perfil = Perfil.Paciente,
+                Rol = "Paciente",
+                Activo = true,
+                IdPaciente = idPacienteGenerado
+            };
+            usuarioNegocio.Agregar(usuario);     
+
+            Session["usuario"] = usuario;
+            Response.Redirect("~/Pacientes/Default.aspx", false);
         }
+
 
     }
 

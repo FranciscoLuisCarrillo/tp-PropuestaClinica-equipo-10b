@@ -33,22 +33,7 @@ namespace Clinica.Datos
                         Activo = datos.Lector["Activo"] == DBNull.Value ? true : (bool)datos.Lector["Activo"]
                     };
 
-                    Paciente aux = new Paciente();
-                    aux.PacienteId = (int)datos.Lector["PacienteId"];
-                    aux.Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : (string)datos.Lector["Nombre"];
-                    aux.Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : (string)datos.Lector["Apellido"];
-                    aux.Dni = datos.Lector["DNI"] == DBNull.Value ? "" : (string)datos.Lector["DNI"];
-                    aux.Email = datos.Lector["Email"] == DBNull.Value ? "" : (string)datos.Lector["Email"];
-
-                    aux.Telefono = datos.Lector["Telefono"] == DBNull.Value ? "" : (string)datos.Lector["Telefono"];
-                    aux.Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : (string)datos.Lector["Domicilio"];
-                    aux.ObraSocial = datos.Lector["ObraSocial"] == DBNull.Value ? "" : (string)datos.Lector["ObraSocial"];
-
-                    if (datos.Lector["Activo"] != DBNull.Value)
-                        aux.Activo = (bool)datos.Lector["Activo"];
-                    else
-                        aux.Activo = true;
-
+                    
 
                     lista.Add(aux);
                 }
@@ -143,7 +128,7 @@ namespace Clinica.Datos
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("SELECT 1 FROM Pacientes WHERE Email = @Email");
+                datos.SetearConsulta("SELECT 1 FROM Pacientes WHERE LOWER(Email) = LOWER(@Email)");
                 datos.SetearParametro("@Email", email);
                 datos.EjecutarLectura();
                 return datos.Lector.Read();
