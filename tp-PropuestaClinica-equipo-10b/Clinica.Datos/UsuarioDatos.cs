@@ -1,28 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Clinica.Dominio;
 
 namespace Clinica.Datos
 {
     public class UsuarioDatos
     {
-        /// <summary>
-        /// Lista todos los usuarios (Admins, Recepcionistas, Médicos)
-        /// </summary>
         public List<Usuario> Listar()
         {
             List<Usuario> lista = new List<Usuario>();
             AccesoDatos datos = new AccesoDatos();
+
             try
             {
-                datos.SetearConsulta("SELECT UsuarioId, Email, Perfil FROM Usuarios");
+                datos.SetearConsulta("SELECT UsuarioId, Email, Pass, Perfil, Activo, IdRecepcionista, IdMedico, IdPaciente, Nombre, Apellido, Rol FROM Usuarios");
                 datos.EjecutarLectura();
 
                 while (datos.Lector.Read())
                 {
+                    Usuario aux = new Usuario();
+                    aux.IdUsuario = (int)datos.Lector["UsuarioId"];
+                    aux.Email = (string)datos.Lector["Email"];
+                    aux.Password = (string)datos.Lector["Pass"];
+                    aux.Perfil = (Perfil)(int)datos.Lector["Perfil"];
+                    aux.Activo = (bool)datos.Lector["Activo"];
+
+                    if (!(datos.Lector["IdRecepcionista"] is DBNull))
+                        aux.IdRecepcionista = (int)datos.Lector["IdRecepcionista"];
+                    if (!(datos.Lector["IdMedico"] is DBNull))
+                        aux.IdMedico = (int)datos.Lector["IdMedico"];
+                    if (!(datos.Lector["IdPaciente"] is DBNull))
+                        aux.IdPaciente = (int)datos.Lector["IdPaciente"];
+                    if (!(datos.Lector["Nombre"] is DBNull))
+                        aux.Nombre = (string)datos.Lector["Nombre"];
+                    if (!(datos.Lector["Apellido"] is DBNull))
+                        aux.Apellido = (string)datos.Lector["Apellido"];
+                    if (!(datos.Lector["Rol"] is DBNull))
+                        aux.Rol = (string)datos.Lector["Rol"];
                     var aux = new Usuario
                     {
                         IdUsuario = (int)datos.Lector["UsuarioId"],
@@ -35,72 +49,68 @@ namespace Clinica.Datos
                 }
                 return lista;
             }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
             finally
             {
                 datos.CerrarConexion();
             }
         }
 
-        /// <summary>
-        /// Agrega un nuevo usuario (Recepcionista, Admin, etc.)
-        /// </summary>
         public void Agregar(Usuario nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
                 string consulta = @"
-            INSERT INTO Usuarios 
-            (Email, Pass, Perfil, Activo, IdRecepcionista, IdMedico, IdPaciente, Nombre, Apellido, Rol) 
-            VALUES 
-            (@Email, @Pass, @Perfil, @Activo, @IdRecepcionista, @IdMedico, @IdPaciente, @Nombre, @Apellido, @Rol)";
+                    INSERT INTO Usuarios 
+                    (Email, Pass, Perfil, Activo, IdRecepcionista, IdMedico, IdPaciente, Nombre, Apellido, Rol) 
+                    VALUES 
+                    (@Email, @Pass, @Perfil, @Activo, @IdRecepcionista, @IdMedico, @IdPaciente, @Nombre, @Apellido, @Rol)";
 
                 datos.SetearConsulta(consulta);
 
-                // Parámetros Básicos
                 datos.SetearParametro("@Email", nuevo.Email);
                 datos.SetearParametro("@Pass", nuevo.Pass); 
                 datos.SetearParametro("@Perfil", (int)nuevo.Perfil);
                 datos.SetearParametro("@Activo", nuevo.Activo);
 
-                // Parámetros de Relación (Manejo de Nulos)
                 datos.SetearParametro("@IdRecepcionista", (object)nuevo.IdRecepcionista ?? DBNull.Value);
                 datos.SetearParametro("@IdMedico", (object)nuevo.IdMedico ?? DBNull.Value);
                 datos.SetearParametro("@IdPaciente", (object)nuevo.IdPaciente ?? DBNull.Value);
 
-                // Parámetros Nuevos
                 datos.SetearParametro("@Nombre", (object)nuevo.Nombre ?? DBNull.Value);
                 datos.SetearParametro("@Apellido", (object)nuevo.Apellido ?? DBNull.Value);
                 datos.SetearParametro("@Rol", (object)nuevo.Rol ?? DBNull.Value);
 
                 datos.EjecutarAccion();
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al agregar usuario: " + ex.Message);
-            }
             finally
             {
                 datos.CerrarConexion();
             }
         }
 
-        /// <summary>
-        /// Verifica si un email ya existe en la base de datos de Usuarios.
-        /// </summary>
         public bool ExistePorEmail(string email)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("SELECT 1 FROM Usuarios WHERE Email COLLATE Latin1_General_CI_AI = @Email");
+                datos.SetearConsulta("SELECT 1 FROM Usuarios WHERE Email = @Email");
                 datos.SetearParametro("@Email", email);
                 datos.EjecutarLectura();
                 return datos.Lector.Read();
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        public void ModificarPassword(string email, string nuevaPass)
+        {
+            AccesoDatos datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta("UPDATE Usuarios SET Pass = @Pass WHERE Email = @Email");
+                datos.SetearParametro("@Pass", nuevaPass);
+                datos.SetearParametro("@Email", email);
+                datos.EjecutarAccion();
             }
             finally
             {
@@ -108,17 +118,16 @@ namespace Clinica.Datos
             }
         }
 
-        public Usuario Login(string email, string pass)
+        public Usuario Login(string email, string password)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta(@"SELECT UsuarioId, Email, Pass, Perfil, IdPaciente, IdMedico, IdRecepcionista, Activo
-                                    FROM Usuarios
-                                    WHERE Email = @Email AND Pass = @Pass");
+                datos.SetearConsulta("SELECT UsuarioId, Email, Pass, Perfil, Activo FROM Usuarios WHERE Email = @Email AND Pass = @Pass");
                 datos.SetearParametro("@Email", email);
-                datos.SetearParametro("@Pass", pass);
+                datos.SetearParametro("@Pass", password);
                 datos.EjecutarLectura();
+
                 if (datos.Lector.Read())
                 {
                     var usuario = new Usuario
@@ -136,30 +145,14 @@ namespace Clinica.Datos
                 }
                 return null;
             }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
             finally
             {
                 datos.CerrarConexion();
             }
         }
-        public void ModificarPasswordEmail(string email, string nuevaPass)
-        {
-            AccesoDatos datos = new AccesoDatos();
-            try
-            {
-                datos.SetearConsulta(@"UPDATE Usuarios 
-                               SET Pass = @Pass 
-                               WHERE Email COLLATE Latin1_General_CI_AI = @Email");
-                datos.SetearParametro("@Pass", nuevaPass);
-                datos.SetearParametro("@Email", email);
-                int afectados = datos.EjecutarAccion();
-
-                if (afectados == 0)
-                    throw new Exception("No se encontró un usuario con ese email.");
-            }
-            finally { datos.CerrarConexion(); }
-        }
-
-        
-
     }
-}
+ }

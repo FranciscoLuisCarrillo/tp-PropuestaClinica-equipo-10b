@@ -13,7 +13,6 @@ namespace Presentacion.Account
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-
         }
 
         protected void btnLogin_Click(object sender, EventArgs e)
@@ -21,13 +20,20 @@ namespace Presentacion.Account
             try
             {
                 UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
+
+                // AHORA ESTO FUNCIONA: Devuelve Usuario o null
                 Usuario usuario = usuarioNegocio.Login(txtEmail.Text.Trim(), txtPass.Text.Trim());
+
                 if (usuario == null)
                 {
                     valSum.HeaderText = "Email o contraseña incorrectos.";
                     return;
                 }
+
+                // Si llegó acá, es que logueó bien
                 Session["Usuario"] = usuario;
+
+                // Redirección según perfil
                 switch (usuario.Perfil)
                 {
                     case Perfil.Administrador:
@@ -39,9 +45,7 @@ namespace Presentacion.Account
                     case Perfil.Medico:
                         Response.Redirect("~/Medicos/Default.aspx");
                         break;
-                    case Perfil.Paciente:
-                        Response.Redirect("~/Pacientes/Default.aspx");
-                        break;
+                    // case Perfil.Paciente: ... (si lo agregaste)
                     default:
                         valSum.HeaderText = "Perfil de usuario no reconocido.";
                         break;
@@ -49,8 +53,7 @@ namespace Presentacion.Account
             }
             catch (Exception ex)
             {
-                valSum.HeaderText = ex.Message;
-
+                valSum.HeaderText = "Error: " + ex.Message;
             }
         }
     }

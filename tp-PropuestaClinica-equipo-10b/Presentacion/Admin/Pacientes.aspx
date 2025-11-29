@@ -29,7 +29,6 @@
       </div>
     </section>
 
-    <!-- Tarjetas horizontales -->
   <section class="mb-4">
   <asp:Literal ID="litVacio" runat="server" />
   <div class="row row-cols-1 row-cols-sm-2 row-cols-lg-3 row-cols-xl-4 g-3" id="gridPacientes">
@@ -50,7 +49,6 @@
             </ul>
 
             <div class="mt-auto d-flex gap-2">
-              
               <button type="button"
                 class="btn btn-sm btn-warning"
                 onclick="abrirModalPassEmail('<%# Eval("Email") %>')"
@@ -66,11 +64,8 @@
   </div>
 </section>
 
-
-    <!-- Hidden con Email destino -->
   <asp:HiddenField ID="hfEmailDestino" runat="server" ClientIDMode="Static" />
 
-    <!-- Modal Cambiar Contraseña -->
     <div class="modal fade" id="modalPassword" tabindex="-1" aria-labelledby="modalPassLabel" aria-hidden="true">
       <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content shadow-lg border-0">
@@ -110,4 +105,13 @@
           <a href="Default.aspx" class="btn btn-secondary">Volver al panel</a>
         </div>
   </main>
+
+  <script>
+      function abrirModalPassEmail(email) {
+          document.getElementById('hfEmailDestino').value = email;
+          document.getElementById('lblEmailModal').innerText = email;
+          var myModal = new bootstrap.Modal(document.getElementById('modalPassword'));
+          myModal.show();
+      }
+  </script>
 </asp:Content>

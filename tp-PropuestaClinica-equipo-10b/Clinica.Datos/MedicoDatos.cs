@@ -6,9 +6,6 @@ namespace Clinica.Datos
 {
     public class MedicoDatos
     {
-        /// <summary>
-        /// Lista los datos básicos de los médicos (sin JOIN).
-        /// </summary>
         public List<Medico> Listar()
         {
             List<Medico> lista = new List<Medico>();
@@ -16,7 +13,6 @@ namespace Clinica.Datos
 
             try
             {
-                
                 string consulta = @"SELECT M.MedicoId, M.Nombre, M.Apellido, M.Matricula, M.Email, M.Telefono,
                                   M.TurnoTrabajoId,
                                   T.Nombre AS TurnoNombre,
@@ -49,29 +45,14 @@ namespace Clinica.Datos
                     aux.NombreTurnoTrabajo = datos.Lector["TurnoNombre"] == DBNull.Value
                         ? "-"
                         : datos.Lector["TurnoNombre"].ToString();
-                    
 
                     aux.Especialidades = ObtenerEspecialidadesPorMedico(aux.Id);
 
                     aux.Activo = datos.Lector["Activo"] == DBNull.Value ? true : (bool)datos.Lector["Activo"];
-                    /*
-                    // Solo guardamos el ID del turno (no cargamos el objeto completo)
-                    
-                    aux.Turno = new TurnoTrabajo();
-                    if (datos.Lector["TurnoTrabajoId"] != DBNull.Value)
-                    {
-                        aux.Turno.TurnoTrabajoId = (int)datos.Lector["TurnoTrabajoId"];
-                    }
-                    */
-
 
                     lista.Add(aux);
                 }
                 return lista;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {
@@ -103,31 +84,22 @@ namespace Clinica.Datos
                 }
                 return especialidades;
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al obtener especialidades del médico.", ex);
-            }
             finally
             {
                 datos.CerrarConexion();
             }
         }
 
-        /// <summary>
-        /// Guarda el médico solo en la tabla 'Medicos'.
-        /// Devuelve el ID del médico generado.
-        /// </summary>
         public int Agregar(Medico nuevo)
         {
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                // --- PASO 1: Guardar el Médico en la tabla Medicos ---
                 string consulta = @"INSERT INTO Medicos 
                                 (Nombre, Apellido, Matricula, Email, Telefono, TurnoTrabajoId) 
                                 VALUES 
                                 (@Nombre, @Apellido, @Matricula, @Email, @Telefono, @TurnoTrabajoId);
-                                SELECT SCOPE_IDENTITY();"; // Devuelve el ID generado
+                                SELECT SCOPE_IDENTITY();";
 
                 datos.SetearConsulta(consulta);
                 datos.SetearParametro("@Nombre", nuevo.Nombre);
@@ -138,34 +110,36 @@ namespace Clinica.Datos
                 datos.SetearParametro("@TurnoTrabajoId",
                 (object)nuevo.TurnoTrabajoId ?? DBNull.Value);
 
-                // Ejecutamos y obtenemos el nuevo ID
                 int idMedicoGenerado = Convert.ToInt32(datos.EjecutarEscalar());
                 datos.CerrarConexion();
 
-                if(nuevo.Especialidades != null && nuevo.Especialidades.Count > 0)
+                if (nuevo.Especialidades != null && nuevo.Especialidades.Count > 0)
                 {
-                    foreach(var especialidad in nuevo.Especialidades)
+                    foreach (var especialidad in nuevo.Especialidades)
                     {
                         AccesoDatos datosEspecialidad = new AccesoDatos();
-                        datosEspecialidad.SetearConsulta(@"INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) 
-                                                        VALUES (@MedicoId, @EspecialidadId)");
-                        datosEspecialidad.SetearParametro("@MedicoId", idMedicoGenerado);
-                        datosEspecialidad.SetearParametro("@EspecialidadId", especialidad.EspecialidadId);
-                        datosEspecialidad.EjecutarAccion();
-                        datosEspecialidad.CerrarConexion();
+                        try
+                        {
+                            datosEspecialidad.SetearConsulta(@"INSERT INTO MedicoEspecialidades (MedicoId, EspecialidadId) 
+                                                            VALUES (@MedicoId, @EspecialidadId)");
+                            datosEspecialidad.SetearParametro("@MedicoId", idMedicoGenerado);
+                            datosEspecialidad.SetearParametro("@EspecialidadId", especialidad.EspecialidadId);
+                            datosEspecialidad.EjecutarAccion();
+                        }
+                        finally
+                        {
+                            datosEspecialidad.CerrarConexion();
+                        }
                     }
                 }
 
                 return idMedicoGenerado;
             }
-            catch (Exception ex)
+            finally
             {
-                throw new Exception("Error al agregar médico en la base de datos.", ex);
+                datos.CerrarConexion();
             }
-           
         }
-
-        // --- Métodos de Validación (Necesarios para Negocio) ---
 
         public bool ExistePorMatricula(string matricula)
         {
@@ -217,10 +191,6 @@ namespace Clinica.Datos
                     lista.Add(aux);
                 }
                 return lista;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
             }
             finally
             {

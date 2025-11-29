@@ -11,21 +11,19 @@ namespace Presentacion.Account
 {
     public partial class Register : System.Web.UI.Page
     {
-      
-
         protected void Page_Load(object sender, EventArgs e)
         {
             if (!IsPostBack)
             {
 
             }
-
         }
 
         protected void BtnCrearCuenta_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid)
                 return;
+
 
             PacienteNegocio pacienteNegocio = new PacienteNegocio();
             
@@ -64,13 +62,13 @@ namespace Presentacion.Account
             }
             catch (Exception ex)
             {
-                valSummary.HeaderText = ex.Message;
+                // Asegúrate de tener un control con ID="valSummary" en tu HTML
+                // o cambia esto por un Label de error.
+                if (valSummary != null)
+                    valSummary.HeaderText = ex.Message;
             }
         }
 
     }
 
 }
-
-
-

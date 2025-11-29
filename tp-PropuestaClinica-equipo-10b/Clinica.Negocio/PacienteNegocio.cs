@@ -26,13 +26,11 @@ namespace Clinica.Negocio
             return datos.Agregar(nuevo);
         }
 
-        // ESTE ES EL MÉTODO QUE TE FALTABA
         public void Eliminar(int id)
         {
             datos.Eliminar(id);
         }
 
-     
         public Paciente ObtenerPorId(int id)
         {
             return datos.ObtenerPorId(id);
@@ -40,9 +38,9 @@ namespace Clinica.Negocio
 
         public void Modificar(Paciente paciente)
         {
-
             datos.Modificar(paciente);
         }
+
         public void CambioEstado(int id, bool estado)
         {
             datos.CambioEstado(id, estado);
