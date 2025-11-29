@@ -115,39 +115,43 @@ namespace Clinica.Datos
 
         public Usuario Login(string email, string password)
         {
-            AccesoDatos datos = new AccesoDatos();
+            var datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("SELECT UsuarioId, Email, Pass, Perfil, Activo FROM Usuarios WHERE Email = @Email AND Pass = @Pass");
+                datos.SetearConsulta(@"
+            SELECT  UsuarioId, Email, Pass, Perfil, Activo,
+                    IdPaciente, IdMedico, IdRecepcionista,
+                    Nombre, Apellido, Rol
+            FROM    Usuarios
+            WHERE   LOWER(Email) = LOWER(@Email) AND Pass = @Pass
+        ");
                 datos.SetearParametro("@Email", email);
                 datos.SetearParametro("@Pass", password);
                 datos.EjecutarLectura();
 
-                if (datos.Lector.Read())
+                if (!datos.Lector.Read()) return null;
+
+                var u = new Usuario
                 {
-                    var usuario = new Usuario
-                    {
-                        IdUsuario = (int)datos.Lector["UsuarioId"],
-                        Email = (string)datos.Lector["Email"],
-                        Pass = (string)datos.Lector["Pass"],          
-                        Perfil = (Perfil)(int)datos.Lector["Perfil"],
-                        Activo = datos.Lector["Activo"] != DBNull.Value && (bool)datos.Lector["Activo"],
-                        IdPaciente = datos.Lector["IdPaciente"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdPaciente"],
-                        IdMedico = datos.Lector["IdMedico"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdMedico"],
-                        IdRecepcionista = datos.Lector["IdRecepcionista"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdRecepcionista"]
-                    };
-                    return usuario;
-                }
-                return null;
-            }
-            catch (Exception ex)
-            {
-                throw ex;
+                    IdUsuario = (int)datos.Lector["UsuarioId"],
+                    Email = (string)datos.Lector["Email"],
+                    Pass = (string)datos.Lector["Pass"],
+                    Perfil = (Perfil)(int)datos.Lector["Perfil"],
+                    Activo = datos.Lector["Activo"] != DBNull.Value && (bool)datos.Lector["Activo"],
+                    IdPaciente = datos.Lector["IdPaciente"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdPaciente"],
+                    IdMedico = datos.Lector["IdMedico"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdMedico"],
+                    IdRecepcionista = datos.Lector["IdRecepcionista"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdRecepcionista"],
+                    Nombre = datos.Lector["Nombre"] == DBNull.Value ? null : (string)datos.Lector["Nombre"],
+                    Apellido = datos.Lector["Apellido"] == DBNull.Value ? null : (string)datos.Lector["Apellido"],
+                    Rol = datos.Lector["Rol"] == DBNull.Value ? null : (string)datos.Lector["Rol"],
+                };
+                return u;
             }
             finally
             {
                 datos.CerrarConexion();
             }
         }
+
     }
- }
+}

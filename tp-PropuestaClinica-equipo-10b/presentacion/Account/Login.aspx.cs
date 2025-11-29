@@ -21,7 +21,7 @@ namespace Presentacion.Account
             {
                 UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
 
-                // AHORA ESTO FUNCIONA: Devuelve Usuario o null
+              
                 Usuario usuario = usuarioNegocio.Login(txtEmail.Text.Trim(), txtPass.Text.Trim());
 
                 if (usuario == null)
@@ -31,7 +31,7 @@ namespace Presentacion.Account
                 }
 
                 // Si llegó acá, es que logueó bien
-                Session["Usuario"] = usuario;
+                Session["usuario"] = usuario;
 
                 // Redirección según perfil
                 switch (usuario.Perfil)
@@ -45,7 +45,9 @@ namespace Presentacion.Account
                     case Perfil.Medico:
                         Response.Redirect("~/Medicos/Default.aspx");
                         break;
-                    // case Perfil.Paciente: ... (si lo agregaste)
+                    case Perfil.Paciente: 
+                            Response.Redirect("~/Pacientes/Default.aspx");
+                        break;
                     default:
                         valSum.HeaderText = "Perfil de usuario no reconocido.";
                         break;
