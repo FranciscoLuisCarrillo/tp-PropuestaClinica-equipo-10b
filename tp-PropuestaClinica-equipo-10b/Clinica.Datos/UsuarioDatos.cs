@@ -23,12 +23,13 @@ namespace Clinica.Datos
 
                 while (datos.Lector.Read())
                 {
-                    Usuario aux = new Usuario();
-                    aux.IdUsuario = (int)datos.Lector["UsuarioId"];
-                    aux.Email = (string)datos.Lector["Email"];
-
-                    // Convertimos el INT de la DB al ENUM de C#
-                    aux.Perfil = (Perfil)(int)datos.Lector["Perfil"];
+                    var aux = new Usuario
+                    {
+                        IdUsuario = (int)datos.Lector["UsuarioId"],
+                        Email = (string)datos.Lector["Email"],
+                        Perfil = (Perfil)(int)datos.Lector["Perfil"]
+                    };
+                   
 
                     lista.Add(aux);
                 }
@@ -62,7 +63,7 @@ namespace Clinica.Datos
 
                 // Parámetros Básicos
                 datos.SetearParametro("@Email", nuevo.Email);
-                datos.SetearParametro("@Pass", nuevo.Password); // Asegurate que la propiedad en Usuario se llame Password
+                datos.SetearParametro("@Pass", nuevo.Pass); 
                 datos.SetearParametro("@Perfil", (int)nuevo.Perfil);
                 datos.SetearParametro("@Activo", nuevo.Activo);
 
@@ -120,19 +121,17 @@ namespace Clinica.Datos
                 datos.EjecutarLectura();
                 if (datos.Lector.Read())
                 {
-                    Usuario usuario = new Usuario();
-                    usuario.IdUsuario = (int)datos.Lector["UsuarioId"];
-                    usuario.Email = (string)datos.Lector["Email"];
-                    usuario.Password = (string)datos.Lector["Pass"];
-                    usuario.Perfil = (Perfil)(int)datos.Lector["Perfil"];
-                    usuario.Activo = datos.Lector["Activo"] != DBNull.Value ? (bool)datos.Lector["Activo"] : true;
-
-                    if(datos.Lector["IdPaciente"] != DBNull.Value)
-                        usuario.IdPaciente = (int)datos.Lector["IdPaciente"];
-                    if (datos.Lector["IdMedico"] != DBNull.Value)
-                        usuario.IdMedico = (int)datos.Lector["IdMedico"];
-                    if (datos.Lector["IdRecepcionista"] != DBNull.Value)
-                        usuario.IdRecepcionista = (int)datos.Lector["IdRecepcionista"];
+                    var usuario = new Usuario
+                    {
+                        IdUsuario = (int)datos.Lector["UsuarioId"],
+                        Email = (string)datos.Lector["Email"],
+                        Pass = (string)datos.Lector["Pass"],          
+                        Perfil = (Perfil)(int)datos.Lector["Perfil"],
+                        Activo = datos.Lector["Activo"] != DBNull.Value && (bool)datos.Lector["Activo"],
+                        IdPaciente = datos.Lector["IdPaciente"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdPaciente"],
+                        IdMedico = datos.Lector["IdMedico"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdMedico"],
+                        IdRecepcionista = datos.Lector["IdRecepcionista"] == DBNull.Value ? (int?)null : (int)datos.Lector["IdRecepcionista"]
+                    };
                     return usuario;
                 }
                 return null;

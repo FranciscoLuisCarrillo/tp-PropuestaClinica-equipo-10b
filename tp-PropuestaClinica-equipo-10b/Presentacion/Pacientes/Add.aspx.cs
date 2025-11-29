@@ -13,7 +13,7 @@ namespace Presentacion.Pacientes
     {
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(Session["Usuario"] == null)
+            if(Session["usuario"] == null)
             {
                 Response.Redirect("../Login.aspx", false);
                 return;
@@ -53,7 +53,7 @@ namespace Presentacion.Pacientes
                     ddlGenero.SelectedValue = miPerfil.Genero;
             }
         }
-        protected void btnGuardar_Click(object sender, EventArgs e)
+        protected void BtnGuardar_Click(object sender, EventArgs e)
         {
             Page.Validate();
             if (!Page.IsValid) return;
@@ -62,23 +62,22 @@ namespace Presentacion.Pacientes
             {
                 Usuario usuario = (Usuario)Session["usuario"];
                 PacienteNegocio negocio = new PacienteNegocio();
-                Paciente pacienteActualizado = new Paciente();
 
-             
-                pacienteActualizado.PacienteId = (int)usuario.IdPaciente;
-
-                // Cargamos datos del formulario
-                pacienteActualizado.Nombre = txtNombre.Text;
-                pacienteActualizado.Apellido = txtApellido.Text;
-                pacienteActualizado.Dni = txtDni.Text;
-                pacienteActualizado.FechaNacimiento = DateTime.Parse(txtFechaNacimiento.Text);
-                pacienteActualizado.Genero = ddlGenero.SelectedValue;
-                pacienteActualizado.Telefono = txtTelefono.Text;
-                pacienteActualizado.Domicilio = txtDireccion.Text;
-                pacienteActualizado.ObraSocial = txtObraSocial.Text;
-
+                var paciente = new Paciente
+                {
+                    PacienteId = (int)usuario.IdPaciente,
+                    Nombre = txtNombre.Text.Trim(),
+                    Apellido = txtApellido.Text.Trim(),
+                    Dni = txtDni.Text.Trim(),
+                    FechaNacimiento = DateTime.Parse(txtFechaNacimiento.Text),
+                    Genero = ddlGenero.SelectedValue,
+                    Telefono = txtTelefono.Text.Trim(),
+                    Domicilio = txtDireccion.Text.Trim(),
+                    ObraSocial = txtObraSocial.Text.Trim(),
+                    Activo = true
+                };
                 // Guardamos en BD
-                negocio.Modificar(pacienteActualizado);
+                negocio.Modificar(paciente);
 
                 Response.Write("<script>alert('Datos actualizados correctamente.'); window.location='Default.aspx';</script>");
             }

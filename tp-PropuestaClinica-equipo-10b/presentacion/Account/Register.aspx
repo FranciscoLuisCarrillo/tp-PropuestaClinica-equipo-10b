@@ -61,7 +61,7 @@
             <asp:Button ID="btnCrearCuenta" runat="server"
                 Text="Crear cuenta"
                 CssClass="btn btn-success mt-4 w-100"
-                OnClick="btnCrearCuenta_Click"/>
+                OnClick="BtnCrearCuenta_Click"/>
              <div class="text-end mt-3">
                 <a href="Default.aspx" class="btn btn-secondary">Atrás</a>
             </div>

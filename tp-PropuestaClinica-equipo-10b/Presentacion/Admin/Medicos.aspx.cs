@@ -123,7 +123,7 @@ namespace Presentacion.Admin
                 Usuario usuarioMedico = new Usuario
                 {
                     Email = nuevo.Email,
-                    Password = txtPassword.Text.Trim(),
+                    Pass = txtPassword.Text.Trim(),
                     Perfil = Perfil.Medico,
                     Rol = "Medico",
                     IdMedico = idMedicoGenerado,

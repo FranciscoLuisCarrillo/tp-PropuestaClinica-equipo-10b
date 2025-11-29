@@ -81,7 +81,7 @@ namespace Presentacion.Admin
 
                 Usuario usuario = new Usuario();
                 usuario.Email = txtEmail.Text.Trim();
-                usuario.Password = txtPass.Text.Trim();
+                usuario.Pass = txtPass.Text.Trim();
                 usuario.Perfil = Perfil.Recepcionista;
                 usuario.Rol = "Recepcionista";
                 usuario.Activo = true;

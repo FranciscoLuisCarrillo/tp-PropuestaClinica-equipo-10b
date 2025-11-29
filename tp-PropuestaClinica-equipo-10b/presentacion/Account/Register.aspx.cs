@@ -22,47 +22,54 @@ namespace Presentacion.Account
 
         }
 
-        protected void btnCrearCuenta_Click(object sender, EventArgs e)
+        protected void BtnCrearCuenta_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid)
                 return;
-            PacienteNegocio pacienteNegocio = new PacienteNegocio();
-            Paciente paciente = new Paciente();
 
+            PacienteNegocio pacienteNegocio = new PacienteNegocio();
             
-            
+
             try
             {
-                paciente.Nombre = txtNombre.Text.Trim();
-                paciente.Apellido = txtApellido.Text.Trim();
-                paciente.Email = txtEmail.Text.Trim();
-                paciente.Activo = true;
+                var paciente = new Paciente
+                {
+                    Nombre = txtNombre.Text.Trim(),
+                    Apellido = txtApellido.Text.Trim(),
+                    Email = txtEmail.Text.Trim(),
+                    Dni = null,                
+                    FechaNacimiento = DateTime.MinValue,
+                    Telefono = null,
+                    Domicilio = null,
+                    ObraSocial = null,
+                    Activo = true
+                };
+
 
                 int idPacienteGenerado = pacienteNegocio.Agregar(paciente);
 
                 UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
-                Usuario nuevo = new Usuario();
-                nuevo.Email = txtEmail.Text.Trim();
-                nuevo.Password = txtPass.Text.Trim();
-                nuevo.Perfil = Perfil.Paciente;
-                nuevo.Rol = "Paciente";
-                nuevo.Activo = true;
+                var usuario = new Usuario
+                {
+                    Email = txtEmail.Text.Trim(),
+                    Pass = txtPass.Text.Trim(),
+                    Perfil = Perfil.Paciente,
+                    Rol = "Paciente",
+                    Activo = true,
+                    IdPaciente = idPacienteGenerado
+                };
+                Session["usuario"] = usuario;
 
-                nuevo.IdPaciente = idPacienteGenerado;
-                usuarioNegocio.Agregar(nuevo);
-
-
-                Session["usuario"] = nuevo;
-
-                Response.Redirect("~/Pacientes/Default.aspx");
+                Response.Redirect("~/Pacientes/Default.aspx", false);
             }
             catch (Exception ex)
             {
                 valSummary.HeaderText = ex.Message;
             }
         }
+
     }
-    
+
 }
 
 

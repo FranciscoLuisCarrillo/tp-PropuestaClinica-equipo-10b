@@ -45,7 +45,7 @@ namespace Clinica.Negocio
             if (nuevo == null)
                 throw new ArgumentNullException("El objeto Usuario no puede ser nulo.");
 
-            if (string.IsNullOrWhiteSpace(nuevo.Email) || string.IsNullOrWhiteSpace(nuevo.Password))
+            if (string.IsNullOrWhiteSpace(nuevo.Email) || string.IsNullOrWhiteSpace(nuevo.Pass))
                 throw new ArgumentException("Email y Contraseña son obligatorios.");
 
             // Validación de duplicados

@@ -19,22 +19,19 @@ namespace Clinica.Datos
 
                 while (datos.Lector.Read())
                 {
-                    Paciente aux = new Paciente();
-                    aux.PacienteId = (int)datos.Lector["PacienteId"];
-                    aux.Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : (string)datos.Lector["Nombre"];
-                    aux.Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : (string)datos.Lector["Apellido"];
-                    aux.Dni = datos.Lector["DNI"] == DBNull.Value ? "" : (string)datos.Lector["DNI"];
-                    aux.Email = datos.Lector["Email"] == DBNull.Value ? "" : (string)datos.Lector["Email"];
-
-                    aux.Telefono = datos.Lector["Telefono"] == DBNull.Value ? "" : (string)datos.Lector["Telefono"];
-                    aux.Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : (string)datos.Lector["Domicilio"];
-                    aux.ObraSocial = datos.Lector["ObraSocial"] == DBNull.Value ? "" : (string)datos.Lector["ObraSocial"];
-
-                    // Leemos el estado
-                    if (datos.Lector["Activo"] != DBNull.Value)
-                        aux.Activo = (bool)datos.Lector["Activo"];
-                    else
-                        aux.Activo = true; 
+                    var aux = new Paciente
+                    {
+                        PacienteId = (int)datos.Lector["PacienteId"],
+                        Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : (string)datos.Lector["Nombre"],
+                        Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : (string)datos.Lector["Apellido"],
+                        Dni = datos.Lector["DNI"] == DBNull.Value ? "" : (string)datos.Lector["DNI"],
+                        Email = datos.Lector["Email"] == DBNull.Value ? "" : (string)datos.Lector["Email"],
+                        Telefono = datos.Lector["Telefono"] == DBNull.Value ? "" : (string)datos.Lector["Telefono"],
+                        Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : (string)datos.Lector["Domicilio"],
+                        ObraSocial = datos.Lector["ObraSocial"] == DBNull.Value ? "" : (string)datos.Lector["ObraSocial"],
+                        FechaNacimiento = datos.Lector["FechaNacimiento"] == DBNull.Value ? DateTime.MinValue : (DateTime)datos.Lector["FechaNacimiento"],
+                        Activo = datos.Lector["Activo"] == DBNull.Value ? true : (bool)datos.Lector["Activo"]
+                    };
 
                     lista.Add(aux);
                 }
@@ -55,21 +52,34 @@ namespace Clinica.Datos
             try
             {
                 string consulta = @"INSERT INTO Pacientes 
-                                (Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial, Activo) 
-                                VALUES 
-                                (@Nombre, @Apellido, @DNI, @FechaNacimiento, @Telefono, @Email, @Domicilio, @ObraSocial, 1);
-                                SELECT SCOPE_IDENTITY();";
+            (Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial, Activo) 
+            VALUES 
+            (@Nombre, @Apellido, @DNI, @FechaNacimiento, @Telefono, @Email, @Domicilio, @ObraSocial, 1);
+            SELECT SCOPE_IDENTITY();";
 
                 datos.SetearConsulta(consulta);
 
                 datos.SetearParametro("@Nombre", nuevo.Nombre);
                 datos.SetearParametro("@Apellido", nuevo.Apellido);
-                datos.SetearParametro("@DNI", nuevo.Dni);
-                datos.SetearParametro("@FechaNacimiento", nuevo.FechaNacimiento);
-                datos.SetearParametro("@Telefono", (object)nuevo.Telefono ?? DBNull.Value);
+                datos.SetearParametro("@DNI",
+                    string.IsNullOrWhiteSpace(nuevo.Dni) ? (object)DBNull.Value : nuevo.Dni);
+
+             
+                if (nuevo.FechaNacimiento == default(DateTime))
+                    datos.SetearParametro("@FechaNacimiento", DBNull.Value);
+                else
+                    datos.SetearParametro("@FechaNacimiento", nuevo.FechaNacimiento);
+
+                datos.SetearParametro("@Telefono",
+                    string.IsNullOrWhiteSpace(nuevo.Telefono) ? (object)DBNull.Value : nuevo.Telefono);
+
                 datos.SetearParametro("@Email", nuevo.Email);
-                datos.SetearParametro("@Domicilio", (object)nuevo.Domicilio ?? DBNull.Value);
-                datos.SetearParametro("@ObraSocial", (object)nuevo.ObraSocial ?? DBNull.Value);
+
+                datos.SetearParametro("@Domicilio",
+                    string.IsNullOrWhiteSpace(nuevo.Domicilio) ? (object)DBNull.Value : nuevo.Domicilio);
+
+                datos.SetearParametro("@ObraSocial",
+                    string.IsNullOrWhiteSpace(nuevo.ObraSocial) ? (object)DBNull.Value : nuevo.ObraSocial);
 
                 object idGenerado = datos.EjecutarEscalar();
                 return Convert.ToInt32(idGenerado);
@@ -79,6 +89,7 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+
 
         // NUEVO MÉTODO ELIMINAR
         public void Eliminar(int id)
@@ -172,18 +183,19 @@ namespace Clinica.Datos
 
                 if (datos.Lector.Read())
                 {
-                    Paciente aux = new Paciente();
-                    aux.PacienteId = (int)datos.Lector["PacienteId"];
-                    aux.Nombre = (string)datos.Lector["Nombre"];
-                    aux.Apellido = (string)datos.Lector["Apellido"];
-                    aux.Email = (string)datos.Lector["Email"];
-
-                    // Validamos nulos porque es un registro incompleto
-                    if (!(datos.Lector["DNI"] is DBNull)) aux.Dni = (string)datos.Lector["DNI"];
-                    if (!(datos.Lector["Telefono"] is DBNull)) aux.Telefono = (string)datos.Lector["Telefono"];
-                    if (!(datos.Lector["FechaNacimiento"] is DBNull)) aux.FechaNacimiento = (DateTime)datos.Lector["FechaNacimiento"];
-                    if (!(datos.Lector["Domicilio"] is DBNull)) aux.Domicilio = (string)datos.Lector["Domicilio"];
-
+                    var aux = new Paciente
+                    {
+                        PacienteId = (int)datos.Lector["PacienteId"],
+                        Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : datos.Lector["Nombre"].ToString(),
+                        Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : datos.Lector["Apellido"].ToString(),
+                        Dni = datos.Lector["DNI"] == DBNull.Value ? "" : datos.Lector["DNI"].ToString(),
+                        Email = datos.Lector["Email"] == DBNull.Value ? "" : datos.Lector["Email"].ToString(),
+                        Telefono = datos.Lector["Telefono"] == DBNull.Value ? "" : datos.Lector["Telefono"].ToString(),
+                        Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : datos.Lector["Domicilio"].ToString(),
+                        ObraSocial = datos.Lector["ObraSocial"] == DBNull.Value ? "" : datos.Lector["ObraSocial"].ToString(),
+                        FechaNacimiento = datos.Lector["FechaNacimiento"] == DBNull.Value ? DateTime.MinValue : (DateTime)datos.Lector["FechaNacimiento"],
+                        Activo = datos.Lector["Activo"] == DBNull.Value ? true : (bool)datos.Lector["Activo"]
+                    };
                     return aux;
                 }
                 return null;
