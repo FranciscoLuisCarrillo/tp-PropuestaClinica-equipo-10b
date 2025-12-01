@@ -11,6 +11,7 @@ namespace Clinica.Datos
         private SqlConnection conexion;
         private SqlCommand comando;
         private SqlDataReader lector;
+        private SqlTransaction transaccion;
 
         public SqlDataReader Lector
         {
@@ -57,13 +58,11 @@ namespace Clinica.Datos
             try
             {
                 comando.Connection = conexion;
-                conexion.Open();
+                if (conexion.State != ConnectionState.Open) conexion.Open();
+                if (EnTransaccion) comando.Transaction = transaccion;
                 lector = comando.ExecuteReader();
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al ejecutar la lectura en la base de datos.", ex);
-            }
+            catch (Exception ex) { throw new Exception("Error al ejecutar la lectura.", ex); }
         }
 
         // Método para ejecutar acciones (INSERT, UPDATE, DELETE). Devuelve el número de filas afectadas.
@@ -72,18 +71,17 @@ namespace Clinica.Datos
             try
             {
                 comando.Connection = conexion;
-                conexion.Open();
-                // ExecuteNonQuery devuelve el número de filas afectadas.
+                if (conexion.State != ConnectionState.Open) conexion.Open();
+                if (EnTransaccion) comando.Transaction = transaccion;
                 return comando.ExecuteNonQuery();
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al ejecutar la acción en la base de datos (INSERT/UPDATE/DELETE).", ex);
-            }
+            catch (Exception ex) { throw new Exception("Error al ejecutar la acción.", ex); }
             finally
             {
-                // Aseguramos que la conexión se cierre después de la acción.
-                CerrarConexion();
+                
+                if (!EnTransaccion) CerrarConexion();
+                
+                LimpiarParametros();
             }
         }
 
@@ -93,16 +91,15 @@ namespace Clinica.Datos
             try
             {
                 comando.Connection = conexion;
-                conexion.Open();
+                if (conexion.State != ConnectionState.Open) conexion.Open();
+                if (EnTransaccion) comando.Transaction = transaccion;
                 return comando.ExecuteScalar();
             }
-            catch (Exception ex)
-            {
-                throw new Exception("Error al ejecutar el escalar en la base de datos.", ex);
-            }
+            catch (Exception ex) { throw new Exception("Error al ejecutar escalar.", ex); }
             finally
             {
-                CerrarConexion();
+                if (!EnTransaccion) CerrarConexion();
+                LimpiarParametros();
             }
         }
 
@@ -118,6 +115,47 @@ namespace Clinica.Datos
 
             if (conexion != null && conexion.State == ConnectionState.Open)
                 conexion.Close();
+        }
+        public void IniciarTransaccion()
+        {
+            if (conexion.State != ConnectionState.Open) conexion.Open();
+            transaccion = conexion.BeginTransaction();
+            comando.Connection = conexion;
+            comando.Transaction = transaccion;
+        }
+
+        public void ConfirmarTransaccion()
+        {
+            transaccion?.Commit();
+            transaccion = null;
+            
+        }
+       public void CancelarTransaccion()
+        {
+            try { transaccion?.Rollback(); }
+            finally { transaccion = null; }
+        }
+
+      
+        private bool EnTransaccion => transaccion != null;
+        public void Commit()
+        {
+            if (transaccion != null)
+            {
+                transaccion.Commit();
+                transaccion.Dispose();
+                transaccion = null;
+            }
+        }
+
+        public void Rollback()
+        {
+            if (transaccion != null)
+            {
+                transaccion.Rollback();
+                transaccion.Dispose();
+                transaccion = null;
+            }
         }
     }
 }

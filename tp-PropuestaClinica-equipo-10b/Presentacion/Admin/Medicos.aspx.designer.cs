@@ -42,6 +42,15 @@ namespace Presentacion.Admin
         protected global::System.Web.UI.WebControls.Panel pnlNuevoMedico;
 
         /// <summary>
+        /// Control hfMedicoId.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfMedicoId;
+
+        /// <summary>
         /// Control ValidarMedico.
         /// </summary>
         /// <remarks>

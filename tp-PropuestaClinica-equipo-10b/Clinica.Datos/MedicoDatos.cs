@@ -197,5 +197,129 @@ namespace Clinica.Datos
                 datos.CerrarConexion();
             }
         }
+        public Medico ObtenerPorId(int id)
+        {
+            var d = new AccesoDatos();
+            try
+            {
+                d.SetearConsulta(@"SELECT M.MedicoId, M.Nombre, M.Apellido, M.Matricula, M.Email, M.Telefono,
+                                  M.TurnoTrabajoId, M.Activo
+                           FROM Medicos M
+                           WHERE M.MedicoId=@Id");
+                d.SetearParametro("@Id", id);
+                d.EjecutarLectura();
+                if (!d.Lector.Read()) return null;
+
+                var m = new Medico
+                {
+                    Id = (int)d.Lector["MedicoId"],
+                    Nombre = d.Lector["Nombre"].ToString(),
+                    Apellido = d.Lector["Apellido"].ToString(),
+                    Matricula = d.Lector["Matricula"].ToString(),
+                    Email = d.Lector["Email"].ToString(),
+                    Telefono = d.Lector["Telefono"] == DBNull.Value ? null : d.Lector["Telefono"].ToString(),
+                    TurnoTrabajoId = d.Lector["TurnoTrabajoId"] == DBNull.Value ? (int?)null : Convert.ToInt32(d.Lector["TurnoTrabajoId"]),
+                    Activo = d.Lector["Activo"] == DBNull.Value ? true : (bool)d.Lector["Activo"]
+                };
+
+                m.Especialidades = ObtenerEspecialidadesPorMedico(m.Id);
+                return m;
+            }
+            finally { d.CerrarConexion(); }
+        }
+
+        public void Modificar(Medico m)
+        {
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.IniciarTransaccion();
+
+                datos.SetearConsulta(@"UPDATE Medicos SET 
+            Nombre=@N, Apellido=@A, Matricula=@Mat, Email=@E, Telefono=@T,
+            TurnoTrabajoId=@TT, Activo=@Ac
+            WHERE MedicoId=@Id");
+                datos.LimpiarParametros();
+                datos.SetearParametro("@N", m.Nombre);
+                datos.SetearParametro("@A", m.Apellido);
+                datos.SetearParametro("@Mat", m.Matricula);
+                datos.SetearParametro("@E", m.Email);
+                datos.SetearParametro("@T", (object)m.Telefono ?? DBNull.Value);
+                datos.SetearParametro("@TT", (object)m.TurnoTrabajoId ?? DBNull.Value);
+                datos.SetearParametro("@Ac", m.Activo);
+                datos.SetearParametro("@Id", m.Id);
+                datos.EjecutarAccion();
+
+                datos.SetearConsulta("DELETE FROM MedicoEspecialidades WHERE MedicoId=@Id");
+                datos.LimpiarParametros();
+                datos.SetearParametro("@Id", m.Id);
+                datos.EjecutarAccion();
+
+                if (m.Especialidades != null)
+                {
+                    foreach (var esp in m.Especialidades)
+                    {
+                        datos.SetearConsulta(@"INSERT INTO MedicoEspecialidades(MedicoId, EspecialidadId)
+                                   VALUES(@M,@E)");
+                        datos.LimpiarParametros();
+                        datos.SetearParametro("@M", m.Id);
+                        datos.SetearParametro("@E", esp.EspecialidadId);
+                        datos.EjecutarAccion();
+                    }
+                }
+
+                
+                datos.SetearConsulta(@"UPDATE Usuarios 
+                           SET Nombre=@N, Apellido=@A, Email=@E 
+                           WHERE IdMedico=@Id");
+                datos.LimpiarParametros();
+                datos.SetearParametro("@N", m.Nombre);
+                datos.SetearParametro("@A", m.Apellido);
+                datos.SetearParametro("@E", m.Email);
+                datos.SetearParametro("@Id", m.Id);
+                datos.EjecutarAccion();
+
+                datos.ConfirmarTransaccion();
+            }
+            catch
+            {
+                datos.CancelarTransaccion();
+                throw;
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        // Útiles: unicidad excluyendo el propio Id
+        public bool EmailEnUso(string email, int? excluirId = null)
+        {
+            var d = new AccesoDatos();
+            try
+            {
+                d.SetearConsulta(@"SELECT 1 FROM Medicos 
+                           WHERE Email COLLATE Latin1_General_CI_AI = @E
+                           AND (@Excl IS NULL OR MedicoId <> @Excl)");
+                d.SetearParametro("@E", email);
+                d.SetearParametro("@Excl", (object)excluirId ?? DBNull.Value);
+                d.EjecutarLectura();
+                return d.Lector.Read();
+            }
+            finally { d.CerrarConexion(); }
+        }
+
+        public bool MatriculaEnUso(string mat, int? excluirId = null)
+        {
+            var d = new AccesoDatos();
+            try
+            {
+                d.SetearConsulta(@"SELECT 1 FROM Medicos 
+                           WHERE Matricula = @M
+                           AND (@Excl IS NULL OR MedicoId <> @Excl)");
+                d.SetearParametro("@M", mat);
+                d.SetearParametro("@Excl", (object)excluirId ?? DBNull.Value);
+                d.EjecutarLectura();
+                return d.Lector.Read();
+            }
+            finally { d.CerrarConexion(); }
+        }
     }
 }

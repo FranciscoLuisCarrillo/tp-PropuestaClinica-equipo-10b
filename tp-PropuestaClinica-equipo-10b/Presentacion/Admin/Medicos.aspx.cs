@@ -23,6 +23,12 @@ namespace Presentacion.Admin
             }
         }
 
+        // Password obligatoria solo en ALTAS
+        protected void Page_PreRender(object sender, EventArgs e)
+        {
+            rfvPassword.Enabled = string.IsNullOrWhiteSpace(hfMedicoId.Value);
+        }
+
         private void CargarTurnos()
         {
             try
@@ -68,97 +74,147 @@ namespace Presentacion.Admin
             }
         }
 
+        // Validador servidor: 1..2 especialidades
+        protected void cvEspecialidades_ServerValidate(object source, ServerValidateEventArgs args)
+        {
+            int cant = 0;
+            foreach (ListItem item in chkEspecialidades.Items)
+                if (item.Selected) cant++;
+
+            args.IsValid = (cant >= 1 && cant <= 2);
+        }
+
         protected void btnGuarda_Click(object sender, EventArgs e)
         {
             if (!Page.IsValid)
             {
-                ClientScript.RegisterStartupScript(this.GetType(), "ShowPanel", "mostrarFormularioMedico();", true);
+                ClientScript.RegisterStartupScript(
+                this.GetType(), "ShowFormEdit",
+                "if (window.mostrarFormularioMedico) { mostrarFormularioMedico(); }", true);
                 return;
             }
 
             try
             {
-                Medico nuevo = new Medico();
-
-                nuevo.Nombre = txtNombre.Text.Trim();
-                nuevo.Apellido = txtApellido.Text.Trim();
-                nuevo.Email = txtEmail.Text.Trim();
-                nuevo.Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? null : txtTelefono.Text.Trim();
-                nuevo.Matricula = string.IsNullOrWhiteSpace(txtMatricula.Text) ? null : txtMatricula.Text.Trim();
-
-                int idTurno = int.Parse(ddlTurnoTrabajo.SelectedValue);
-                nuevo.TurnoTrabajoId = idTurno;
-                nuevo.Turno = new TurnoTrabajo { TurnoTrabajoId = idTurno };
-
-                int cantidadSeleccionada = 0;
-                nuevo.Especialidades = new List<Especialidad>();
-
-                foreach (ListItem item in chkEspecialidades.Items)
+                var m = new Medico
                 {
-                    if (item.Selected)
-                    {
-                        cantidadSeleccionada++;
-                        nuevo.Especialidades.Add(new Especialidad
-                        {
-                            EspecialidadId = int.Parse(item.Value),
-                            Nombre = item.Text
-                        });
-                    }
-                }
-
-                if (cantidadSeleccionada == 0)
-                {
-                    throw new Exception("Debe seleccionar al menos una especialidad.");
-                }
-
-                if (cantidadSeleccionada > 2)
-                {
-                    throw new Exception("Solo puede seleccionar un máximo de 2 especialidades.");
-                }
-
-                nuevo.Activo = true;
-
-                int idMedicoGenerado = medicoNegocio.Agregar(nuevo);
-
-                UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
-                Usuario usuarioMedico = new Usuario
-                {
-                    Email = nuevo.Email,
-                    Pass = txtPassword.Text.Trim(),
-                    Perfil = Perfil.Medico,
-                    Rol = "Medico",
-                    IdMedico = idMedicoGenerado,
-                    Nombre = nuevo.Nombre,
-                    Apellido = nuevo.Apellido,
-                    Activo = true
+                    Nombre = txtNombre.Text.Trim(),
+                    Apellido = txtApellido.Text.Trim(),
+                    Email = txtEmail.Text.Trim(),
+                    Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? null : txtTelefono.Text.Trim(),
+                    Matricula = string.IsNullOrWhiteSpace(txtMatricula.Text) ? null : txtMatricula.Text.Trim(),
+                    TurnoTrabajoId = string.IsNullOrEmpty(ddlTurnoTrabajo.SelectedValue) ? (int?)null : int.Parse(ddlTurnoTrabajo.SelectedValue),
+                    Activo = true,
+                    Especialidades = new List<Especialidad>()
                 };
 
-                usuarioNegocio.Agregar(usuarioMedico);
+                foreach (ListItem item in chkEspecialidades.Items)
+                    if (item.Selected)
+                        m.Especialidades.Add(new Especialidad { EspecialidadId = int.Parse(item.Value), Nombre = item.Text });
 
-                ClientScript.RegisterStartupScript(this.GetType(), "alertSuccess", "alert('Médico y Usuario creados correctamente.');", true);
+                bool esEdicion = !string.IsNullOrWhiteSpace(hfMedicoId.Value);
+
+                if (esEdicion)
+                {
+                    m.Id = int.Parse(hfMedicoId.Value);
+                    medicoNegocio.Modificar(m);
+                    ClientScript.RegisterStartupScript(this.GetType(), "okUpd", "alert('Médico actualizado.');", true);
+                }
+                else
+                {
+                    if (string.IsNullOrWhiteSpace(txtPassword.Text))
+                        throw new Exception("La contraseña es obligatoria para crear el usuario del médico.");
+
+                    int idMedico = medicoNegocio.Agregar(m);
+
+                    var usuarioNegocio = new UsuarioNegocio();
+                    usuarioNegocio.Agregar(new Usuario
+                    {
+                        Email = m.Email,
+                        Pass = txtPassword.Text.Trim(),
+                        Perfil = Perfil.Medico,
+                        Rol = "Medico",
+                        IdMedico = idMedico,
+                        Nombre = m.Nombre,
+                        Apellido = m.Apellido,
+                        Activo = true
+                    });
+
+                    ClientScript.RegisterStartupScript(this.GetType(), "okAdd", "alert('Médico y usuario creados.');", true);
+                }
+
                 CargarMedicos();
                 LimpiarFormulario();
+                ClientScript.RegisterStartupScript(this.GetType(), "HideForm",
+                "if (window.ocultarFormularioMedico){ocultarFormularioMedico();}", true);
             }
             catch (Exception ex)
             {
-                string mensajeLimpio = ex.Message.Replace("'", "").Replace("\n", "").Replace("\r", "");
-                ClientScript.RegisterStartupScript(this.GetType(), "alertError", $"alert('{mensajeLimpio}'); mostrarFormularioMedico();", true);
+                string msg = ex.Message.Replace("'", "").Replace("\r", "").Replace("\n", " ");
+                ValidarMedico.HeaderText = msg;
+                ClientScript.RegisterStartupScript(
+                this.GetType(), "ShowFormEdit",
+                "if (window.mostrarFormularioMedico) { mostrarFormularioMedico(); }", true);
             }
         }
 
         private void LimpiarFormulario()
         {
-            txtNombre.Text = string.Empty;
-            txtApellido.Text = string.Empty;
-            txtTelefono.Text = string.Empty;
-            txtEmail.Text = string.Empty;
-            txtPassword.Text = string.Empty;
-            txtMatricula.Text = string.Empty;
+            hfMedicoId.Value = string.Empty;
+            txtNombre.Text = txtApellido.Text = txtTelefono.Text = txtEmail.Text = txtPassword.Text = txtMatricula.Text = string.Empty;
             ddlTurnoTrabajo.SelectedIndex = 0;
+            foreach (ListItem item in chkEspecialidades.Items) item.Selected = false;
+            btnGuarda.Text = "Guardar médico";
+            rfvPassword.Enabled = true;
+        }
 
-            foreach (ListItem item in chkEspecialidades.Items)
+        protected void gvMedicos_RowCommand(object sender, GridViewCommandEventArgs e)
+        {
+            if (e.CommandName == "Editar")
             {
-                item.Selected = false;
+                int medicoId = int.Parse(e.CommandArgument.ToString());
+                CargarFormularioEdicion(medicoId);
+                ClientScript.RegisterStartupScript(
+                this.GetType(), "ShowFormEdit",
+                "if (window.mostrarFormularioMedico) { mostrarFormularioMedico(); }", true);
+            }
+        }
+
+        private void CargarFormularioEdicion(int medicoId)
+        {
+            try
+            {
+                var m = medicoNegocio.ObtenerPorId(medicoId);
+                if (m == null) { ValidarMedico.HeaderText = "No se encontró el médico."; return; }
+
+                hfMedicoId.Value = m.Id.ToString();
+                txtNombre.Text = m.Nombre;
+                txtApellido.Text = m.Apellido;
+                txtTelefono.Text = m.Telefono ?? "";
+                txtEmail.Text = m.Email ?? "";
+                txtMatricula.Text = m.Matricula ?? "";
+
+                ddlTurnoTrabajo.ClearSelection();
+                if (m.TurnoTrabajoId.HasValue)
+                {
+                    var it = ddlTurnoTrabajo.Items.FindByValue(m.TurnoTrabajoId.Value.ToString());
+                    if (it != null) it.Selected = true;
+                }
+
+                foreach (ListItem it in chkEspecialidades.Items) it.Selected = false;
+                if (m.Especialidades != null)
+                    foreach (var esp in m.Especialidades)
+                    {
+                        var it = chkEspecialidades.Items.FindByValue(esp.EspecialidadId.ToString());
+                        if (it != null) it.Selected = true;
+                    }
+
+                btnGuarda.Text = "Guardar cambios";
+                rfvPassword.Enabled = false;
+            }
+            catch (Exception ex)
+            {
+                ValidarMedico.HeaderText = "Error al cargar médico: " + ex.Message;
             }
         }
     }

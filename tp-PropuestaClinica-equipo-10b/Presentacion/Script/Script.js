@@ -1,67 +1,97 @@
-﻿function validarEspecialidades(sender, args) {
-    const lista = document.querySelector('[data-rol="especialidades"]');
-    if (!lista) { args.IsValid = false; return; }
-    args.IsValid = [...lista.querySelectorAll('input[type=checkbox]')]
-        .some(c => c.checked);
+﻿// -------- Validación de especialidades--------
+function validarEspecialidades(sender, args) {
+    const cont = document.querySelector('[data-rol="especialidades"]');
+    if (!cont) { args.IsValid = false; return; }
+
+    const checks = Array.from(cont.querySelectorAll('input[type=checkbox]'));
+    const sel = checks.filter(c => c.checked).length;
+
+    if (sel === 0) {
+        sender.errormessage = 'Debe seleccionar al menos una especialidad.';
+        args.IsValid = false;
+        return;
+    }
+    if (sel > 2) {
+        sender.errormessage = 'Solo puede seleccionar hasta 2 especialidades.';
+        args.IsValid = false;
+        return;
+    }
+    args.IsValid = true;
 }
 
-window.addEventListener('load', function () {
-    const lista = document.querySelector('[data-rol="especialidades"]');
-    if (!lista) return;
+// Bloqueo visual al llegar a 2
+window.addEventListener('load', () => {
+    const cont = document.querySelector('[data-rol="especialidades"]');
+    if (!cont) return;
 
-    const checkboxes = lista.querySelectorAll('input[type=checkbox]');
-    const aviso = document.createElement('small');
-    aviso.className = 'text-danger d-block mt-1';
-    lista.insertAdjacentElement('afterend', aviso);
+    const checks = cont.querySelectorAll('input[type=checkbox]');
+    let aviso = cont.nextElementSibling;
+    if (!aviso || !aviso.classList.contains('text-danger')) {
+        aviso = document.createElement('small');
+        aviso.className = 'text-danger d-block mt-1';
+        cont.insertAdjacentElement('afterend', aviso);
+    }
 
-    checkboxes.forEach(chk => chk.addEventListener('change', () => {
-        const seleccionados = [...checkboxes].filter(c => c.checked);
-        const max = 2;
-
+    const max = 2;
+    const sync = () => {
+        const seleccionados = Array.from(checks).filter(c => c.checked);
         if (seleccionados.length >= max) {
             aviso.textContent = `Solo podés elegir ${max} especialidades.`;
-            checkboxes.forEach(c => !c.checked && (c.disabled = true));
+            checks.forEach(c => { if (!c.checked) c.disabled = true; });
         } else {
             aviso.textContent = '';
-            checkboxes.forEach(c => c.disabled = false);
+            checks.forEach(c => c.disabled = false);
         }
-    }));
+    };
+    checks.forEach(chk => chk.addEventListener('change', sync));
+    sync();
 });
 
+// -------- UI: mostrar/ocultar paneles --------
 function mostrarFormularioMedico() {
-    const formPanel = document.getElementById('pnlNuevoMedico');
-    const listPanel = document.getElementById('pnlListadoMedicos');
-
+    const formPanel = document.querySelector('[data-rol="panel-form"]');
+    const listPanel = document.querySelector('[data-rol="panel-lista"]');
     if (formPanel) formPanel.style.display = 'block';
     if (listPanel) listPanel.style.display = 'none';
-
-    if (formPanel) {
-        window.scrollTo({ top: formPanel.offsetTop - 80, behavior: 'smooth' });
-    }
+    if (formPanel) window.scrollTo({ top: formPanel.offsetTop - 80, behavior: 'smooth' });
 }
 
 function ocultarFormularioMedico() {
-    const formPanel = document.getElementById('pnlNuevoMedico');
-    const listPanel = document.getElementById('pnlListadoMedicos');
-
+    const formPanel = document.querySelector('[data-rol="panel-form"]');
+    const listPanel = document.querySelector('[data-rol="panel-lista"]');
     if (formPanel) formPanel.style.display = 'none';
     if (listPanel) listPanel.style.display = 'block';
 }
 
-window.abrirModalPassEmail = function (email) {
-    var hidEmail = document.getElementById('hfEmailDestino');
-    var lbl = document.getElementById('lblEmailModal');
-    var txt = document.getElementById('txtNuevaPass');
-    var modalEl = document.getElementById('modalPassword');
+// Limpiar formulario y forzar modo ALTA
+function limpiarFormularioMedico() {
+    const setVal = (sel, val = '') => { const el = document.querySelector(sel); if (el) el.value = val; };
 
-    if (hidEmail) hidEmail.value = email || '';
-    if (lbl) lbl.textContent = email || '';
-    if (txt) txt.value = '';
+    setVal('[data-rol="inp-nombre"]');
+    setVal('[data-rol="inp-apellido"]');
+    setVal('[data-rol="inp-telefono"]');
+    setVal('[data-rol="inp-email"]');
+    setVal('[data-rol="inp-matricula"]');
+    setVal('[data-rol="inp-pass"]');
 
-    if (modalEl && typeof bootstrap !== 'undefined') {
-        var m = new bootstrap.Modal(modalEl);
-        m.show();
-    } else {
-        console.error('Modal/Bootstrap no disponible.');
-    }
-};
+    const hf = document.getElementById('hfMedicoId');
+    if (hf) hf.value = '';
+
+    const ddl = document.querySelector('[data-rol="ddl-turno"]');
+    if (ddl) ddl.selectedIndex = 0;
+
+    const cont = document.querySelector('[data-rol="especialidades"]');
+    if (cont) cont.querySelectorAll('input[type=checkbox]').forEach(c => { c.checked = false; c.disabled = false; });
+
+    const vt = document.querySelector('[data-rol="form-title"]');
+    if (vt) vt.textContent = 'Nuevo médico';
+}
+
+// Botones (alta / cancelar)
+window.addEventListener('DOMContentLoaded', () => {
+    const btnAlta = document.querySelector('[data-rol="btn-alta"]');
+    const btnCancelar = document.querySelectorAll('[data-rol="btn-cancelar"]');
+
+    if (btnAlta) btnAlta.addEventListener('click', () => { limpiarFormularioMedico(); mostrarFormularioMedico(); });
+    btnCancelar.forEach(b => b.addEventListener('click', () => ocultarFormularioMedico()));
+});
