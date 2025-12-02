@@ -164,6 +164,11 @@ namespace Presentacion.Recepcion
             var lista = turnoNegocio.ListarResumenPorFecha(fecha);
             gvTurnosDia.DataSource = lista;
             gvTurnosDia.DataBind();
+            if (gvTurnosDia.HeaderRow != null)
+            {
+                gvTurnosDia.UseAccessibleHeader = true;
+                gvTurnosDia.HeaderRow.TableSection = TableRowSection.TableHeader;
+            }
         }
 
         protected void btnBuscarTurnosDia_Click(object sender, EventArgs e)
@@ -174,30 +179,30 @@ namespace Presentacion.Recepcion
         // ================== REPROG/CANCEL ==================
         protected void gvTurnosDia_RowCommand(object sender, GridViewCommandEventArgs e)
         {
+            if (e.CommandName != "Reprogramar" && e.CommandName != "Cancelar") return;
+
+            int index = Convert.ToInt32(e.CommandArgument);             
+            int idTurno = (int)gvTurnosDia.DataKeys[index]["TurnoId"];  
+
             if (e.CommandName == "Reprogramar")
             {
-                int index = Convert.ToInt32(e.CommandArgument);
-                var keys = gvTurnosDia.DataKeys[index];
-                int idTurno = (int)keys["IdTurno"];
                 hfReprogId.Value = idTurno.ToString();
-
-                // por default: nueva fecha = misma fecha listada
                 txtReprogFecha.Text = txtFechaListado.Text;
                 ddlReprogHora.SelectedIndex = 0;
 
-                ScriptManager.RegisterStartupScript(this, GetType(), "showReprog", "abrirModalReprog();", true);
-            }
-            else if (e.CommandName == "Cancelar")
-            {
-                int index = Convert.ToInt32(e.CommandArgument);
-                var keys = gvTurnosDia.DataKeys[index];
-                int idTurno = (int)keys["IdTurno"];
 
+                ScriptManager.RegisterStartupScript(
+                 this, GetType(), "showReprog",
+                 "window.addEventListener('load', function(){ abrirModalReprog(); }, { once: true });",
+                 true
+             );
+            }
+            else 
+            {
                 turnoNegocio.CancelarTurno(idTurno);
                 BindTurnosDelDia();
             }
         }
-
         protected void btnConfirmarReprog_Click(object sender, EventArgs e)
         {
             try
