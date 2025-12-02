@@ -40,12 +40,18 @@ namespace Clinica.Negocio
             datos.ActualizarEstadoYDiagnostico(idTurno, 2, "");
         }
 
-        public void ReprogramarTurno(int idTurnoAnterior, Turno nuevoTurno)
+        public void ReprogramarTurnoCreandoNuevo(int idTurnoAnterior, Turno nuevoTurno)
         {
             datos.ActualizarEstadoYDiagnostico(idTurnoAnterior, 1, "");
             datos.Agregar(nuevoTurno);
         }
+        public void ReprogramarTurno(int idTurno, DateTime nuevaFechaHora, int medicoId)
+        {
+            if (ExisteTurnoEnHorario(medicoId, nuevaFechaHora))
+                throw new Exception("El médico ya tiene un turno en ese horario.");
 
+            datos.ReprogramarFecha(idTurno, nuevaFechaHora);
+        }
         private int EstadoTextoAInt(string estado)
         {
             switch (estado)
@@ -70,5 +76,16 @@ namespace Clinica.Negocio
         }
         public int ContarTurnosHoy() => datos.ContarTurnosHoy();
         public List<TurnoResumen> ListarUltimosResumen(int top) => datos.ListarUltimosResumen(top);
+
+        public bool ExisteTurnoEnHorario(int medicoId, DateTime fechaHoraInicio)
+            => datos.ExisteTurnoEnHorario(medicoId, fechaHoraInicio);
+
+        public List<TurnoResumen> ListarResumenPorFecha(DateTime fecha)
+            => datos.ListarResumenPorFecha(fecha);
+        public List<string> HorasDisponibles(int medicoId, DateTime fecha)
+        {
+            return datos.HorasDisponibles(medicoId, fecha);
+        }
+
     }
 }

@@ -171,37 +171,106 @@ namespace Clinica.Datos
                 return lista;
             }
             finally { datos.CerrarConexion(); }
+
+        }
+        public bool ExisteTurnoEnHorario(int medicoId, DateTime fechaHoraInicio)
+        {
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"
+            SELECT 1
+            FROM Turnos
+            WHERE MedicoId = @MedicoId
+              AND FechaHoraInicio = @Inicio
+              AND Estado <> 2; -- 2 = Cancelado
+        ");
+                datos.SetearParametro("@MedicoId", medicoId);
+                datos.SetearParametro("@Inicio", fechaHoraInicio);
+                datos.EjecutarLectura();
+                return datos.Lector.Read();
+            }
+            finally { datos.CerrarConexion(); }
+        }
+        public List<TurnoResumen> ListarResumenPorFecha(DateTime fecha)
+        {
+            var lista = new List<TurnoResumen>();
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"
+            SELECT  t.TurnoId,
+                    t.MedicoId,
+                    CAST(t.FechaHoraInicio AS date) AS Fecha,
+                    FORMAT(t.FechaHoraInicio, 'HH:mm') AS Hora,
+                    CONCAT(p.Apellido, ', ', p.Nombre) AS Paciente,
+                    CONCAT(m.Apellido, ', ', m.Nombre) AS Medico,
+                    e.Nombre AS Especialidad,
+                    t.Estado
+            FROM Turnos t
+            INNER JOIN Pacientes p ON p.PacienteId = t.PacienteId
+            INNER JOIN Medicos   m ON m.MedicoId   = t.MedicoId
+            INNER JOIN Especialidades e ON e.EspecialidadId = t.EspecialidadId
+            WHERE CAST(t.FechaHoraInicio AS date) = @Fecha
+            ORDER BY t.FechaHoraInicio;
+        ");
+                datos.SetearParametro("@Fecha", fecha.Date);
+                datos.EjecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    int estado = (int)datos.Lector["Estado"];
+                    lista.Add(new TurnoResumen
+                    {
+                        TurnoId = (int)datos.Lector["TurnoId"],
+                        MedicoId = (int)datos.Lector["MedicoId"],
+                        Fecha = (DateTime)datos.Lector["Fecha"],
+                        Hora = (string)datos.Lector["Hora"],
+                        Paciente = (string)datos.Lector["Paciente"],
+                        Medico = (string)datos.Lector["Medico"],
+                        Especialidad = (string)datos.Lector["Especialidad"],
+                        Estado = EstadoTurnoToTexto((EstadoTurno)estado)
+                    });
+                }
+                return lista;
+            }
+            finally { datos.CerrarConexion(); }
         }
 
         public Turno ObtenerPorId(int idTurno)
         {
-            AccesoDatos datos = new AccesoDatos();
+            var datos = new AccesoDatos();
             try
             {
-                string consulta = @"SELECT T.TurnoId, T.FechaHoraInicio, T.MotivoConsulta, T.DiagnosticoMedico, T.Estado, 
-                                   P.Nombre, P.Apellido, P.DNI 
-                            FROM Turnos T
-                            INNER JOIN Pacientes P ON T.PacienteId = P.PacienteId
-                            WHERE T.TurnoId = @Id";
-
-                datos.SetearConsulta(consulta);
+                datos.SetearConsulta(@"
+            SELECT T.TurnoId, T.FechaHoraInicio, T.MotivoConsulta, T.DiagnosticoMedico, T.Estado,
+                   T.MedicoId, T.EspecialidadId, T.PacienteId,
+                   P.Nombre, P.Apellido, P.DNI
+            FROM Turnos T
+            INNER JOIN Pacientes P ON T.PacienteId = P.PacienteId
+            WHERE T.TurnoId = @Id");
                 datos.SetearParametro("@Id", idTurno);
                 datos.EjecutarLectura();
 
                 if (datos.Lector.Read())
                 {
-                    Turno turno = new Turno();
-                    turno.IdTurno = (int)datos.Lector["TurnoId"];
-                    turno.FechaHoraInicio = (DateTime)datos.Lector["FechaHoraInicio"];
-                    turno.MotivoConsulta = datos.Lector["MotivoConsulta"].ToString();
-                    turno.DiagnosticoMedico = datos.Lector["DiagnosticoMedico"] == DBNull.Value ? "" : datos.Lector["DiagnosticoMedico"].ToString();
-                    turno.Estado = (EstadoTurno)(int)datos.Lector["Estado"];
-
-                    turno.Paciente = new Paciente();
-                    turno.Paciente.Nombre = datos.Lector["Nombre"].ToString();
-                    turno.Paciente.Apellido = datos.Lector["Apellido"].ToString();
-                    turno.Paciente.Dni = datos.Lector["DNI"] == DBNull.Value ? "-" : datos.Lector["DNI"].ToString();
-
+                    var turno = new Turno
+                    {
+                        IdTurno = (int)datos.Lector["TurnoId"],
+                        FechaHoraInicio = (DateTime)datos.Lector["FechaHoraInicio"],
+                        MotivoConsulta = datos.Lector["MotivoConsulta"] == DBNull.Value ? null : datos.Lector["MotivoConsulta"].ToString(),
+                        DiagnosticoMedico = datos.Lector["DiagnosticoMedico"] == DBNull.Value ? null : datos.Lector["DiagnosticoMedico"].ToString(),
+                        Estado = (EstadoTurno)(int)datos.Lector["Estado"],
+                        Paciente = new Paciente
+                        {
+                            PacienteId = (int)datos.Lector["PacienteId"],
+                            Nombre = datos.Lector["Nombre"].ToString(),
+                            Apellido = datos.Lector["Apellido"].ToString(),
+                            Dni = datos.Lector["DNI"] == DBNull.Value ? "-" : datos.Lector["DNI"].ToString()
+                        },
+                        Medico = new Medico { Id = (int)datos.Lector["MedicoId"] },
+                        Especialidad = new Especialidad { EspecialidadId = (int)datos.Lector["EspecialidadId"] }
+                    };
                     return turno;
                 }
                 return null;
@@ -271,6 +340,125 @@ namespace Clinica.Datos
             finally { datos.CerrarConexion(); }
         }
 
+        public List<TurnoResumen> ListarPorFecha(DateTime fecha)
+        {
+            var lista = new List<TurnoResumen>();
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"
+            SELECT  t.TurnoId,
+                    t.FechaHoraInicio,
+                    CONCAT(p.Apellido, ', ', p.Nombre)   AS Paciente,
+                    CONCAT(m.Apellido, ', ', m.Nombre)   AS Medico,
+                    e.Nombre                             AS Especialidad,
+                    t.Estado
+            FROM Turnos t
+            INNER JOIN Pacientes p      ON p.PacienteId     = t.PacienteId
+            INNER JOIN Medicos m        ON m.MedicoId       = t.MedicoId
+            INNER JOIN Especialidades e ON e.EspecialidadId = t.EspecialidadId
+            WHERE CAST(t.FechaHoraInicio AS date) = @F
+            ORDER BY t.FechaHoraInicio ASC;");
+                datos.SetearParametro("@F", fecha.Date);
+                datos.EjecutarLectura();
+
+                while (datos.Lector.Read())
+                {
+                    var fh = (DateTime)datos.Lector["FechaHoraInicio"];
+                    var estInt = (int)datos.Lector["Estado"];
+
+                    var item = new TurnoResumen
+                    {
+                        NumeroTurno = (int)datos.Lector["TurnoId"], 
+                        TurnoId = (int)datos.Lector["TurnoId"],   
+                        Fecha = fh.Date,
+                        Hora = fh.ToString("HH:mm"),
+                        Paciente = (string)datos.Lector["Paciente"],
+                        Medico = (string)datos.Lector["Medico"],
+                        Especialidad = (string)datos.Lector["Especialidad"],
+                        Estado = EstadoTurnoToTexto((EstadoTurno)estInt)
+                    };
+                    lista.Add(item);
+                }
+                return lista;
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        // Reprogramar (actualiza fecha/hora)
+        public void ReprogramarFecha(int idTurno, DateTime nuevaFechaHora)
+        {
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"
+            UPDATE Turnos
+            SET FechaHoraInicio = @Nueva,
+                FechaHoraFin    = DATEADD(hour, 1, @Nueva),
+                Estado          = 1  -- Reprogramado
+            WHERE TurnoId = @Id;");
+                datos.SetearParametro("@Nueva", nuevaFechaHora);
+                datos.SetearParametro("@Id", idTurno);
+                datos.EjecutarAccion();
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        // Cancelar (marca estado = 2)
+        public void Cancelar(int idTurno)
+        {
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"UPDATE Turnos SET Estado = 2 WHERE TurnoId = @Id;");
+                datos.SetearParametro("@Id", idTurno);
+                datos.EjecutarAccion();
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        private List<string> HorasOcupadas(int medicoId, DateTime fecha)
+        {
+            var ocupadas = new List<string>();
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"
+            SELECT FORMAT(FechaHoraInicio, 'HH:mm') AS Hora
+            FROM Turnos
+            WHERE MedicoId = @M
+              AND CAST(FechaHoraInicio AS date) = @F
+              AND Estado <> 2 -- excluir cancelados");
+                datos.SetearParametro("@M", medicoId);
+                datos.SetearParametro("@F", fecha.Date);
+                datos.EjecutarLectura();
+
+                while (datos.Lector.Read())
+                    ocupadas.Add((string)datos.Lector["Hora"]);
+
+                return ocupadas;
+            }
+            finally { datos.CerrarConexion(); }
+        }
+
+        // Horas disponibles (08:00–18:00 cada 30’) menos ocupadas
+        public List<string> HorasDisponibles(int medicoId, DateTime fecha)
+        {
+            var ocupadas = new HashSet<string>(HorasOcupadas(medicoId, fecha));
+            var libres = new List<string>();
+
+            var inicio = new DateTime(fecha.Year, fecha.Month, fecha.Day, 8, 0, 0);
+            var fin = new DateTime(fecha.Year, fecha.Month, fecha.Day, 18, 0, 0);
+
+            for (var h = inicio; h <= fin; h = h.AddMinutes(30))
+            {
+                var hhmm = h.ToString("HH:mm");
+                if (!ocupadas.Contains(hhmm))
+                    libres.Add(hhmm);
+            }
+            return libres;
+        }
+
         private static string EstadoTurnoToTexto(EstadoTurno e)
         {
             switch (e)
@@ -283,5 +471,6 @@ namespace Clinica.Datos
                 default: return "Desconocido";
             }
         }
+
     }
 }

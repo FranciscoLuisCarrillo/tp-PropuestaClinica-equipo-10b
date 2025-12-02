@@ -9,6 +9,8 @@ namespace Clinica.Dominio
     public class TurnoResumen
     {
         public int NumeroTurno { get; set; }
+        public int TurnoId { get; set; }
+        public int MedicoId { get; set; }
         public DateTime Fecha { get; set; }
         public string Hora { get; set; }
         public string Paciente { get; set; }

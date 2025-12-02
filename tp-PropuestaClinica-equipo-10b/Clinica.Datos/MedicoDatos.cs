@@ -173,10 +173,14 @@ namespace Clinica.Datos
             AccesoDatos datos = new AccesoDatos();
             try
             {
-                string consulta = @"SELECT M.MedicoId, M.Nombre, M.Apellido 
-                            FROM Medicos M
-                            INNER JOIN MedicoEspecialidades ME ON ME.MedicoId = M.MedicoId
-                            WHERE ME.EspecialidadId = @EspecialidadId AND M.Activo = 1";
+                string consulta = @"
+            SELECT DISTINCT M.MedicoId, M.Nombre, M.Apellido
+            FROM Medicos M
+            LEFT JOIN MedicoEspecialidades ME ON ME.MedicoId = M.MedicoId
+            WHERE M.Activo = 1
+              AND (@EspecialidadId = 0 OR ME.EspecialidadId = @EspecialidadId)
+            ORDER BY M.Apellido, M.Nombre;
+        ";
 
                 datos.SetearConsulta(consulta);
                 datos.SetearParametro("@EspecialidadId", especialidadId);
@@ -184,12 +188,14 @@ namespace Clinica.Datos
 
                 while (datos.Lector.Read())
                 {
-                    Medico aux = new Medico();
-                    aux.Id = (int)datos.Lector["MedicoId"];
-                    aux.Nombre = (string)datos.Lector["Nombre"];
-                    aux.Apellido = (string)datos.Lector["Apellido"];
-                    lista.Add(aux);
+                    lista.Add(new Medico
+                    {
+                        Id = (int)datos.Lector["MedicoId"],
+                        Nombre = datos.Lector["Nombre"].ToString(),
+                        Apellido = datos.Lector["Apellido"].ToString()
+                    });
                 }
+
                 return lista;
             }
             finally

@@ -95,3 +95,8 @@ window.addEventListener('DOMContentLoaded', () => {
     if (btnAlta) btnAlta.addEventListener('click', () => { limpiarFormularioMedico(); mostrarFormularioMedico(); });
     btnCancelar.forEach(b => b.addEventListener('click', () => ocultarFormularioMedico()));
 });
+
+function abrirModalReprog() {
+    var m = new bootstrap.Modal(document.getElementById('mdlReprog'));
+    m.show();
+}

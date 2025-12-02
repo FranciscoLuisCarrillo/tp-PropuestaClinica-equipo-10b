@@ -15,13 +15,13 @@ namespace Presentacion.Recepcion
     {
 
         /// <summary>
-        /// Control valTurno.
+        /// Control valAlta.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.ValidationSummary valTurno;
+        protected global::System.Web.UI.WebControls.ValidationSummary valAlta;
 
         /// <summary>
         /// Control ddlPaciente.
@@ -33,13 +33,13 @@ namespace Presentacion.Recepcion
         protected global::System.Web.UI.WebControls.DropDownList ddlPaciente;
 
         /// <summary>
-        /// Control ddlEspecialidades.
+        /// Control ddlEspecialidad.
         /// </summary>
         /// <remarks>
         /// Campo generado automáticamente.
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
-        protected global::System.Web.UI.WebControls.DropDownList ddlEspecialidades;
+        protected global::System.Web.UI.WebControls.DropDownList ddlEspecialidad;
 
         /// <summary>
         /// Control ddlMedico.
@@ -112,5 +112,41 @@ namespace Presentacion.Recepcion
         /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
         /// </remarks>
         protected global::System.Web.UI.WebControls.GridView gvTurnosDia;
+
+        /// <summary>
+        /// Control hfReprogId.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.HiddenField hfReprogId;
+
+        /// <summary>
+        /// Control txtReprogFecha.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.TextBox txtReprogFecha;
+
+        /// <summary>
+        /// Control ddlReprogHora.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.DropDownList ddlReprogHora;
+
+        /// <summary>
+        /// Control btnConfirmarReprog.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Button btnConfirmarReprog;
     }
 }

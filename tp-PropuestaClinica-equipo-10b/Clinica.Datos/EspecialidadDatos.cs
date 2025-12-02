@@ -21,7 +21,7 @@ namespace Clinica.Datos
 
             try
             {
-                // Usamos COLLATE Latin1_General_CI_AI para hacer la comparación case-insensitive (CI) y accent-insensitive (AI).
+                
                 string consulta = "SELECT EspecialidadId FROM Especialidades WHERE Nombre COLLATE Latin1_General_CI_AI = @Nombre";
                 datos.SetearConsulta(consulta);
                 datos.SetearParametro("@Nombre", nombre);
