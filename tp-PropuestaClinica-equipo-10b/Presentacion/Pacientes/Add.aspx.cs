@@ -26,7 +26,7 @@ namespace Presentacion.Pacientes
         }
         private void CargarDatos()
         {
-            // Recuperar el ID del paciente desde la sesión
+           
             Usuario usuario = (Usuario)Session["usuario"];
             PacienteNegocio negocio = new PacienteNegocio();
 

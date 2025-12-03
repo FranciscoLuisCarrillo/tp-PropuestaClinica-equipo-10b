@@ -166,70 +166,186 @@ namespace Presentacion.Pacientes
 
         protected void btnCrearTurno_Click(object sender, EventArgs e)
         {
+            // 1) Validación ASP.NET
             Page.Validate();
             if (!Page.IsValid) return;
-            Usuario usuarioActual = (Usuario)Session["usuario"];
+
+            // 2) Validar sesión/usuario
+            var usuarioActual = Session["usuario"] as Usuario;
+            if (usuarioActual == null)
+            {
+                Response.Redirect("~/Login.aspx", false);
+                return;
+            }
+
+            // 3) Validar que el usuario tenga Paciente asociado
+            if (!usuarioActual.IdPaciente.HasValue)
+            {
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "errNoPaciente",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    "__queueToast.push({ m: 'Tu usuario no está asociado a un paciente. Completá tu perfil.', t: 'warning', d: 1200, redirect: 'Add.aspx' });",
+                    true
+                );
+                return;
+            }
+
             try
             {
-                PacienteNegocio pacienteNegocio = new PacienteNegocio();
-                Paciente datos = pacienteNegocio.ObtenerPorId((int)usuarioActual.IdPaciente);
+                // 4) Verificar datos obligatorios del perfil
+                var pacienteNegocio = new PacienteNegocio();
+                var datos = pacienteNegocio.ObtenerPorId(usuarioActual.IdPaciente.Value);
                 if (datos == null || string.IsNullOrEmpty(datos.Dni) || datos.FechaNacimiento == DateTime.MinValue)
                 {
-
-                    Response.Write("<script>alert('Faltan datos en tu perfil. Por favor complétalos.'); window.location='Add.aspx';</script>");
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "faltanDatos",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Faltan datos en tu perfil. Por favor complétalos.', t: 'warning', d: 1200, redirect: 'Add.aspx' });",
+                        true
+                    );
                     return;
                 }
-            }
-            catch (Exception ex)
-            {
-                Response.Write("<script>alert('Error al verificar datos personales: " + ex.Message + "');</script>");
-                return;
-            }
 
+                // 5) Validar y parsear Especialidad / Médico
+                if (string.IsNullOrWhiteSpace(ddlEspecialidades.SelectedValue) ||
+                    string.IsNullOrWhiteSpace(ddlMedico.SelectedValue))
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "reqCombos",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Seleccioná especialidad y médico.', t: 'danger', d: 2000 });",
+                        true
+                    );
+                    return;
+                }
 
+                if (!int.TryParse(ddlEspecialidades.SelectedValue, out int especialidadId))
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "badEsp",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Especialidad inválida.', t: 'danger', d: 2000 });",
+                        true
+                    );
+                    return;
+                }
 
+                if (!int.TryParse(ddlMedico.SelectedValue, out int medicoId))
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "badMed",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Médico inválido.', t: 'danger', d: 2000 });",
+                        true
+                    );
+                    return;
+                }
 
-            if (ddlHora.SelectedIndex == 0 || string.IsNullOrEmpty(ddlHora.SelectedValue))
-            {
-                Response.Write("<script>alert('Por favor seleccione una hora.');</script>");
-                return;
-            }
-            try
-            {
-                TurnoNegocio turnoNegocio = new TurnoNegocio();
-                Turno nuevoTurno = new Turno();
+                // 6) Validar y parsear Fecha
+                if (string.IsNullOrWhiteSpace(txtFecha.Text))
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "reqFecha",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Fecha requerida.', t: 'danger', d: 2000 });",
+                        true
+                    );
+                    return;
+                }
 
-                nuevoTurno.Medico = new Medico();
-                nuevoTurno.Medico.Id = int.Parse(ddlMedico.SelectedValue);
+                if (!DateTime.TryParseExact(txtFecha.Text, "yyyy-MM-dd",
+                                            System.Globalization.CultureInfo.InvariantCulture,
+                                            System.Globalization.DateTimeStyles.None,
+                                            out DateTime fechaBase))
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "badFecha",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Formato de fecha inválido.', t: 'danger', d: 2000 });",
+                        true
+                    );
+                    return;
+                }
 
-                nuevoTurno.Especialidad = new Especialidad();
-                nuevoTurno.Especialidad.EspecialidadId = int.Parse(ddlEspecialidades.SelectedValue);
+                // 7) Validar y parsear Hora
+                if (ddlHora.SelectedIndex <= 0 || string.IsNullOrWhiteSpace(ddlHora.SelectedValue))
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "reqHora",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Seleccioná una hora.', t: 'danger', d: 2000 });",
+                        true
+                    );
+                    return;
+                }
 
+                if (!TimeSpan.TryParseExact(ddlHora.SelectedValue, "hh\\:mm",
+                                            System.Globalization.CultureInfo.InvariantCulture, out TimeSpan horaSel))
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "badHora",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Formato de hora inválido.', t: 'danger', d: 2000 });",
+                        true
+                    );
+                    return;
+                }
 
-                nuevoTurno.Paciente = new Paciente();
-                nuevoTurno.Paciente.PacienteId = (int)usuarioActual.IdPaciente;
-                DateTime fecha = DateTime.Parse(txtFecha.Text);
-                TimeSpan hora = TimeSpan.Parse(ddlHora.SelectedValue);
+                // 8) Construir Turno
+                var nuevoTurno = new Turno
+                {
+                    Medico = new Medico { Id = medicoId },
+                    Especialidad = new Especialidad { EspecialidadId = especialidadId },
+                    Paciente = new Paciente { PacienteId = usuarioActual.IdPaciente.Value },
+                    FechaHoraInicio = fechaBase.Date.Add(horaSel),
+                    FechaHoraFin = fechaBase.Date.Add(horaSel).AddHours(1),
+                    MotivoConsulta = (txtObs.Text ?? string.Empty).Trim(),
+                    Estado = EstadoTurno.Nuevo
+                };
 
-                nuevoTurno.FechaHoraInicio = fecha.Add(hora);
-                nuevoTurno.FechaHoraFin = nuevoTurno.FechaHoraInicio.AddHours(1);
+                // 9) No reservar en el pasado
+                if (nuevoTurno.FechaHoraInicio < DateTime.Now)
+                {
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "past",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'No podés reservar en el pasado.', t: 'danger', d: 2200 });",
+                        true
+                    );
+                    return;
+                }
 
-                nuevoTurno.MotivoConsulta = txtObs.Text;
-                nuevoTurno.Estado = EstadoTurno.Nuevo;
-
+                // 10) Guardar
+                var turnoNegocio = new TurnoNegocio();
                 turnoNegocio.AgendarTurno(nuevoTurno);
 
-                Response.Write("<script>alert('¡Turno reservado con éxito!'); window.location='Default.aspx';</script>");
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "okReserva",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    "__queueToast.push({ m: '¡Turno reservado con éxito!', t: 'success', d: 1500, redirect: 'Default.aspx' });",
+                    true
+                );
             }
             catch (System.Threading.ThreadAbortException)
             {
-
+               
             }
             catch (Exception ex)
             {
-                Response.Write("<script>alert('Error al reservar: " + ex.Message + "');</script>");
+              
+                Session["error"] = ex.ToString(); 
+
+                var msgUser = (ex.InnerException?.Message ?? ex.Message ?? "Error").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
+
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "errReserva",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    $"__queueToast.push({{ m: 'Error al reservar: {msgUser}', t: 'danger', d: 4000 }});",
+                    true
+                );
             }
         }
+
 
     }
 }

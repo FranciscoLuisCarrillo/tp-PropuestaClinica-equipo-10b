@@ -471,6 +471,25 @@ namespace Clinica.Datos
                 default: return "Desconocido";
             }
         }
+        public bool ExisteTurnoPacienteEnHorario(int pacienteId, DateTime fechaHoraInicio)
+        {
+            var datos = new AccesoDatos();
+            try
+            {
+                datos.SetearConsulta(@"
+            SELECT 1
+            FROM Turnos
+            WHERE PacienteId = @PacienteId
+              AND FechaHoraInicio = @Inicio
+              AND Estado <> 2; -- 2 = Cancelado
+        ");
+                datos.SetearParametro("@PacienteId", pacienteId);
+                datos.SetearParametro("@Inicio", fechaHoraInicio);
+                datos.EjecutarLectura();
+                return datos.Lector.Read();
+            }
+            finally { datos.CerrarConexion(); }
+        }
 
     }
 }

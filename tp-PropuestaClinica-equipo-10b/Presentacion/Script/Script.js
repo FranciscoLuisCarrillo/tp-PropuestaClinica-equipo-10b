@@ -101,3 +101,71 @@ window.abrirModalReprog = function () {
     var m = new bootstrap.Modal(document.getElementById('mdlReprog'));
     m.show();
 };
+
+
+// ======= Toast universal y cola segura =======
+(function () {
+    
+    function defineToastOnce() {
+        if (window.mostrarToast) return true;
+
+        if (!(window.bootstrap && bootstrap.Toast)) {
+           
+            return false;
+        }
+
+        window.mostrarToast = function (mensaje, tipo = "success", delayMs = 2500) {
+            var cont = document.querySelector('.toast-container');
+            if (!cont) {
+                cont = document.createElement('div');
+                cont.className = 'toast-container position-fixed bottom-0 end-0 p-3';
+                cont.style.zIndex = 99999;
+                document.body.appendChild(cont);
+            }
+
+            var toast = document.createElement('div');
+            toast.className = "toast align-items-center text-bg-" + tipo + " border-0";
+            toast.setAttribute("role", "status");
+            toast.innerHTML =
+                '<div class="d-flex">' +
+                '<div class="toast-body">' + (mensaje || '') + '</div>' +
+                '<button type="button" class="btn-close btn-close-white me-2 m-auto" ' +
+                'data-bs-dismiss="toast" aria-label="Cerrar"></button>' +
+                '</div>';
+
+            cont.appendChild(toast);
+            var inst = bootstrap.Toast.getOrCreateInstance(toast, { delay: delayMs });
+            inst.show();
+            toast.addEventListener('hidden.bs.toast', function () { toast.remove(); });
+        };
+
+        return true;
+    }
+
+    
+    function drainQueue() {
+        if (!defineToastOnce()) {
+           
+            setTimeout(drainQueue, 50);
+            return;
+        }
+
+        if (!Array.isArray(window.__queueToast)) return;
+
+        var q = window.__queueToast.splice(0); 
+        q.forEach(function (x) {
+            try {
+                window.mostrarToast(x.m, x.t, x.d);
+                if (x.redirect) {
+                    setTimeout(function () { window.location = x.redirect; }, x.d || 1500);
+                }
+            } catch (e) {  }
+        });
+    }
+
+  
+    if (window.Sys && Sys.Application) {
+        Sys.Application.add_load(drainQueue);
+    }
+    window.addEventListener('load', drainQueue);
+})();

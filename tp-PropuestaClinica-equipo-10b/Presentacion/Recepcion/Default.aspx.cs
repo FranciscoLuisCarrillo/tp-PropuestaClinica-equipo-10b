@@ -112,6 +112,7 @@ namespace Presentacion.Recepcion
             CargarHorasDisponibles();
         }
 
+        
         // ================== ALTA ==================
         protected void btnCrearTurno_Click(object sender, EventArgs e)
         {
@@ -127,9 +128,26 @@ namespace Presentacion.Recepcion
                 var hora = TimeSpan.Parse(ddlHora.SelectedValue);
                 var fechaHora = fecha.Date + hora;
 
-             
+                
+                if (turnoNegocio.ExisteTurnoPacienteEnHorario(pacienteId, fechaHora))
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "dupPac",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Ese paciente ya tiene un turno en ese horario.', t: 'warning', d: 3000 });",
+                        true
+                    );
+                    return;
+                }
+
                 if (turnoNegocio.ExisteTurnoEnHorario(medicoId, fechaHora))
-                    throw new Exception("Ese horario ya está ocupado para el médico seleccionado.");
+                {
+                    ScriptManager.RegisterStartupScript(this, GetType(), "dupMed",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: 'Ese horario ya está ocupado para el médico.', t: 'danger', d: 3000 });",
+                        true
+                    );
+                    return;
+                }
 
                 var t = new Turno
                 {
@@ -146,12 +164,34 @@ namespace Presentacion.Recepcion
                 txtObs.Text = "";
                 ddlHora.SelectedIndex = 0;
 
-                ScriptManager.RegisterStartupScript(this, GetType(), "okAlta",
-                    "alert('Turno creado correctamente.');", true);
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "okAlta",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    "__queueToast.push({ m: 'Turno creado correctamente.', t: 'success', d: 1800 });",
+                    true
+                );
+            }
+            catch (InvalidOperationException iox)
+            {
+                var msg = (iox.Message ?? "Error").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
+                valAlta.HeaderText = msg;
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "bizAlta",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    $"__queueToast.push({{ m: '{msg}', t: 'warning', d: 3200 }});",
+                    true
+                );
             }
             catch (Exception ex)
             {
-                valAlta.HeaderText = ex.Message;
+                var msg = (ex.Message ?? "Error").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
+                valAlta.HeaderText = msg;
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "errAlta",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    $"__queueToast.push({{ m: 'Error al crear turno: {msg}', t: 'danger', d: 3000 }});",
+                    true
+                );
             }
         }
 
@@ -201,6 +241,12 @@ namespace Presentacion.Recepcion
             {
                 turnoNegocio.CancelarTurno(idTurno);
                 BindTurnosDelDia();
+                ScriptManager.RegisterStartupScript(
+                this, GetType(), "okCancel",
+                "window.__queueToast = window.__queueToast || []; " +
+                "__queueToast.push({ m: 'Turno cancelado.', t: 'warning', d: 1800 });",
+                true
+            );
             }
         }
         protected void btnConfirmarReprog_Click(object sender, EventArgs e)
@@ -219,11 +265,24 @@ namespace Presentacion.Recepcion
                 turnoNegocio.ReprogramarTurno(turnoId, fechaHoraNueva, turnoOrigen.Medico.Id);
 
                 BindTurnosDelDia();
+                ScriptManager.RegisterStartupScript(
+                this, GetType(), "okReprog",
+                "window.__queueToast = window.__queueToast || []; " +
+                "__queueToast.push({ m: 'Turno reprogramado.', t: 'success', d: 1800 });" +
+                "var m = (window.bootstrap && document.getElementById('mdlReprog')) ? bootstrap.Modal.getInstance(document.getElementById('mdlReprog')) : null;" +
+                "if (m) m.hide();",
+                true
+            );
             }
             catch (Exception ex)
             {
-                ScriptManager.RegisterStartupScript(this, GetType(), "reprogErr",
-                    $"alert('{ex.Message.Replace("'", "")}');", true);
+                var msg = (ex.Message ?? "Error").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "reprogErr",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    $"__queueToast.push({{ m: 'Error al reprogramar: {msg}', t: 'danger', d: 3500 }});",
+                    true
+                );
             }
         }
     }

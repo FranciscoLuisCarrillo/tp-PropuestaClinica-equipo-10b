@@ -422,4 +422,12 @@ BEGIN
 END
 GO
 
+
+    Agregado en Tabla turnos para cuando queres agendar un turno con la recepcionista no se necesario
+Completar el campo observaciones 02/12/2025
+
+ALTER TABLE Turnos
+ALTER COLUMN MotivoConsulta NVARCHAR(500) NULL
+
+
 */
