@@ -221,8 +221,24 @@ namespace Presentacion.Recepcion
         {
             if (e.CommandName != "Reprogramar" && e.CommandName != "Cancelar") return;
 
-            int index = Convert.ToInt32(e.CommandArgument);             
-            int idTurno = (int)gvTurnosDia.DataKeys[index]["TurnoId"];  
+            int index = Convert.ToInt32(e.CommandArgument);
+            int idTurno = (int)gvTurnosDia.DataKeys[index]["TurnoId"];
+
+            var turno = turnoNegocio.ObtenerPorId(idTurno);
+            if (turno == null)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "noTurno",
+                    "window.__queueToast = window.__queueToast || []; __queueToast.push({ m:'No se encontró el turno.', t:'danger', d:2500 });", true);
+                return;
+            }
+
+            // Bloqueo por estado
+            if (turno.Estado == EstadoTurno.Cerrado || turno.Estado == EstadoTurno.Cancelado)
+            {
+                ScriptManager.RegisterStartupScript(this, GetType(), "bloqueado",
+                    "window.__queueToast = window.__queueToast || []; __queueToast.push({ m:'No se puede reprogramar/cancelar un turno cerrado o cancelado.', t:'warning', d:3000 });", true);
+                return;
+            }
 
             if (e.CommandName == "Reprogramar")
             {
@@ -230,24 +246,31 @@ namespace Presentacion.Recepcion
                 txtReprogFecha.Text = txtFechaListado.Text;
                 ddlReprogHora.SelectedIndex = 0;
 
-
-                ScriptManager.RegisterStartupScript(
-                 this, GetType(), "showReprog",
-                 "window.addEventListener('load', function(){ abrirModalReprog(); }, { once: true });",
-                 true
-             );
+                ScriptManager.RegisterStartupScript(this, GetType(), "showReprog",
+                    "window.addEventListener('load', function(){ abrirModalReprog(); }, { once:true });", true);
             }
-            else 
+            else // Cancelar
             {
                 turnoNegocio.CancelarTurno(idTurno);
                 BindTurnosDelDia();
-                ScriptManager.RegisterStartupScript(
-                this, GetType(), "okCancel",
-                "window.__queueToast = window.__queueToast || []; " +
-                "__queueToast.push({ m: 'Turno cancelado.', t: 'warning', d: 1800 });",
-                true
-            );
+                ScriptManager.RegisterStartupScript(this, GetType(), "okCancel",
+                    "window.__queueToast = window.__queueToast || []; __queueToast.push({ m:'Turno cancelado.', t:'warning', d:1800 });", true);
             }
+        }
+        protected void gvTurnosDia_RowDataBound(object sender, GridViewRowEventArgs e)
+        {
+            if (e.Row.RowType != DataControlRowType.DataRow) return;
+
+            var estado = DataBinder.Eval(e.Row.DataItem, "Estado") as string; // "Nuevo", "Cerrado", etc.
+            bool bloquear = string.Equals(estado, "Cerrado", StringComparison.OrdinalIgnoreCase)
+                         || string.Equals(estado, "Cancelado", StringComparison.OrdinalIgnoreCase);
+
+          
+            var btnReprog = e.Row.Cells[5].Controls.Count > 0 ? e.Row.Cells[5].Controls[0] as Button : null;
+            var btnCancel = e.Row.Cells[6].Controls.Count > 0 ? e.Row.Cells[6].Controls[0] as Button : null;
+
+            if (btnReprog != null) btnReprog.Enabled = !bloquear;
+            if (btnCancel != null) btnCancel.Enabled = !bloquear;
         }
         protected void btnConfirmarReprog_Click(object sender, EventArgs e)
         {

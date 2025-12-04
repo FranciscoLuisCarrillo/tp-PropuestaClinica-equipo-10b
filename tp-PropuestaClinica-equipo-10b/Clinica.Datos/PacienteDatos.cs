@@ -13,28 +13,24 @@ namespace Clinica.Datos
 
             try
             {
-                datos.SetearConsulta("SELECT PacienteId, Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial, Activo FROM Pacientes");
-                datos.EjecutarLectura();
+                datos.SetearConsulta("SELECT PacienteId, Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial, Genero, Activo FROM Pacientes");
 
                 while (datos.Lector.Read())
                 {
-
                     var aux = new Paciente
                     {
                         PacienteId = (int)datos.Lector["PacienteId"],
-                        Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : (string)datos.Lector["Nombre"],
-                        Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : (string)datos.Lector["Apellido"],
-                        Dni = datos.Lector["DNI"] == DBNull.Value ? "" : (string)datos.Lector["DNI"],
-                        Email = datos.Lector["Email"] == DBNull.Value ? "" : (string)datos.Lector["Email"],
-                        Telefono = datos.Lector["Telefono"] == DBNull.Value ? "" : (string)datos.Lector["Telefono"],
-                        Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : (string)datos.Lector["Domicilio"],
-                        ObraSocial = datos.Lector["ObraSocial"] == DBNull.Value ? "" : (string)datos.Lector["ObraSocial"],
+                        Nombre = datos.Lector["Nombre"] as string ?? "",
+                        Apellido = datos.Lector["Apellido"] as string ?? "",
+                        Dni = datos.Lector["DNI"] as string ?? "",
+                        Email = datos.Lector["Email"] as string ?? "",
+                        Telefono = datos.Lector["Telefono"] as string ?? "",
+                        Domicilio = datos.Lector["Domicilio"] as string ?? "",
+                        ObraSocial = datos.Lector["ObraSocial"] as string ?? "",
+                        Genero = datos.Lector["Genero"] as string ?? "",  
                         FechaNacimiento = datos.Lector["FechaNacimiento"] == DBNull.Value ? DateTime.MinValue : (DateTime)datos.Lector["FechaNacimiento"],
                         Activo = datos.Lector["Activo"] == DBNull.Value ? true : (bool)datos.Lector["Activo"]
                     };
-
-                    
-
                     lista.Add(aux);
                 }
                 return lista;
@@ -138,30 +134,41 @@ namespace Clinica.Datos
 
         public void Modificar(Paciente paciente)
         {
-            AccesoDatos datos = new AccesoDatos();
+            var datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta(@"UPDATE Pacientes 
-                               SET Nombre=@Nombre, Apellido=@Apellido, DNI=@DNI, 
-                                   FechaNacimiento=@Fecha, Telefono=@Tel, Domicilio=@Dom
-                               WHERE PacienteId=@Id");
+                datos.SetearConsulta(@"
+            UPDATE Pacientes 
+            SET  Nombre          = @Nombre,
+                 Apellido        = @Apellido,
+                 DNI             = @DNI,
+                 FechaNacimiento = @Fecha,
+                 Telefono        = @Tel,
+                 Domicilio       = @Dom,
+                 Genero          = @Genero,
+                 Email           = @Email,
+                 ObraSocial      = @ObraSocial,
+                 Activo          = @Activo
+            WHERE PacienteId     = @Id;");
 
-                datos.SetearParametro("@Nombre", paciente.Nombre);
-                datos.SetearParametro("@Apellido", paciente.Apellido);
-                datos.SetearParametro("@DNI", paciente.Dni);
-                datos.SetearParametro("@Fecha", paciente.FechaNacimiento);
-                datos.SetearParametro("@Tel", paciente.Telefono);
-                datos.SetearParametro("@Dom", paciente.Domicilio);
+                datos.SetearParametro("@Nombre", paciente.Nombre ?? (object)DBNull.Value);
+                datos.SetearParametro("@Apellido", paciente.Apellido ?? (object)DBNull.Value);
+                datos.SetearParametro("@DNI", string.IsNullOrWhiteSpace(paciente.Dni) ? (object)DBNull.Value : paciente.Dni);
+                datos.SetearParametro("@Fecha", paciente.FechaNacimiento == DateTime.MinValue ? (object)DBNull.Value : paciente.FechaNacimiento);
+                datos.SetearParametro("@Tel", string.IsNullOrWhiteSpace(paciente.Telefono) ? (object)DBNull.Value : paciente.Telefono);
+                datos.SetearParametro("@Dom", string.IsNullOrWhiteSpace(paciente.Domicilio) ? (object)DBNull.Value : paciente.Domicilio);
+
+                
+                datos.SetearParametro("@Genero", string.IsNullOrWhiteSpace(paciente.Genero) ? (object)DBNull.Value : paciente.Genero);
+                datos.SetearParametro("@Email", string.IsNullOrWhiteSpace(paciente.Email) ? (object)DBNull.Value : paciente.Email);
+                datos.SetearParametro("@ObraSocial", string.IsNullOrWhiteSpace(paciente.ObraSocial) ? (object)DBNull.Value : paciente.ObraSocial);
+                datos.SetearParametro("@Activo", paciente.Activo);
+
                 datos.SetearParametro("@Id", paciente.PacienteId);
-
                 datos.EjecutarAccion();
             }
-            finally
-            {
-                datos.CerrarConexion();
-            }
+            finally { datos.CerrarConexion(); }
         }
-
         public void CambioEstado(int id, bool estado)
         {
             AccesoDatos datos = new AccesoDatos();
@@ -195,6 +202,7 @@ namespace Clinica.Datos
                         Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : datos.Lector["Nombre"].ToString(),
                         Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : datos.Lector["Apellido"].ToString(),
                         Dni = datos.Lector["DNI"] == DBNull.Value ? "" : datos.Lector["DNI"].ToString(),
+                        Genero = datos.Lector["Genero"] == DBNull.Value ? "" : datos.Lector["Genero"].ToString(),
                         Email = datos.Lector["Email"] == DBNull.Value ? "" : datos.Lector["Email"].ToString(),
                         Telefono = datos.Lector["Telefono"] == DBNull.Value ? "" : datos.Lector["Telefono"].ToString(),
                         Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : datos.Lector["Domicilio"].ToString(),

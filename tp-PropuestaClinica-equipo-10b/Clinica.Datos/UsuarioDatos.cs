@@ -153,5 +153,129 @@ namespace Clinica.Datos
             }
         }
 
+        public void CambiarActivoPorEmail(string email, bool activo)
+        {
+            var acc = new AccesoDatos();
+            try
+            {
+                acc.SetearConsulta("UPDATE Usuarios SET Activo=@A WHERE LOWER(Email)=LOWER(@E)");
+                acc.SetearParametro("@A", activo);
+                acc.SetearParametro("@E", email);
+                acc.EjecutarAccion();
+            }
+            finally { acc.CerrarConexion(); }
+        }
+        public Usuario ObtenerPorPacienteId(int pacienteId)
+        {
+            var acc = new AccesoDatos();
+            try
+            {
+                acc.SetearConsulta(@"
+            SELECT TOP 1 UsuarioId, Email, Pass, Perfil, Activo,
+                    IdPaciente, IdMedico, IdRecepcionista,
+                    Nombre, Apellido, Rol
+            FROM Usuarios
+            WHERE IdPaciente = @P");
+                acc.SetearParametro("@P", pacienteId);
+                acc.EjecutarLectura();
+                if (acc.Lector.Read())
+                {
+                    return new Usuario
+                    {
+                        IdUsuario = (int)acc.Lector["UsuarioId"],
+                        Email = acc.Lector["Email"].ToString(),
+                        Pass = acc.Lector["Pass"].ToString(),
+                        Perfil = (Perfil)(int)acc.Lector["Perfil"],
+                        Rol = acc.Lector["Rol"].ToString(),
+                        IdPaciente = acc.Lector["IdPaciente"] == DBNull.Value ? (int?)null : (int)acc.Lector["IdPaciente"],
+                        IdMedico = acc.Lector["IdMedico"] == DBNull.Value ? (int?)null : (int)acc.Lector["IdMedico"],
+                        Nombre = acc.Lector["Nombre"].ToString(),
+                        Apellido = acc.Lector["Apellido"].ToString(),
+                        Activo = (bool)acc.Lector["Activo"]
+                    };
+                }
+                return null;
+            }
+            finally { acc.CerrarConexion(); }
+        }
+
+        public Usuario ObtenerPorId(int id)
+        {
+            var acc = new AccesoDatos();
+            try
+            {
+                acc.SetearConsulta(@"
+            SELECT UsuarioId, Email, Pass, Perfil, Activo,
+                    IdPaciente, IdMedico, IdRecepcionista,
+                    Nombre, Apellido, Rol
+            FROM Usuarios
+            WHERE UsuarioId = @Id");
+                acc.SetearParametro("@Id", id);
+                acc.EjecutarLectura();
+                if (acc.Lector.Read())
+                {
+                    return new Usuario
+                    {
+                        IdUsuario = (int)acc.Lector["UsuarioId"],
+                        Email = acc.Lector["Email"].ToString(),
+                        Pass = acc.Lector["Pass"].ToString(),
+                        Perfil = (Perfil)(int)acc.Lector["Perfil"],
+                        Rol = acc.Lector["Rol"].ToString(),
+                        IdPaciente = acc.Lector["IdPaciente"] == DBNull.Value ? (int?)null : (int)acc.Lector["IdPaciente"],
+                        IdMedico = acc.Lector["IdMedico"] == DBNull.Value ? (int?)null : (int)acc.Lector["IdMedico"],
+                        Nombre = acc.Lector["Nombre"].ToString(),
+                        Apellido = acc.Lector["Apellido"].ToString(),
+                        Activo = (bool)acc.Lector["Activo"]
+                    };
+                }
+                return null;
+            }
+            finally { acc.CerrarConexion(); }
+        }
+
+        public void Modificar(Usuario u, bool actualizarPassword)
+        {
+            var acc = new AccesoDatos();
+            try
+            {
+                acc.SetearConsulta(@"
+            UPDATE Usuarios
+            SET Email = @E,
+                Perfil = @Perf,
+                Rol = @Rol,
+                IdPaciente = @Pid,
+                IdMedico = @Mid,
+                IdRecepcionista = @Rid,
+                Nombre = @Nom,
+                Apellido = @Ape,
+                Activo = @Act
+                " + (actualizarPassword ? ", Pass = @P" : "") + @"
+            WHERE UsuarioId = @Id;");
+
+                acc.SetearParametro("@E", u.Email);
+                acc.SetearParametro("@Perf", (int)u.Perfil);
+                acc.SetearParametro("@Rol", (object)u.Rol ?? DBNull.Value);
+
+                acc.SetearParametro("@Pid", u.IdPaciente.HasValue ? (object)u.IdPaciente.Value : DBNull.Value);
+                acc.SetearParametro("@Mid", u.IdMedico.HasValue ? (object)u.IdMedico.Value : DBNull.Value);
+                acc.SetearParametro("@Rid", u.IdRecepcionista.HasValue ? (object)u.IdRecepcionista.Value : DBNull.Value);
+
+                acc.SetearParametro("@Nom", (object)u.Nombre ?? DBNull.Value);
+                acc.SetearParametro("@Ape", (object)u.Apellido ?? DBNull.Value);
+                acc.SetearParametro("@Act", u.Activo);
+
+                if (actualizarPassword)
+                    acc.SetearParametro("@P", u.Pass);
+
+                
+                acc.SetearParametro("@Id", u.IdUsuario);
+
+                acc.EjecutarAccion();
+            }
+            finally { acc.CerrarConexion(); }
+        }
+
+
+
     }
 }

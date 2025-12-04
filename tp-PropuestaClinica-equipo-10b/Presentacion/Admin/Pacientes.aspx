@@ -11,9 +11,9 @@
         <h1 class="h3 text-primary mb-0">Gestión de Pacientes</h1>
         <p class="text-muted small mb-0">Administración de usuarios y estados</p>
       </div>
-      <a href="../Account/Register.aspx" class="btn btn-success shadow-sm">
-        <i class="bi bi-person-plus-fill me-2" aria-hidden="true"></i>Nuevo Paciente
-      </a>
+      <a href="AddPaciente.aspx" class="btn btn-success shadow-sm">
+      <i class="bi bi-person-plus-fill me-2"></i>Nuevo Paciente
+    </a>
     </header>
 
     <section aria-labelledby="filtro-pacientes" class="card shadow-sm mb-4 border-0">

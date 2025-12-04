@@ -58,5 +58,28 @@ namespace Clinica.Negocio
         {
             return datos.ExistePorEmail(email);
         }
+
+        public void CambiarActivoPorEmail(string email, bool activo)
+        {
+            if (string.IsNullOrWhiteSpace(email)) throw new ArgumentException("Email inválido");
+            datos.CambiarActivoPorEmail(email, activo);
+        }
+        public Usuario ObtenerPorPacienteId(int pacienteId)
+        {
+            return datos.ObtenerPorPacienteId(pacienteId);
+        }
+
+        public Usuario ObtenerPorId(int id)
+        {
+            return datos.ObtenerPorId(id);
+        }
+
+        
+        public void Modificar(Usuario u, bool actualizarPassword = false)
+        {
+            if (u == null || u.IdUsuario <= 0) throw new ArgumentException("Usuario inválido.");
+            datos.Modificar(u, actualizarPassword);
+        }
+
     }
 }

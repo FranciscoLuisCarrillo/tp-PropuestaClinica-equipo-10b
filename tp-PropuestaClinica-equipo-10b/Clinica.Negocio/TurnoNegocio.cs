@@ -89,12 +89,20 @@ namespace Clinica.Negocio
 
         public void ReprogramarTurno(int idTurno, DateTime nuevaFechaHora, int medicoId)
         {
+            // Traer turno actual y validar estado
+            var actual = datos.ObtenerPorId(idTurno);
+            if (actual == null)
+                throw new InvalidOperationException("No se encontró el turno.");
+
+            if (actual.Estado == EstadoTurno.Cerrado || actual.Estado == EstadoTurno.Cancelado)
+                throw new InvalidOperationException("No se puede reprogramar un turno cerrado o cancelado.");
+
+            // Disponibilidad del médico
             if (ExisteTurnoEnHorario(medicoId, nuevaFechaHora))
                 throw new InvalidOperationException("El médico ya tiene un turno en ese horario.");
 
             datos.ReprogramarFecha(idTurno, nuevaFechaHora);
         }
-
         private int EstadoTextoAInt(string estado)
         {
             switch (estado)

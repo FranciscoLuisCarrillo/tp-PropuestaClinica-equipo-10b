@@ -96,12 +96,13 @@
 
       <div class="card-body p-0">
         <asp:GridView ID="gvTurnosDia" runat="server"
-          CssClass="table table-striped table-hover table-sm mb-0"
-          AutoGenerateColumns="false"
-          DataKeyNames="TurnoId"
-          OnRowCommand="gvTurnosDia_RowCommand"
-          Caption="Listado de turnos para la fecha seleccionada"
-          CaptionAlign="Top">
+            CssClass="table table-striped table-hover table-sm mb-0"
+            AutoGenerateColumns="false"
+            DataKeyNames="TurnoId"
+            OnRowCommand="gvTurnosDia_RowCommand"
+            OnRowDataBound="gvTurnosDia_RowDataBound"
+            Caption="Listado de turnos para la fecha seleccionada"
+            CaptionAlign="Top">
           <Columns>
             <asp:BoundField DataField="Hora" HeaderText="Hora" />
             <asp:BoundField DataField="Paciente" HeaderText="Paciente" />

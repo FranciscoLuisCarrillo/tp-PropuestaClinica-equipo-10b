@@ -1,58 +1,60 @@
 ﻿using Clinica.Dominio;
 using Clinica.Negocio;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
-using System.Web.UI.WebControls;
 
 namespace Presentacion.Pacientes
 {
     public partial class Add : System.Web.UI.Page
     {
+        private readonly PacienteNegocio pacienteNegocio = new PacienteNegocio();
+        private readonly UsuarioNegocio usuarioNegocio = new UsuarioNegocio();
+
         protected void Page_Load(object sender, EventArgs e)
         {
-            if(Session["usuario"] == null)
+            var usuario = Session["usuario"] as Usuario;
+            if (usuario == null)
             {
                 Response.Redirect("../Login.aspx", false);
                 return;
             }
 
             if (!IsPostBack)
-            {
-                CargarDatos();
-            }
+                CargarDatos(usuario);
         }
-        private void CargarDatos()
+
+        private void CargarDatos(Usuario usuario)
         {
-           
-            Usuario usuario = (Usuario)Session["usuario"];
-            PacienteNegocio negocio = new PacienteNegocio();
-
-            Paciente miPerfil = negocio.ObtenerPorId((int)usuario.IdPaciente);
-
-            if (miPerfil != null)
+            // Si el usuario ya tiene Paciente ligado, traemos sus datos
+            if (usuario.IdPaciente.HasValue && usuario.IdPaciente.Value > 0)
             {
-                txtNombre.Text = miPerfil.Nombre;
-                txtApellido.Text = miPerfil.Apellido;
-                txtEmail.Text = miPerfil.Email;
-                txtEmail.Enabled = false;
+                var p = pacienteNegocio.ObtenerPorId(usuario.IdPaciente.Value);
+                if (p != null)
+                {
+                    txtNombre.Text = p.Nombre ?? "";
+                    txtApellido.Text = p.Apellido ?? "";
+                    txtEmail.Text = p.Email ?? (usuario.Email ?? "");
+                    txtEmail.ReadOnly = true;
 
-                // Cargamos lo demás si existe
-                txtDni.Text = miPerfil.Dni;
-                txtTelefono.Text = miPerfil.Telefono;
-                txtDireccion.Text = miPerfil.Domicilio;
-                txtObraSocial.Text = miPerfil.ObraSocial;
+                    txtDni.Text = p.Dni ?? "";
+                    txtTelefono.Text = p.Telefono ?? "";
+                    txtDireccion.Text = p.Domicilio ?? "";
+                    txtObraSocial.Text = p.ObraSocial ?? "";
 
-                // Manejo de Fecha y DropDown
-                if (miPerfil.FechaNacimiento != DateTime.MinValue)
-                    txtFechaNacimiento.Text = miPerfil.FechaNacimiento.ToString("yyyy-MM-dd");
+                    if (p.FechaNacimiento != DateTime.MinValue)
+                        txtFechaNacimiento.Text = p.FechaNacimiento.ToString("yyyy-MM-dd");
 
-                if (!string.IsNullOrEmpty(miPerfil.Genero))
-                    ddlGenero.SelectedValue = miPerfil.Genero;
+                    if (!string.IsNullOrEmpty(p.Genero))
+                        ddlGenero.SelectedValue = p.Genero;
+                    return;
+                }
             }
+
+            // Si NO tiene paciente (o no se encontró), prellenamos con el email del usuario
+            txtEmail.Text = usuario.Email ?? "";
+            txtEmail.ReadOnly = true;
         }
+
         protected void BtnGuardar_Click(object sender, EventArgs e)
         {
             Page.Validate();
@@ -60,32 +62,79 @@ namespace Presentacion.Pacientes
 
             try
             {
-                Usuario usuario = (Usuario)Session["usuario"];
-                PacienteNegocio negocio = new PacienteNegocio();
+                var usuario = Session["usuario"] as Usuario;
+                if (usuario == null)
+                {
+                    Response.Redirect("../Login.aspx", false);
+                    return;
+                }
+
+                // Parse seguro de la fecha
+                DateTime fechaNac = DateTime.MinValue;
+                if (!string.IsNullOrWhiteSpace(txtFechaNacimiento.Text))
+                    DateTime.TryParse(txtFechaNacimiento.Text, out fechaNac);
 
                 var paciente = new Paciente
                 {
-                    PacienteId = (int)usuario.IdPaciente,
-                    Nombre = txtNombre.Text.Trim(),
-                    Apellido = txtApellido.Text.Trim(),
-                    Dni = txtDni.Text.Trim(),
-                    FechaNacimiento = DateTime.Parse(txtFechaNacimiento.Text),
+                    
+                    PacienteId = (usuario.IdPaciente.HasValue ? usuario.IdPaciente.Value : 0),
+                    Nombre = (txtNombre.Text ?? "").Trim(),
+                    Apellido = (txtApellido.Text ?? "").Trim(),
+                    Dni = string.IsNullOrWhiteSpace(txtDni.Text) ? null : txtDni.Text.Trim(),
+                    FechaNacimiento = fechaNac == DateTime.MinValue ? DateTime.MinValue : fechaNac,
                     Genero = ddlGenero.SelectedValue,
-                    Telefono = txtTelefono.Text.Trim(),
-                    Domicilio = txtDireccion.Text.Trim(),
-                    ObraSocial = txtObraSocial.Text.Trim(),
+                    Telefono = string.IsNullOrWhiteSpace(txtTelefono.Text) ? null : txtTelefono.Text.Trim(),
+                    Domicilio = string.IsNullOrWhiteSpace(txtDireccion.Text) ? null : txtDireccion.Text.Trim(),
+                    ObraSocial = string.IsNullOrWhiteSpace(txtObraSocial.Text) ? null : txtObraSocial.Text.Trim(),
+                    Email = string.IsNullOrWhiteSpace(txtEmail.Text) ? usuario.Email : txtEmail.Text.Trim(),
                     Activo = true
                 };
-                // Guardamos en BD
-                negocio.Modificar(paciente);
 
-                Response.Write("<script>alert('Datos actualizados correctamente.'); window.location='Default.aspx';</script>");
+               
+                if (usuario.IdPaciente.HasValue && usuario.IdPaciente.Value > 0)
+                {
+                    pacienteNegocio.Modificar(paciente);
+                }
+                else
+                {
+                    int nuevoId = pacienteNegocio.Agregar(paciente);
+
+                   
+                    var uDb = usuarioNegocio.ObtenerPorId(usuario.IdUsuario); 
+                    if (uDb == null) throw new Exception("No se pudo obtener el usuario para vincular el paciente.");
+
+                    uDb.IdPaciente = nuevoId;
+                    uDb.Nombre = paciente.Nombre;
+                    uDb.Apellido = paciente.Apellido;
+
+                
+                    usuarioNegocio.Modificar(uDb, actualizarPassword: false);
+
+                 
+                    usuario.IdPaciente = nuevoId;
+                    usuario.Nombre = uDb.Nombre;
+                    usuario.Apellido = uDb.Apellido;
+                    Session["usuario"] = usuario;
+                }
+
+
+                ScriptManager.RegisterStartupScript(
+                 this, GetType(), "okPerfil",
+                 "window.__queueToast = window.__queueToast || []; " +
+                 "__queueToast.push({ m: 'Datos actualizados correctamente.', t: 'success', d: 1500, redirect: '" + ResolveUrl("~/Pacientes/Default.aspx") + "' });",
+                 true
+             );
             }
             catch (Exception ex)
             {
-                Response.Write("<script>alert('Error al guardar: " + ex.Message + "');</script>");
+                var msg = (ex.Message ?? "Error al guardar").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "errPerfil",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    "__queueToast.push({ m: 'Error al guardar: " + msg + "', t: 'danger', d: 3200 });",
+                    true
+                );
             }
-        
-    }
+        }
     }
 }

@@ -88,9 +88,19 @@ namespace Presentacion.Admin
         {
             if (!Page.IsValid)
             {
-                ClientScript.RegisterStartupScript(
-                this.GetType(), "ShowFormEdit",
-                "if (window.mostrarFormularioMedico) { mostrarFormularioMedico(); }", true);
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "ShowFormEdit",
+                    "if (window.Sys && Sys.Application) { " +
+                    "  Sys.Application.add_load(function(){ if (window.mostrarFormularioMedico) mostrarFormularioMedico(); });" +
+                    "} else { if (window.mostrarFormularioMedico) mostrarFormularioMedico(); }",
+                    true
+                );
+                ScriptManager.RegisterStartupScript(
+                  this, GetType(), "valWarn",
+                  "window.__queueToast = window.__queueToast || []; " +
+                  "__queueToast.push({ m: 'Revisá los campos en rojo.', t: 'warning', d: 2500 });",
+                  true
+              );
                 return;
             }
 
@@ -118,7 +128,12 @@ namespace Presentacion.Admin
                 {
                     m.Id = int.Parse(hfMedicoId.Value);
                     medicoNegocio.Modificar(m);
-                    ClientScript.RegisterStartupScript(this.GetType(), "okUpd", "alert('Médico actualizado.');", true);
+                    ScriptManager.RegisterStartupScript(
+                      this, GetType(), "okUpd",
+                      "window.__queueToast = window.__queueToast || []; " +
+                      "__queueToast.push({ m: 'Médico actualizado.', t: 'success', d: 1800 });",
+                      true
+                  );
                 }
                 else
                 {
@@ -140,21 +155,43 @@ namespace Presentacion.Admin
                         Activo = true
                     });
 
-                    ClientScript.RegisterStartupScript(this.GetType(), "okAdd", "alert('Médico y usuario creados.');", true);
+                    ScriptManager.RegisterStartupScript(
+                       this, GetType(), "okAdd",
+                       "window.__queueToast = window.__queueToast || []; " +
+                       "__queueToast.push({ m: 'Médico y usuario creados.', t: 'success', d: 2000 });",
+                       true
+                   );
                 }
 
                 CargarMedicos();
                 LimpiarFormulario();
-                ClientScript.RegisterStartupScript(this.GetType(), "HideForm",
-                "if (window.ocultarFormularioMedico){ocultarFormularioMedico();}", true);
+                ScriptManager.RegisterStartupScript(
+                     this, GetType(), "HideForm",
+                     "if (window.Sys && Sys.Application) { " +
+                     "  Sys.Application.add_load(function(){ if (window.ocultarFormularioMedico) ocultarFormularioMedico(); });" +
+                     "} else { if (window.ocultarFormularioMedico) ocultarFormularioMedico(); }",
+                     true
+                 );
             }
             catch (Exception ex)
             {
                 string msg = ex.Message.Replace("'", "").Replace("\r", "").Replace("\n", " ");
                 ValidarMedico.HeaderText = msg;
-                ClientScript.RegisterStartupScript(
-                this.GetType(), "ShowFormEdit",
-                "if (window.mostrarFormularioMedico) { mostrarFormularioMedico(); }", true);
+                ScriptManager.RegisterStartupScript(
+                   this, GetType(), "ShowFormEditErr",
+                   "if (window.Sys && Sys.Application) { " +
+                   "  Sys.Application.add_load(function(){ if (window.mostrarFormularioMedico) mostrarFormularioMedico(); });" +
+                   "} else { if (window.mostrarFormularioMedico) mostrarFormularioMedico(); }",
+                   true
+               );
+
+
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "errMed",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    $"__queueToast.push({{ m: 'Error: {msg}', t: 'danger', d: 3500 }});",
+                    true
+                );
             }
         }
 
@@ -174,9 +211,13 @@ namespace Presentacion.Admin
             {
                 int medicoId = int.Parse(e.CommandArgument.ToString());
                 CargarFormularioEdicion(medicoId);
-                ClientScript.RegisterStartupScript(
-                this.GetType(), "ShowFormEdit",
-                "if (window.mostrarFormularioMedico) { mostrarFormularioMedico(); }", true);
+                ScriptManager.RegisterStartupScript(
+                    this, GetType(), "ShowFormEditGrid",
+                    "if (window.Sys && Sys.Application) { " +
+                    "  Sys.Application.add_load(function(){ if (window.mostrarFormularioMedico) mostrarFormularioMedico(); });" +
+                    "} else { if (window.mostrarFormularioMedico) mostrarFormularioMedico(); }",
+                    true
+                );
             }
         }
 

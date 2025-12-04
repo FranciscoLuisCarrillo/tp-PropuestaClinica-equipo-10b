@@ -70,7 +70,7 @@
 
             <div class="col-12 mt-4">
                 <asp:Button ID="BtnGuardar" runat="server" Text="Guardar y Continuar" CssClass="btn btn-primary" OnClick="BtnGuardar_Click" />
-                <a href="Dashboard.aspx" class="btn btn-link">Cancelar</a>
+                <a href="Default.aspx" class="btn btn-link">Cancelar</a>
             </div>
         </div>
     </div>
