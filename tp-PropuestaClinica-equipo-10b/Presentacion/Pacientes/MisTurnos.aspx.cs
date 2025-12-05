@@ -1,12 +1,8 @@
 ﻿using Clinica.Dominio;
 using Clinica.Negocio;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.UI;
 using System.Web.UI.WebControls;
-
 
 namespace Presentacion.Pacientes
 {
@@ -35,49 +31,53 @@ namespace Presentacion.Pacientes
             gvMisTurnos.DataBind();
         }
 
-        protected void gvMisTurnos_RowCommand(object sender, System.Web.UI.WebControls.GridViewCommandEventArgs e)
+        protected void gvMisTurnos_RowCommand(object sender, GridViewCommandEventArgs e)
         {
-            if (e.CommandName != "Cancelar") return;
-
-            try
+            // Redirección para Reprogramar
+            if (e.CommandName == "Reprogramar")
             {
-               
-                int turnoId = Convert.ToInt32(e.CommandArgument);
-
-                
-                var usuario = (Usuario)Session["usuario"];
-                var negocio = new TurnoNegocio();
-                var turno = negocio.ObtenerPorId(turnoId);
-                if (turno == null || turno.Paciente.PacienteId != usuario.IdPaciente)
-                    throw new Exception("Turno inválido o no pertenece al usuario actual.");
-
-                
-                if (turno.Estado != EstadoTurno.Nuevo && turno.Estado != EstadoTurno.Reprogramado)
-                    throw new Exception("Solo se pueden cancelar turnos pendientes.");
-
-               
-                negocio.CancelarTurno(turnoId);
-
-                
-                CargarMisTurnos();
-
-                
-                ScriptManager.RegisterStartupScript(
-                    this, GetType(), "okCancel",
-                    "window.__queueToast = window.__queueToast || []; " +
-                    "__queueToast.push({ m:'Turno cancelado.', t:'warning', d:1800 });",
-                    true
-                );
+                string idTurno = e.CommandArgument.ToString();
+                // Enviamos el parametro "reprogramar" con el ID del turno
+                Response.Redirect($"ReservarTurno.aspx?reprogramar={idTurno}");
+                return;
             }
-            catch (Exception ex)
+
+            // Lógica de Cancelación existente
+            if (e.CommandName == "Cancelar")
             {
-                var msg = (ex.Message ?? "Error al cancelar").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
-                ScriptManager.RegisterStartupScript(
-                    this, GetType(), "errCancel",
-                    "window.__queueToast = window.__queueToast || []; " +
-                    $"__queueToast.push({{ m:'No se pudo cancelar: {msg}', t:'danger', d:3000 }});",
-                    true
-                );
+                try
+                {
+                    int turnoId = Convert.ToInt32(e.CommandArgument);
+                    var usuario = (Usuario)Session["usuario"];
+                    var negocio = new TurnoNegocio();
+                    var turno = negocio.ObtenerPorId(turnoId);
+
+                    if (turno == null || turno.Paciente.PacienteId != usuario.IdPaciente)
+                        throw new Exception("Turno inválido o no pertenece al usuario actual.");
+
+                    if (turno.Estado != EstadoTurno.Nuevo && turno.Estado != EstadoTurno.Reprogramado)
+                        throw new Exception("Solo se pueden cancelar turnos pendientes.");
+
+                    negocio.CancelarTurno(turnoId);
+                    CargarMisTurnos();
+
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "okCancel",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m:'Turno cancelado.', t:'warning', d:1800 });",
+                        true
+                    );
+                }
+                catch (Exception ex)
+                {
+                    var msg = (ex.Message ?? "Error al cancelar").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
+                    ScriptManager.RegisterStartupScript(
+                        this, GetType(), "errCancel",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        $"__queueToast.push({{ m:'No se pudo cancelar: {msg}', t:'danger', d:3000 }});",
+                        true
+                    );
+                }
             }
         }
     }

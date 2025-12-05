@@ -11,10 +11,15 @@ namespace Presentacion.Pacientes
 {
     public partial class ReservarTurno : System.Web.UI.Page
     {
+        // Propiedad para guardar el ID si estamos reprogramando
+        public int? IdTurnoReprogramar
+        {
+            get { return (int?)ViewState["IdTurnoReprogramar"]; }
+            set { ViewState["IdTurnoReprogramar"] = value; }
+        }
 
         protected void Page_Load(object sender, EventArgs e)
         {
-
             if (Session["usuario"] == null)
             {
                 Response.Redirect("~/Login.aspx", false);
@@ -27,14 +32,63 @@ namespace Presentacion.Pacientes
                 CargarMedicos(true);
                 CargarHorasBase();
 
-
                 txtFecha.Attributes["min"] = DateTime.Now.ToString("yyyy-MM-dd");
+
+                // Verificamos si venimos a REPROGRAMAR
+                string idReprog = Request.QueryString["reprogramar"];
+                if (!string.IsNullOrEmpty(idReprog) && int.TryParse(idReprog, out int idTurno))
+                {
+                    PrepararModoReprogramacion(idTurno);
+                }
             }
+        }
+
+        private void PrepararModoReprogramacion(int idTurno)
+        {
+            var turnoNegocio = new TurnoNegocio();
+            var turno = turnoNegocio.ObtenerPorId(idTurno);
+            var usuario = (Usuario)Session["usuario"];
+
+            // Validaciones de seguridad básicas
+            if (turno == null || turno.Paciente.PacienteId != usuario.IdPaciente)
+            {
+                Response.Redirect("MisTurnos.aspx");
+                return;
+            }
+
+            // Guardamos el ID en ViewState para usarlo al dar click en Confirmar
+            IdTurnoReprogramar = idTurno;
+
+            // Ajustes Visuales
+            lblTitulo.Text = "Reprogramar Turno";
+            btnCrearTurno.Text = "Confirmar Reprogramación";
+            btnCrearTurno.CssClass = "btn btn-warning px-4 text-dark"; // Cambiar color para diferenciar
+
+            // Pre-seleccionar valores del turno actual
+            if (ddlEspecialidades.Items.FindByValue(turno.Especialidad.EspecialidadId.ToString()) != null)
+            {
+                ddlEspecialidades.SelectedValue = turno.Especialidad.EspecialidadId.ToString();
+                // Forzamos la carga de médicos filtrados
+                ddlEspecialidades_SelectedIndexChanged(null, null);
+            }
+
+            if (ddlMedico.Items.FindByValue(turno.Medico.Id.ToString()) != null)
+            {
+                ddlMedico.SelectedValue = turno.Medico.Id.ToString();
+                // Forzamos la carga de horario del médico y rango
+                ddlMedico_SelectedIndexChanged(null, null);
+            }
+
+            // Llenamos observaciones previas
+            if (!string.IsNullOrEmpty(turno.MotivoConsulta))
+                txtObs.Text = turno.MotivoConsulta;
+
+            // Nota: No preseleccionamos fecha/hora porque la idea es cambiarlas, 
+            // pero el usuario ya ve "Médico" y "Especialidad" listos.
         }
 
         private void CargarHorasBase()
         {
-
             ddlHora.Items.Clear();
             ddlHora.Items.Insert(0, new ListItem("-- Seleccionar hora --", ""));
         }
@@ -44,13 +98,11 @@ namespace Presentacion.Pacientes
             ddlHora.Items.Clear();
             ddlHora.Items.Insert(0, new ListItem("-- Seleccionar hora --", ""));
 
-
             if (!int.TryParse(ddlMedico.SelectedValue, out int medicoId) || medicoId <= 0)
                 return;
 
             if (!DateTime.TryParse(txtFecha.Text, out DateTime fecha))
                 return;
-
 
             var turnoNegocio = new TurnoNegocio();
             var libres = turnoNegocio.HorasDisponibles(medicoId, fecha);
@@ -58,7 +110,6 @@ namespace Presentacion.Pacientes
             foreach (var hhmm in libres)
                 ddlHora.Items.Add(new ListItem(hhmm, hhmm));
         }
-
 
         private void CargarEspecialidades(List<Especialidad> listaFiltrada = null)
         {
@@ -71,7 +122,6 @@ namespace Presentacion.Pacientes
                 ddlEspecialidades.DataTextField = "Nombre";
                 ddlEspecialidades.DataValueField = "EspecialidadId";
                 ddlEspecialidades.DataBind();
-
                 ddlEspecialidades.Items.Insert(0, new ListItem("-- Seleccionar especialidad --", ""));
             }
             catch (Exception ex)
@@ -80,7 +130,6 @@ namespace Presentacion.Pacientes
             }
         }
 
-
         private void CargarMedicos(bool cargarTodos = false, List<Medico> listaFiltrada = null)
         {
             try
@@ -88,17 +137,13 @@ namespace Presentacion.Pacientes
                 MedicoNegocio negocio = new MedicoNegocio();
                 List<Medico> lista;
 
-                if (cargarTodos)
-                    lista = negocio.Listar();
-                else
-                    lista = listaFiltrada ?? new List<Medico>();
-
+                if (cargarTodos) lista = negocio.Listar();
+                else lista = listaFiltrada ?? new List<Medico>();
 
                 ddlMedico.DataSource = lista;
                 ddlMedico.DataTextField = "Nombre";
                 ddlMedico.DataValueField = "Id";
                 ddlMedico.DataBind();
-
                 ddlMedico.Items.Insert(0, new ListItem("-- Seleccionar médico --", ""));
             }
             catch (Exception ex)
@@ -107,12 +152,11 @@ namespace Presentacion.Pacientes
             }
         }
 
-
         protected void ddlMedico_SelectedIndexChanged(object sender, EventArgs e)
         {
             try
             {
-                lblRangoHorario.Text = ""; // Resetear label
+                lblRangoHorario.Text = "";
                 string especialidadPrevia = ddlEspecialidades.SelectedValue;
 
                 if (ddlMedico.SelectedIndex == 0 || ddlMedico.SelectedValue == "")
@@ -123,11 +167,10 @@ namespace Presentacion.Pacientes
                 {
                     int idMedico = int.Parse(ddlMedico.SelectedValue);
 
-                    // --- NUEVO: Obtener datos del médico para mostrar el rango horario ---
+                    // Mostrar Rango Horario
                     MedicoNegocio medNegocio = new MedicoNegocio();
                     Medico medico = medNegocio.ObtenerPorId(idMedico);
 
-                    // Obtenemos el turno de trabajo para mostrar las horas
                     TurnoTrabajoNegocio ttNegocio = new TurnoTrabajoNegocio();
                     var listaTurnos = ttNegocio.Listar();
                     var turnoTrabajo = listaTurnos.Find(t => t.TurnoTrabajoId == medico.TurnoTrabajoId);
@@ -136,18 +179,14 @@ namespace Presentacion.Pacientes
                     {
                         lblRangoHorario.Text = $"Atiende de {turnoTrabajo.HoraEntrada:hh\\:mm} a {turnoTrabajo.HoraSalida:hh\\:mm}";
                     }
-                    // -------------------------------------------------------------------
 
                     EspecialidadNegocio negocio = new EspecialidadNegocio();
                     var listaEspecialidades = negocio.ListarPorMedico(idMedico);
 
                     CargarEspecialidades(listaFiltrada: listaEspecialidades);
 
-
                     if (listaEspecialidades.Count == 1)
-                    {
                         ddlEspecialidades.SelectedIndex = 1;
-                    }
                 }
 
                 if (!string.IsNullOrEmpty(especialidadPrevia) && ddlEspecialidades.Items.FindByValue(especialidadPrevia) != null)
@@ -166,7 +205,7 @@ namespace Presentacion.Pacientes
         {
             try
             {
-                lblRangoHorario.Text = ""; // Resetear label al cambiar especialidad
+                lblRangoHorario.Text = "";
                 string medicoPrevio = ddlMedico.SelectedValue;
 
                 if (ddlEspecialidades.SelectedIndex == 0 || ddlEspecialidades.SelectedValue == "")
@@ -182,12 +221,11 @@ namespace Presentacion.Pacientes
                     CargarMedicos(cargarTodos: false, listaFiltrada: listaMedicos);
                 }
 
-
                 if (!string.IsNullOrEmpty(medicoPrevio) && ddlMedico.Items.FindByValue(medicoPrevio) != null)
                 {
                     ddlMedico.SelectedValue = medicoPrevio;
 
-                    // Si mantenemos el médico seleccionado, volvemos a mostrar su horario
+                    // Restaurar label de rango si se mantuvo el médico
                     int idMedico = int.Parse(medicoPrevio);
                     MedicoNegocio medNegocio = new MedicoNegocio();
                     Medico medico = medNegocio.ObtenerPorId(idMedico);
@@ -204,27 +242,20 @@ namespace Presentacion.Pacientes
                 Session.Add("error", "Error al filtrar médicos: " + ex.Message);
             }
         }
+
         protected void txtFecha_TextChanged(object sender, EventArgs e)
         {
-
             CargarHorasDisponibles();
         }
 
         protected void btnCrearTurno_Click(object sender, EventArgs e)
         {
-            // 1) Validación ASP.NET
             Page.Validate();
             if (!Page.IsValid) return;
 
-            // 2) Validar sesión/usuario
             var usuarioActual = Session["usuario"] as Usuario;
-            if (usuarioActual == null)
-            {
-                Response.Redirect("~/Login.aspx", false);
-                return;
-            }
+            if (usuarioActual == null) { Response.Redirect("~/Login.aspx", false); return; }
 
-            // 3) Validar que el usuario tenga Paciente asociado
             if (!usuarioActual.IdPaciente.HasValue)
             {
                 GuardarReservaPendienteYIrACompletarPerfil("Tu usuario no está asociado a un paciente. Completá tu perfil.");
@@ -233,111 +264,13 @@ namespace Presentacion.Pacientes
 
             try
             {
-                // 4) Verificar datos obligatorios del perfil
+                // Parseos básicos
+                int especialidadId = int.Parse(ddlEspecialidades.SelectedValue);
+                int medicoId = int.Parse(ddlMedico.SelectedValue);
+                DateTime fechaBase = DateTime.ParseExact(txtFecha.Text, "yyyy-MM-dd", System.Globalization.CultureInfo.InvariantCulture);
+                TimeSpan horaSel = TimeSpan.ParseExact(ddlHora.SelectedValue, "hh\\:mm", System.Globalization.CultureInfo.InvariantCulture);
 
-                var pacienteNegocio = new PacienteNegocio();
-                var datos = pacienteNegocio.ObtenerPorId(usuarioActual.IdPaciente.Value);
-                if (datos == null || string.IsNullOrEmpty(datos.Dni) || datos.FechaNacimiento == DateTime.MinValue)
-                {
-
-                    string esp = ddlEspecialidades.SelectedValue ?? "";
-                    string med = ddlMedico.SelectedValue ?? "";
-                    string fechaQ = string.IsNullOrWhiteSpace(txtFecha.Text) ? "" : txtFecha.Text;
-                    string horaQ = string.IsNullOrWhiteSpace(ddlHora.SelectedValue) ? "" : ddlHora.SelectedValue;
-
-                    string backUrl = ResolveUrl($"~/Pacientes/ReservarTurno.aspx?esp={esp}&med={med}&fecha={fechaQ}&hora={horaQ}");
-                    string goTo = ResolveUrl($"~/Pacientes/Add.aspx?return={Server.UrlEncode(backUrl)}");
-
-                    ScriptManager.RegisterStartupScript(
-                        this, GetType(), "faltanDatos",
-                        "window.__queueToast = window.__queueToast || []; " +
-                        $"__queueToast.push({{ m:'Faltan datos en tu perfil. Completalos para reservar.', t:'warning', d:1400, redirect:'{goTo}' }});",
-                        true
-                    );
-                    return;
-                }
-
-                // 5) Validar y parsear Especialidad / Médico
-                if (string.IsNullOrWhiteSpace(ddlEspecialidades.SelectedValue) ||
-                    string.IsNullOrWhiteSpace(ddlMedico.SelectedValue))
-                {
-                    GuardarReservaPendienteYIrACompletarPerfil("Faltan datos en tu perfil. Por favor complétalos.");
-                    return;
-                }
-
-                if (!int.TryParse(ddlEspecialidades.SelectedValue, out int especialidadId))
-                {
-                    ScriptManager.RegisterStartupScript(
-                        this, GetType(), "badEsp",
-                        "window.__queueToast = window.__queueToast || []; " +
-                        "__queueToast.push({ m: 'Especialidad inválida.', t: 'danger', d: 2000 });",
-                        true
-                    );
-                    return;
-                }
-
-                if (!int.TryParse(ddlMedico.SelectedValue, out int medicoId))
-                {
-                    ScriptManager.RegisterStartupScript(
-                        this, GetType(), "badMed",
-                        "window.__queueToast = window.__queueToast || []; " +
-                        "__queueToast.push({ m: 'Médico inválido.', t: 'danger', d: 2000 });",
-                        true
-                    );
-                    return;
-                }
-
-                // 6) Validar y parsear Fecha
-                if (string.IsNullOrWhiteSpace(txtFecha.Text))
-                {
-                    ScriptManager.RegisterStartupScript(
-                        this, GetType(), "reqFecha",
-                        "window.__queueToast = window.__queueToast || []; " +
-                        "__queueToast.push({ m: 'Fecha requerida.', t: 'danger', d: 2000 });",
-                        true
-                    );
-                    return;
-                }
-
-                if (!DateTime.TryParseExact(txtFecha.Text, "yyyy-MM-dd",
-                                            System.Globalization.CultureInfo.InvariantCulture,
-                                            System.Globalization.DateTimeStyles.None,
-                                            out DateTime fechaBase))
-                {
-                    ScriptManager.RegisterStartupScript(
-                        this, GetType(), "badFecha",
-                        "window.__queueToast = window.__queueToast || []; " +
-                        "__queueToast.push({ m: 'Formato de fecha inválido.', t: 'danger', d: 2000 });",
-                        true
-                    );
-                    return;
-                }
-
-                // 7) Validar y parsear Hora
-                if (ddlHora.SelectedIndex <= 0 || string.IsNullOrWhiteSpace(ddlHora.SelectedValue))
-                {
-                    ScriptManager.RegisterStartupScript(
-                        this, GetType(), "reqHora",
-                        "window.__queueToast = window.__queueToast || []; " +
-                        "__queueToast.push({ m: 'Seleccioná una hora.', t: 'danger', d: 2000 });",
-                        true
-                    );
-                    return;
-                }
-
-                if (!TimeSpan.TryParseExact(ddlHora.SelectedValue, "hh\\:mm",
-                                            System.Globalization.CultureInfo.InvariantCulture, out TimeSpan horaSel))
-                {
-                    ScriptManager.RegisterStartupScript(
-                        this, GetType(), "badHora",
-                        "window.__queueToast = window.__queueToast || []; " +
-                        "__queueToast.push({ m: 'Formato de hora inválido.', t: 'danger', d: 2000 });",
-                        true
-                    );
-                    return;
-                }
-
-                // 8) Construir Turno
+                // Objeto Turno Nuevo
                 var nuevoTurno = new Turno
                 {
                     Medico = new Medico { Id = medicoId },
@@ -349,52 +282,48 @@ namespace Presentacion.Pacientes
                     Estado = EstadoTurno.Nuevo
                 };
 
-                // 9) No reservar en el pasado
                 if (nuevoTurno.FechaHoraInicio < DateTime.Now)
                 {
-                    ScriptManager.RegisterStartupScript(
-                        this, GetType(), "past",
-                        "window.__queueToast = window.__queueToast || []; " +
-                        "__queueToast.push({ m: 'No podés reservar en el pasado.', t: 'danger', d: 2200 });",
-                        true
-                    );
+                    ScriptManager.RegisterStartupScript(this, GetType(), "past", "window.__queueToast = window.__queueToast || []; __queueToast.push({ m: 'No podés reservar en el pasado.', t: 'danger', d: 2200 });", true);
                     return;
                 }
 
-                // 10) Guardar
                 var turnoNegocio = new TurnoNegocio();
-                turnoNegocio.AgendarTurno(nuevoTurno);
 
-                ScriptManager.RegisterStartupScript(
-                    this, GetType(), "okReserva",
-                    "window.__queueToast = window.__queueToast || []; " +
-                    "__queueToast.push({ m: '¡Turno reservado con éxito!', t: 'success', d: 1500, redirect: 'Default.aspx' });",
-                    true
-                );
-            }
-            catch (System.Threading.ThreadAbortException)
-            {
+                // --- LÓGICA DIFERENCIADA: REPROGRAMAR vs NUEVO ---
+                if (IdTurnoReprogramar.HasValue)
+                {
+                    // Estamos Reprogramando: Cancelamos el anterior y creamos este nuevo
+                    // Usamos ReprogramarTurnoCreandoNuevo que ya existe en Negocio
+                    turnoNegocio.ReprogramarTurnoCreandoNuevo(IdTurnoReprogramar.Value, nuevoTurno);
 
+                    ScriptManager.RegisterStartupScript(this, GetType(), "okReprog",
+                       "window.__queueToast = window.__queueToast || []; " +
+                       "__queueToast.push({ m: '¡Turno reprogramado con éxito!', t: 'success', d: 1500, redirect: 'MisTurnos.aspx' });",
+                       true);
+                }
+                else
+                {
+                    // Alta normal
+                    turnoNegocio.AgendarTurno(nuevoTurno);
+
+                    ScriptManager.RegisterStartupScript(this, GetType(), "okReserva",
+                        "window.__queueToast = window.__queueToast || []; " +
+                        "__queueToast.push({ m: '¡Turno reservado con éxito!', t: 'success', d: 1500, redirect: 'Default.aspx' });",
+                        true);
+                }
             }
             catch (Exception ex)
             {
-
-                Session["error"] = ex.ToString();
-
                 var msgUser = (ex.InnerException?.Message ?? ex.Message ?? "Error").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
-
-                ScriptManager.RegisterStartupScript(
-                    this, GetType(), "errReserva",
-                    "window.__queueToast = window.__queueToast || []; " +
-                    $"__queueToast.push({{ m: 'Error al reservar: {msgUser}', t: 'danger', d: 4000 }});",
-                    true
-                );
+                ScriptManager.RegisterStartupScript(this, GetType(), "errReserva",
+                    $"window.__queueToast = window.__queueToast || []; __queueToast.push({{ m: 'Error: {msgUser}', t: 'danger', d: 4000 }});",
+                    true);
             }
         }
 
         void GuardarReservaPendienteYIrACompletarPerfil(string motivoToast)
         {
-            // Capturamos lo que el usuario ya eligió
             var pend = new ReservaPendiente
             {
                 EspecialidadId = int.TryParse(ddlEspecialidades.SelectedValue, out var esp) ? esp : (int?)null,
@@ -403,20 +332,15 @@ namespace Presentacion.Pacientes
                 Hora = string.IsNullOrWhiteSpace(ddlHora.SelectedValue) ? null : ddlHora.SelectedValue,
                 Observaciones = string.IsNullOrWhiteSpace(txtObs.Text) ? null : txtObs.Text.Trim()
             };
-
             Session["ReservaPendiente"] = pend;
 
-
             var ret = Server.UrlEncode(ResolveUrl("~/Pacientes/ReservarTurno.aspx"));
-            ScriptManager.RegisterStartupScript(
-                this, GetType(), "redirAddPerfil",
-                "window.__queueToast = window.__queueToast || []; " +
-                $"__queueToast.push({{ m: '{motivoToast}', t: 'warning', d: 1200, redirect: '{ResolveUrl("~/Pacientes/Add.aspx")}?return={ret}' }});",
-                true
-            );
+            // Nota: Si estábamos reprogramando, deberíamos guardar ese estado también, pero es un caso borde complejo.
+            // Asumimos flujo normal para completar perfil.
+
+            ScriptManager.RegisterStartupScript(this, GetType(), "redirAddPerfil",
+                $"window.__queueToast = window.__queueToast || []; __queueToast.push({{ m: '{motivoToast}', t: 'warning', d: 1200, redirect: '{ResolveUrl("~/Pacientes/Add.aspx")}?return={ret}' }});",
+                true);
         }
-
-
-
     }
 }

@@ -20,6 +20,15 @@
                 <asp:BoundField DataField="Estado" HeaderText="Estado" />
                 <asp:TemplateField>
                     <ItemTemplate>
+                        <asp:LinkButton ID="btnReprogramar" runat="server"
+                            Text="Reprogramar"
+                            CssClass="btn btn-sm btn-warning me-1"
+                            CausesValidation="false"
+                            CommandName="Reprogramar"
+                            CommandArgument='<%# Eval("IdTurno") %>'
+                            Visible='<%# Eval("Estado").ToString() == "Pendiente" %>'
+                        />
+
                         <asp:LinkButton ID="btnCancelar" runat="server"
                             Text="Cancelar"
                             CssClass="btn btn-sm btn-danger"
@@ -27,13 +36,13 @@
                             CommandName="Cancelar"
                             CommandArgument='<%# Eval("IdTurno") %>'
                             Visible='<%# Eval("Estado").ToString() == "Pendiente" %>'
-                            OnClientClick="return confirm('¿Seguro que querés cancelar este turno?');" />
+                            OnClientClick="return confirm('¿Seguro que querés cancelar este turno?');"
+                        />
                     </ItemTemplate>
                 </asp:TemplateField>
             </Columns>
         </asp:GridView>
 
-        
         <div class="mt-3">
              <a href="Default.aspx" class="btn btn-secondary">Volver al Menú</a>
         </div>
