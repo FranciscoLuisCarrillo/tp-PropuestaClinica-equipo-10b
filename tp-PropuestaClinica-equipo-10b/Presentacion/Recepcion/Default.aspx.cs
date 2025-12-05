@@ -75,7 +75,7 @@ namespace Presentacion.Recepcion
         {
             ddl.Items.Clear();
             ddl.Items.Insert(0, new ListItem("-- Seleccionar --", ""));
-            for (int h = 8; h <= 20; h++) 
+            for (int h = 0; h <= 24; h++) 
                 ddl.Items.Add(new ListItem($"{h:00}:00", $"{h:00}:00"));
         }
 

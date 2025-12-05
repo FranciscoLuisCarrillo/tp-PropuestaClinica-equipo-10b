@@ -25,7 +25,6 @@ namespace Presentacion.Pacientes
 
         private void CargarDatos(Usuario usuario)
         {
-            // Si el usuario ya tiene Paciente ligado, traemos sus datos
             if (usuario.IdPaciente.HasValue && usuario.IdPaciente.Value > 0)
             {
                 var p = pacienteNegocio.ObtenerPorId(usuario.IdPaciente.Value);
@@ -50,7 +49,6 @@ namespace Presentacion.Pacientes
                 }
             }
 
-            // Si NO tiene paciente (o no se encontró), prellenamos con el email del usuario
             txtEmail.Text = usuario.Email ?? "";
             txtEmail.ReadOnly = true;
         }
@@ -69,15 +67,13 @@ namespace Presentacion.Pacientes
                     return;
                 }
 
-                // Parse seguro de la fecha
                 DateTime fechaNac = DateTime.MinValue;
                 if (!string.IsNullOrWhiteSpace(txtFechaNacimiento.Text))
                     DateTime.TryParse(txtFechaNacimiento.Text, out fechaNac);
 
                 var paciente = new Paciente
                 {
-                    
-                    PacienteId = (usuario.IdPaciente.HasValue ? usuario.IdPaciente.Value : 0),
+                    PacienteId = (usuario.IdPaciente ?? 0),
                     Nombre = (txtNombre.Text ?? "").Trim(),
                     Apellido = (txtApellido.Text ?? "").Trim(),
                     Dni = string.IsNullOrWhiteSpace(txtDni.Text) ? null : txtDni.Text.Trim(),
@@ -90,7 +86,7 @@ namespace Presentacion.Pacientes
                     Activo = true
                 };
 
-               
+                //  alta + linkear al usuario
                 if (usuario.IdPaciente.HasValue && usuario.IdPaciente.Value > 0)
                 {
                     pacienteNegocio.Modificar(paciente);
@@ -99,18 +95,16 @@ namespace Presentacion.Pacientes
                 {
                     int nuevoId = pacienteNegocio.Agregar(paciente);
 
-                   
-                    var uDb = usuarioNegocio.ObtenerPorId(usuario.IdUsuario); 
+                    var uDb = usuarioNegocio.ObtenerPorId(usuario.IdUsuario);
                     if (uDb == null) throw new Exception("No se pudo obtener el usuario para vincular el paciente.");
 
                     uDb.IdPaciente = nuevoId;
                     uDb.Nombre = paciente.Nombre;
                     uDb.Apellido = paciente.Apellido;
 
-                
                     usuarioNegocio.Modificar(uDb, actualizarPassword: false);
 
-                 
+                    // refrescar sesión
                     usuario.IdPaciente = nuevoId;
                     usuario.Nombre = uDb.Nombre;
                     usuario.Apellido = uDb.Apellido;
@@ -118,20 +112,29 @@ namespace Presentacion.Pacientes
                 }
 
 
+                var ret = Request.QueryString["return"];
+                var redirect = string.IsNullOrWhiteSpace(ret)
+                    ? ResolveUrl("~/Pacientes/ReservarTurno.aspx")   // por defecto, volver a reservar
+                    : ret;
+
+                
+                redirect = redirect.Replace("'", "\\'");
+
                 ScriptManager.RegisterStartupScript(
-                 this, GetType(), "okPerfil",
-                 "window.__queueToast = window.__queueToast || []; " +
-                 "__queueToast.push({ m: 'Datos actualizados correctamente.', t: 'success', d: 1500, redirect: '" + ResolveUrl("~/Pacientes/Default.aspx") + "' });",
-                 true
-             );
+                    this, GetType(), "okPerfil",
+                    "window.__queueToast = window.__queueToast || []; " +
+                    $"__queueToast.push({{ m:'Datos actualizados correctamente.', t:'success', d:1200, redirect:'{redirect}' }});",
+                    true
+                );
+                return;
             }
             catch (Exception ex)
             {
-                var msg = (ex.Message ?? "Error al guardar").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
+                var msg = (ex.Message ?? "Error").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
                 ScriptManager.RegisterStartupScript(
                     this, GetType(), "errPerfil",
                     "window.__queueToast = window.__queueToast || []; " +
-                    "__queueToast.push({ m: 'Error al guardar: " + msg + "', t: 'danger', d: 3200 });",
+                    $"__queueToast.push({{ m:'Error al guardar: {msg}', t:'danger', d:3500 }});",
                     true
                 );
             }

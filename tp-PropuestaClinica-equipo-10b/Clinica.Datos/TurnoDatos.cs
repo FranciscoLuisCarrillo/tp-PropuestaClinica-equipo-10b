@@ -441,24 +441,24 @@ namespace Clinica.Datos
             finally { datos.CerrarConexion(); }
         }
 
-        // Horas disponibles (08:00–18:00 cada 30’) menos ocupadas
+        // Horas disponibles (00:00–23:00 cada 60') menos ocupadas
         public List<string> HorasDisponibles(int medicoId, DateTime fecha)
         {
             var ocupadas = new HashSet<string>(HorasOcupadas(medicoId, fecha));
             var libres = new List<string>();
 
-            var inicio = new DateTime(fecha.Year, fecha.Month, fecha.Day, 8, 0, 0);
-            var fin = new DateTime(fecha.Year, fecha.Month, fecha.Day, 18, 0, 0);
+            var inicio = fecha.Date;                 // 00:00 del día
+            var finExcl = fecha.Date.AddDays(1);     // 00:00 del día siguiente (límite exclusivo)
 
-            for (var h = inicio; h <= fin; h = h.AddMinutes(30))
+            for (var h = inicio; h < finExcl; h = h.AddHours(1))
             {
                 var hhmm = h.ToString("HH:mm");
                 if (!ocupadas.Contains(hhmm))
                     libres.Add(hhmm);
             }
+
             return libres;
         }
-
         private static string EstadoTurnoToTexto(EstadoTurno e)
         {
             switch (e)

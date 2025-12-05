@@ -8,36 +8,58 @@ namespace Clinica.Datos
     {
         public List<Paciente> Listar()
         {
-            List<Paciente> lista = new List<Paciente>();
-            AccesoDatos datos = new AccesoDatos();
-
+            var lista = new List<Paciente>();
+            var datos = new AccesoDatos();
             try
             {
-                datos.SetearConsulta("SELECT PacienteId, Nombre, Apellido, DNI, FechaNacimiento, Telefono, Email, Domicilio, ObraSocial, Genero, Activo FROM Pacientes");
+                datos.SetearConsulta(@"
+            SELECT 
+                PacienteId,
+                Nombre,
+                Apellido,
+                DNI,
+                FechaNacimiento,
+                Telefono,
+                Email,
+                Domicilio,
+                ObraSocial,
+                -- usa el nombre correcto de la columna:
+                Genero,     
+                Activo
+            FROM Pacientes");
+
+               
+                datos.EjecutarLectura();
+
+                if (datos.Lector == null)
+                    throw new Exception("La consulta no se ejecutó correctamente (Lector = null). Verifique columnas (¿'Genero'?) y el SELECT.");
 
                 while (datos.Lector.Read())
                 {
-                    var aux = new Paciente
+                    var p = new Paciente
                     {
                         PacienteId = (int)datos.Lector["PacienteId"],
-                        Nombre = datos.Lector["Nombre"] as string ?? "",
-                        Apellido = datos.Lector["Apellido"] as string ?? "",
-                        Dni = datos.Lector["DNI"] as string ?? "",
-                        Email = datos.Lector["Email"] as string ?? "",
-                        Telefono = datos.Lector["Telefono"] as string ?? "",
-                        Domicilio = datos.Lector["Domicilio"] as string ?? "",
-                        ObraSocial = datos.Lector["ObraSocial"] as string ?? "",
-                        Genero = datos.Lector["Genero"] as string ?? "",  
+                        Nombre = datos.Lector["Nombre"] == DBNull.Value ? "" : (string)datos.Lector["Nombre"],
+                        Apellido = datos.Lector["Apellido"] == DBNull.Value ? "" : (string)datos.Lector["Apellido"],
+                        Dni = datos.Lector["DNI"] == DBNull.Value ? "" : (string)datos.Lector["DNI"],
                         FechaNacimiento = datos.Lector["FechaNacimiento"] == DBNull.Value ? DateTime.MinValue : (DateTime)datos.Lector["FechaNacimiento"],
-                        Activo = datos.Lector["Activo"] == DBNull.Value ? true : (bool)datos.Lector["Activo"]
+                        Telefono = datos.Lector["Telefono"] == DBNull.Value ? "" : (string)datos.Lector["Telefono"],
+                        Email = datos.Lector["Email"] == DBNull.Value ? "" : (string)datos.Lector["Email"],
+                        Domicilio = datos.Lector["Domicilio"] == DBNull.Value ? "" : (string)datos.Lector["Domicilio"],
+                        ObraSocial = datos.Lector["ObraSocial"] == DBNull.Value ? "" : (string)datos.Lector["ObraSocial"],
+                        Genero = datos.Lector["Genero"] == DBNull.Value ? "" : (string)datos.Lector["Genero"],
+                        Activo = datos.Lector["Activo"] == DBNull.Value ? true : (bool)datos.Lector["Activo"],
                     };
-                    lista.Add(aux);
+
+                    lista.Add(p);
                 }
+
                 return lista;
             }
             catch (Exception ex)
             {
-                throw ex;
+               
+                throw new Exception("Error al listar pacientes. Detalle: " + ex.Message, ex);
             }
             finally
             {

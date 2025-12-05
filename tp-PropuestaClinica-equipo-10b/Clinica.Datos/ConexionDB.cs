@@ -430,4 +430,30 @@ ALTER TABLE Turnos
 ALTER COLUMN MotivoConsulta NVARCHAR(500) NULL
 
 
+//Agregado  para que se pueda agendar un turno en le horario de un turno que fue cancelado 05/12/2025
+
+-- MÉDICO + HORA
+IF EXISTS (SELECT 1
+           FROM sys.objects
+           WHERE type = 'UQ'
+             AND name = 'UQ_Turno_Medico_Hora'
+             AND parent_object_id = OBJECT_ID('Turnos'))
+BEGIN
+    ALTER TABLE Turnos
+    DROP CONSTRAINT UQ_Turno_Medico_Hora;
+END
+GO
+
+-- Crear índices únicos filtrados (solo aplican cuando Estado <> 2 = Cancelado)
+CREATE UNIQUE INDEX UQ_Turno_Paciente_Hora
+ON Turnos (PacienteId, FechaHoraInicio)
+WHERE Estado <> 2;
+GO
+
+CREATE UNIQUE INDEX UQ_Turno_Medico_Hora
+ON Turnos (MedicoId, FechaHoraInicio)
+WHERE Estado <> 2;
+GO
+
+
 */

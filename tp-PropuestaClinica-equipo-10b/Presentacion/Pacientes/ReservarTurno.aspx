@@ -23,7 +23,12 @@
 
                     <div class="col-md-6">
                         <label class="form-label">Fecha</label>
-                        <asp:TextBox ID="txtFecha" runat="server" CssClass="form-control" TextMode="Date" />
+                        <asp:TextBox ID="txtFecha"
+                         runat="server"
+                         CssClass="form-control"
+                         TextMode="Date"
+                         AutoPostBack="true"
+                         OnTextChanged="txtFecha_TextChanged" />
                         <asp:RequiredFieldValidator runat="server" ControlToValidate="txtFecha" ErrorMessage="Fecha requerida" CssClass="text-danger small" Display="Dynamic" />
                     </div>
 
