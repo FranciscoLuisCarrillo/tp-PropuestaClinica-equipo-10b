@@ -42,6 +42,15 @@ namespace Presentacion.Pacientes
         protected global::System.Web.UI.WebControls.DropDownList ddlMedico;
 
         /// <summary>
+        /// Control lblRangoHorario.
+        /// </summary>
+        /// <remarks>
+        /// Campo generado automáticamente.
+        /// Para modificarlo, mueva la declaración del campo del archivo del diseñador al archivo de código subyacente.
+        /// </remarks>
+        protected global::System.Web.UI.WebControls.Label lblRangoHorario;
+
+        /// <summary>
         /// Control txtFecha.
         /// </summary>
         /// <remarks>

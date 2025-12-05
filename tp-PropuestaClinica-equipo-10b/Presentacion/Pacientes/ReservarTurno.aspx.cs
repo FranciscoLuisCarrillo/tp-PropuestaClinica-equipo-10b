@@ -34,14 +34,9 @@ namespace Presentacion.Pacientes
 
         private void CargarHorasBase()
         {
-            
+
             ddlHora.Items.Clear();
             ddlHora.Items.Insert(0, new ListItem("-- Seleccionar hora --", ""));
-            for (int h = 0; h < 24; h++)
-            {
-                string hh = h.ToString("00") + ":00";
-                ddlHora.Items.Add(new ListItem(hh, hh));
-            }
         }
 
         private void CargarHorasDisponibles()
@@ -49,14 +44,14 @@ namespace Presentacion.Pacientes
             ddlHora.Items.Clear();
             ddlHora.Items.Insert(0, new ListItem("-- Seleccionar hora --", ""));
 
-            
+
             if (!int.TryParse(ddlMedico.SelectedValue, out int medicoId) || medicoId <= 0)
                 return;
 
             if (!DateTime.TryParse(txtFecha.Text, out DateTime fecha))
                 return;
 
-           
+
             var turnoNegocio = new TurnoNegocio();
             var libres = turnoNegocio.HorasDisponibles(medicoId, fecha);
 
@@ -117,6 +112,7 @@ namespace Presentacion.Pacientes
         {
             try
             {
+                lblRangoHorario.Text = ""; // Resetear label
                 string especialidadPrevia = ddlEspecialidades.SelectedValue;
 
                 if (ddlMedico.SelectedIndex == 0 || ddlMedico.SelectedValue == "")
@@ -126,6 +122,22 @@ namespace Presentacion.Pacientes
                 else
                 {
                     int idMedico = int.Parse(ddlMedico.SelectedValue);
+
+                    // --- NUEVO: Obtener datos del médico para mostrar el rango horario ---
+                    MedicoNegocio medNegocio = new MedicoNegocio();
+                    Medico medico = medNegocio.ObtenerPorId(idMedico);
+
+                    // Obtenemos el turno de trabajo para mostrar las horas
+                    TurnoTrabajoNegocio ttNegocio = new TurnoTrabajoNegocio();
+                    var listaTurnos = ttNegocio.Listar();
+                    var turnoTrabajo = listaTurnos.Find(t => t.TurnoTrabajoId == medico.TurnoTrabajoId);
+
+                    if (turnoTrabajo != null)
+                    {
+                        lblRangoHorario.Text = $"Atiende de {turnoTrabajo.HoraEntrada:hh\\:mm} a {turnoTrabajo.HoraSalida:hh\\:mm}";
+                    }
+                    // -------------------------------------------------------------------
+
                     EspecialidadNegocio negocio = new EspecialidadNegocio();
                     var listaEspecialidades = negocio.ListarPorMedico(idMedico);
 
@@ -154,7 +166,7 @@ namespace Presentacion.Pacientes
         {
             try
             {
-
+                lblRangoHorario.Text = ""; // Resetear label al cambiar especialidad
                 string medicoPrevio = ddlMedico.SelectedValue;
 
                 if (ddlEspecialidades.SelectedIndex == 0 || ddlEspecialidades.SelectedValue == "")
@@ -174,6 +186,16 @@ namespace Presentacion.Pacientes
                 if (!string.IsNullOrEmpty(medicoPrevio) && ddlMedico.Items.FindByValue(medicoPrevio) != null)
                 {
                     ddlMedico.SelectedValue = medicoPrevio;
+
+                    // Si mantenemos el médico seleccionado, volvemos a mostrar su horario
+                    int idMedico = int.Parse(medicoPrevio);
+                    MedicoNegocio medNegocio = new MedicoNegocio();
+                    Medico medico = medNegocio.ObtenerPorId(idMedico);
+                    TurnoTrabajoNegocio ttNegocio = new TurnoTrabajoNegocio();
+                    var listaTurnos = ttNegocio.Listar();
+                    var turnoTrabajo = listaTurnos.Find(t => t.TurnoTrabajoId == medico.TurnoTrabajoId);
+                    if (turnoTrabajo != null)
+                        lblRangoHorario.Text = $"Atiende de {turnoTrabajo.HoraEntrada:hh\\:mm} a {turnoTrabajo.HoraSalida:hh\\:mm}";
                 }
                 CargarHorasDisponibles();
             }
@@ -184,7 +206,7 @@ namespace Presentacion.Pacientes
         }
         protected void txtFecha_TextChanged(object sender, EventArgs e)
         {
-            
+
             CargarHorasDisponibles();
         }
 
@@ -212,15 +234,15 @@ namespace Presentacion.Pacientes
             try
             {
                 // 4) Verificar datos obligatorios del perfil
-                
+
                 var pacienteNegocio = new PacienteNegocio();
                 var datos = pacienteNegocio.ObtenerPorId(usuarioActual.IdPaciente.Value);
                 if (datos == null || string.IsNullOrEmpty(datos.Dni) || datos.FechaNacimiento == DateTime.MinValue)
                 {
-                    
+
                     string esp = ddlEspecialidades.SelectedValue ?? "";
                     string med = ddlMedico.SelectedValue ?? "";
-                    string fechaQ = string.IsNullOrWhiteSpace(txtFecha.Text) ? "" : txtFecha.Text; 
+                    string fechaQ = string.IsNullOrWhiteSpace(txtFecha.Text) ? "" : txtFecha.Text;
                     string horaQ = string.IsNullOrWhiteSpace(ddlHora.SelectedValue) ? "" : ddlHora.SelectedValue;
 
                     string backUrl = ResolveUrl($"~/Pacientes/ReservarTurno.aspx?esp={esp}&med={med}&fecha={fechaQ}&hora={horaQ}");
@@ -352,12 +374,12 @@ namespace Presentacion.Pacientes
             }
             catch (System.Threading.ThreadAbortException)
             {
-               
+
             }
             catch (Exception ex)
             {
-              
-                Session["error"] = ex.ToString(); 
+
+                Session["error"] = ex.ToString();
 
                 var msgUser = (ex.InnerException?.Message ?? ex.Message ?? "Error").Replace("'", "").Replace("\r", " ").Replace("\n", " ");
 
@@ -384,7 +406,7 @@ namespace Presentacion.Pacientes
 
             Session["ReservaPendiente"] = pend;
 
-            
+
             var ret = Server.UrlEncode(ResolveUrl("~/Pacientes/ReservarTurno.aspx"));
             ScriptManager.RegisterStartupScript(
                 this, GetType(), "redirAddPerfil",

@@ -297,7 +297,7 @@ namespace Clinica.Datos
             finally { datos.CerrarConexion(); }
         }
 
-        
+
         public List<TurnoResumen> ListarUltimosResumen(int top)
         {
             var lista = new List<TurnoResumen>();
@@ -369,8 +369,8 @@ namespace Clinica.Datos
 
                     var item = new TurnoResumen
                     {
-                        NumeroTurno = (int)datos.Lector["TurnoId"], 
-                        TurnoId = (int)datos.Lector["TurnoId"],   
+                        NumeroTurno = (int)datos.Lector["TurnoId"],
+                        TurnoId = (int)datos.Lector["TurnoId"],
                         Fecha = fh.Date,
                         Hora = fh.ToString("HH:mm"),
                         Paciente = (string)datos.Lector["Paciente"],
@@ -385,7 +385,6 @@ namespace Clinica.Datos
             finally { datos.CerrarConexion(); }
         }
 
-        // Reprogramar (actualiza fecha/hora)
         public void ReprogramarFecha(int idTurno, DateTime nuevaFechaHora)
         {
             var datos = new AccesoDatos();
@@ -404,7 +403,6 @@ namespace Clinica.Datos
             finally { datos.CerrarConexion(); }
         }
 
-        // Cancelar (marca estado = 2)
         public void Cancelar(int idTurno)
         {
             var datos = new AccesoDatos();
@@ -441,16 +439,18 @@ namespace Clinica.Datos
             finally { datos.CerrarConexion(); }
         }
 
-        // Horas disponibles (00:00–23:00 cada 60') menos ocupadas
-        public List<string> HorasDisponibles(int medicoId, DateTime fecha)
+        // --- MODIFICACIÓN: Ahora recibe rango de entrada y salida ---
+        public List<string> HorasDisponibles(int medicoId, DateTime fecha, TimeSpan entrada, TimeSpan salida)
         {
             var ocupadas = new HashSet<string>(HorasOcupadas(medicoId, fecha));
             var libres = new List<string>();
 
-            var inicio = fecha.Date;                 // 00:00 del día
-            var finExcl = fecha.Date.AddDays(1);     // 00:00 del día siguiente (límite exclusivo)
+            // Convertimos la hora de entrada y salida a DateTime completo para el día seleccionado
+            var inicioTurno = fecha.Date.Add(entrada);
+            var finTurno = fecha.Date.Add(salida);
 
-            for (var h = inicio; h < finExcl; h = h.AddHours(1))
+            // Iteramos solo dentro del rango de trabajo del médico
+            for (var h = inicioTurno; h < finTurno; h = h.AddHours(1))
             {
                 var hhmm = h.ToString("HH:mm");
                 if (!ocupadas.Contains(hhmm))
@@ -459,6 +459,7 @@ namespace Clinica.Datos
 
             return libres;
         }
+
         private static string EstadoTurnoToTexto(EstadoTurno e)
         {
             switch (e)
